@@ -1,0 +1,8 @@
+{
+  "id": "4d0a31f4-9f0b-4e2d-9516-7619a3cd4a11",
+  "jobName": "Importar Clientes",
+  "selectSql": "SELECT id, nome, email FROM clientes WHERE ativo = true",
+  "insertSql": "INSERT INTO clientes (id, nome, email) VALUES (?, ?, ?)",
+  "recordsPerPage": 1000,
+  "concurrency": 4
+}
