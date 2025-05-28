@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface DatabaseConfig {
   type: string;
@@ -21,7 +22,7 @@ export interface Project {
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
-  private apiUrl = 'http://localhost:8080/projects';
+  private apiUrl = `${environment.api}/projects`;
 
   constructor(private http: HttpClient) {}
 
