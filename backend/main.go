@@ -11,14 +11,14 @@ func main() {
 
 	// Projetos
 	router.POST("/projects", handlers.CreateProject)
-	router.GET("/projects/:name", handlers.OpenProject)
-	router.POST("/projects/:name/close", handlers.CloseProject)
+	router.GET("/projects/:id", handlers.GetProjectByID)
+	router.POST("/projects/:id/close", handlers.CloseProject)
 
 	// Jobs
-	router.GET("/projects/:name/jobs", handlers.ListJobs)
-	router.POST("/projects/:name/jobs", handlers.AddJob)
-	router.PUT("/projects/:name/jobs/:jobName", handlers.UpdateJob)
-	router.DELETE("/projects/:name/jobs/:jobName", handlers.DeleteJob)
+	router.GET("/projects/:id/jobs", handlers.ListJobs)
+	router.POST("/projects/:id/jobs", handlers.AddJob)
+	router.PUT("/projects/:id/jobs/:jobId", handlers.UpdateJob)
+	router.DELETE("/projects/:id/jobs/:jobId", handlers.DeleteJob)
 
 	router.Run(":8080")
 }

@@ -19,7 +19,7 @@ func CreateProject(c *gin.Context) {
 	}
 
 	project.ID = uuid.New().String()
-	projectDir := filepath.Join("data", "projects", project.ProjectName)
+	projectDir := filepath.Join("data", "projects", project.ID)
 	if err := os.MkdirAll(filepath.Join(projectDir, "jobs"), os.ModePerm); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao criar diretório do projeto"})
 		return
@@ -32,12 +32,12 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, gin.H{"message": "Projeto criado com sucesso!"})
+	c.JSON(201, project)
 }
 
-func OpenProject(c *gin.Context) {
-	projectName := c.Param("name")
-	projectPath := filepath.Join("data", "projects", projectName, "project.json")
+func GetProjectByID(c *gin.Context) {
+	projectID := c.Param("id")
+	projectPath := filepath.Join("data", "projects", projectID, "project.json")
 	projectBytes, err := ioutil.ReadFile(projectPath)
 	if err != nil {
 		c.JSON(404, gin.H{"error": "Projeto não encontrado"})
@@ -54,6 +54,6 @@ func OpenProject(c *gin.Context) {
 }
 
 func CloseProject(c *gin.Context) {
-	projectName := c.Param("name")
-	c.JSON(200, gin.H{"message": "Projeto '" + projectName + "' fechado com sucesso."})
+	projectID := c.Param("id")
+	c.JSON(200, gin.H{"message": "Projeto '" + projectID + "' fechado com sucesso."})
 }

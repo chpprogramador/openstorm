@@ -13,8 +13,8 @@ import (
 )
 
 func ListJobs(c *gin.Context) {
-	projectName := c.Param("name")
-	projectPath := filepath.Join("data", "projects", projectName, "project.json")
+	projectID := c.Param("id")
+	projectPath := filepath.Join("data", "projects", projectID, "project.json")
 	projectBytes, err := ioutil.ReadFile(projectPath)
 	if err != nil {
 		c.JSON(404, gin.H{"error": "Projeto não encontrado"})
@@ -29,7 +29,7 @@ func ListJobs(c *gin.Context) {
 
 	var jobs []models.Job
 	for _, jobPath := range project.Jobs {
-		fullJobPath := filepath.Join("data", "projects", projectName, jobPath)
+		fullJobPath := filepath.Join("data", "projects", projectID, jobPath)
 		jobBytes, err := ioutil.ReadFile(fullJobPath)
 		if err != nil {
 			continue
@@ -43,7 +43,7 @@ func ListJobs(c *gin.Context) {
 }
 
 func AddJob(c *gin.Context) {
-	projectName := c.Param("name")
+	projectID := c.Param("id")
 	var job models.Job
 	if err := c.BindJSON(&job); err != nil {
 		c.JSON(400, gin.H{"error": "JSON inválido"})
@@ -51,8 +51,8 @@ func AddJob(c *gin.Context) {
 	}
 
 	job.ID = uuid.New().String()
-	jobFileName := "job-" + strings.ToLower(strings.ReplaceAll(job.JobName, " ", "-")) + ".json"
-	projectDir := filepath.Join("data", "projects", projectName)
+	jobFileName := job.ID + ".json"
+	projectDir := filepath.Join("data", "projects", projectID)
 	jobsDir := filepath.Join(projectDir, "jobs")
 	jobPath := filepath.Join(jobsDir, jobFileName)
 
@@ -70,33 +70,34 @@ func AddJob(c *gin.Context) {
 	updatedBytes, _ := json.MarshalIndent(project, "", "  ")
 	_ = ioutil.WriteFile(projectPath, updatedBytes, 0644)
 
-	c.JSON(201, gin.H{"message": "Job adicionado com sucesso!"})
+	c.JSON(201, job)
 }
 
 func UpdateJob(c *gin.Context) {
-	projectName := c.Param("name")
-	jobName := c.Param("jobName")
+	projectID := c.Param("id")
+	jobID := c.Param("jobId")
 	var job models.Job
 	if err := c.BindJSON(&job); err != nil {
 		c.JSON(400, gin.H{"error": "JSON inválido"})
 		return
 	}
 
-	jobFileName := "job-" + strings.ToLower(strings.ReplaceAll(jobName, " ", "-")) + ".json"
-	jobPath := filepath.Join("data", "projects", projectName, "jobs", jobFileName)
+	job.ID = jobID
+	jobFileName := jobID + ".json"
+	jobPath := filepath.Join("data", "projects", projectID, "jobs", jobFileName)
 	jobBytes, _ := json.MarshalIndent(job, "", "  ")
 	if err := ioutil.WriteFile(jobPath, jobBytes, 0644); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao atualizar o job"})
 		return
 	}
-	c.JSON(200, gin.H{"message": "Job atualizado com sucesso!"})
+	c.JSON(200, job)
 }
 
 func DeleteJob(c *gin.Context) {
-	projectName := c.Param("name")
-	jobName := c.Param("jobName")
-	jobFileName := "job-" + strings.ToLower(strings.ReplaceAll(jobName, " ", "-")) + ".json"
-	projectDir := filepath.Join("data", "projects", projectName)
+	projectID := c.Param("id")
+	jobID := c.Param("jobId")
+	jobFileName := jobID + ".json"
+	projectDir := filepath.Join("data", "projects", projectID)
 	jobPath := filepath.Join(projectDir, "jobs", jobFileName)
 
 	if err := os.Remove(jobPath); err != nil {
