@@ -1,0 +1,61 @@
+
+mat-card{
+    margin: 10px;
+    padding: 10px;
+}
+
+  mat-card{
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    width: 100%;
+  }
+
+  mat-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      //background-color: #00ff00; /* Cor da faixa */
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    mat-card.card_projects::before {
+      background-color: #00ff00; /* Cor da faixa para projetos */
+    }
+    mat-card.card_jobs::before {
+      background-color: #4d83ff; /* Cor da faixa para tarefas */
+    }
+    mat-card.card_porcentagem::before {
+      background-color: #ffff00; /* Cor da faixa para notas */
+    }
+    mat-card.card_erros::before {
+      background-color: #ff0000; /* Cor da faixa para outros */
+    }
+
+    mat-card .destaque{
+      //color: #00ff00;
+      font-size: 2.2em;
+      display: block;
+      width: 100%;
+    }
+
+    mat-card.card_projects .destaque{
+      color: #00ff00;
+    }
+    mat-card.card_jobs .destaque{
+      color: #4d83ff;
+    }
+    mat-card.card_porcentagem .destaque{
+      color: #ffff00;
+    }
+    mat-card.card_erros .destaque{
+      color: #ff0000;
+    }
+
+    mat-card .subtexto{
+      font-size: 1.2em;
+      display: block;
+    }

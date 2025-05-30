@@ -1,0 +1,79 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  }
+
+.sidenav-container {
+  height: calc(100vh - 120px); /* Ajuste conforme a altura dos seus toolbars */
+  width: 100%; /* Ocupa toda a largura disponível */
+  }
+
+  .content{
+    //background-color: var(--background-color, #242424);
+    border-top-left-radius: 10px;
+    height: 100%; //calc(100vh - 155px);
+    padding: 20px 40px;
+    box-sizing: border-box;
+    box-shadow: 20px 20px 20px 1px rgba(0, 0, 0, 0.1) inset;
+  }
+
+
+
+mat-nav-list a.active mat-icon {
+  color: #00FF00;
+}
+
+mat-nav-list a.active{
+  background-color: #202020;
+}
+
+
+mat-nav-list a:hover{
+  background-color: #202020 !important;
+}
+
+
+
+mat-sidenav {
+  width: 120px; /* largura do menu lateral */
+}
+
+mat-sidenav-content {
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: auto;
+  height: 100%; /* importante para ocupar toda a altura disponível */
+}
+
+mat-nav-list a {
+  height: 80px;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+
+mat-nav-list a:hover mat-icon {
+  color: #00FF00;
+}
+
+mat-nav-list a mat-icon, mat-nav-list a span {
+  display: block;
+  text-align: center;
+  width: 100%;
+  padding: 8px 0;
+}
+
+.logo_open{
+  //font-weight: bold;
+  font-size: 27px;
+}
+
+.logo_storm{
+  font-weight: bold;
+  color: #00b7ff;
+  font-size: 27px;
+}
+
+.footer-text{
+  font-size: 12px;;
+}

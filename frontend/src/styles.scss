@@ -1,5 +1,26 @@
-/* You can add global styles to this file, and also import other style files */
-@use './tailwind.css';
-@use './assets/layout/layout.scss';
-@use 'primeicons/primeicons.css';
-@use './assets/demo/demo.scss';
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: dark;
+  @include mat.theme((
+    color: mat.$violet-palette,
+    typography: Roboto,
+    density: 0
+  ));
+}
+
+*{
+  background-color: transparent !important;
+  font-weight: lighter;
+  color: #c9e0f8;
+}
+
+html, body { height: 100%;  }
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+  background-image: linear-gradient(to left bottom, #010912, #030f1a, #051422, #05182b, #031b33, #031b33, #031b34, #031b34, #04182c, #051424, #04101c, #010a14);
+}
+
+
+
