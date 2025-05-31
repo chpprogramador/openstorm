@@ -1,19 +1,42 @@
 <mat-toolbar color="primary">
   <span class="logo_open">OPEN</span>&nbsp;<span class="logo_storm">STORM</span>
+
+  <div class="projects">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Projects</mat-label>
+      <mat-select [(value)]="selectedProjectId" (selectionChange)="onSelectChange($event)">
+        <mat-option value="" ></mat-option>
+        <mat-option *ngFor="let project of projects" [value]="project.id">
+          {{ project.projectName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button matIconButton class="button" (click)="openEditDialog(null)">
+      <mat-icon>add_circle_outline</mat-icon>
+    </button>
+
+    @if (selectedProjectId) {
+    <button matIconButton class="button" (click)="openEditDialog(selectedProjectId)">
+      <mat-icon>settings</mat-icon>
+    </button>
+    }
+
+  </div>
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="side" opened>
     <mat-nav-list>
-      <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" disableRipple>
         <mat-icon fontIcon="leaderboard"></mat-icon>
         <span>Dashboard</span>
       </a>
-      <a mat-list-item routerLink="/jobs" routerLinkActive="active">
+      <a mat-list-item routerLink="/jobs" routerLinkActive="active" disableRipple>
         <mat-icon fontIcon="dns"></mat-icon>
         <span>Jobs</span>
       </a>
-      <a mat-list-item routerLink="/history" routerLinkActive="active">
+      <a mat-list-item routerLink="/history" routerLinkActive="active" disableRipple>
         <mat-icon fontIcon="list_alt"></mat-icon>
         <span>Histórico</span>
       </a>

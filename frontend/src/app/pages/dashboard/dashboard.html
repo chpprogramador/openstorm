@@ -1,13 +1,13 @@
 <h1>Dashboard</h1>
 
 
-<mat-grid-list cols="4" rowHeight="2:1">
+<mat-grid-list [cols]="cols" rowHeight="2:1">
   <mat-grid-tile>
 
     <mat-card class="card_projects" appearance="outlined">
         <mat-card-content>
-            <span class="destaque">5</span>
-            <span class="subtexto">Projetos</span>
+            <span class="destaque">0</span>
+            <span class="subtexto">Jobs executados</span>
         </mat-card-content>
     </mat-card>
 
@@ -16,8 +16,8 @@
 
     <mat-card class="card_jobs" appearance="outlined">
         <mat-card-content>
-            <span class="destaque">25</span>
-            <span class="subtexto">Jobs executados</span>
+            <span class="destaque">0%</span>
+            <span class="subtexto">Execução concluída</span>
         </mat-card-content>
     </mat-card>
 
@@ -26,8 +26,8 @@
 
     <mat-card class="card_porcentagem" appearance="outlined">
         <mat-card-content>
-            <span class="destaque">75%</span>
-            <span class="subtexto">Execução concluída</span>
+            <span class="destaque">00:00:00</span>
+            <span class="subtexto">Tempo de execução</span>
         </mat-card-content>
     </mat-card>
 

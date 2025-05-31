@@ -26,7 +26,7 @@ mat-card{
       background-color: #00ff00; /* Cor da faixa para projetos */
     }
     mat-card.card_jobs::before {
-      background-color: #4d83ff; /* Cor da faixa para tarefas */
+      background-color: #00b7ff; /* Cor da faixa para tarefas */
     }
     mat-card.card_porcentagem::before {
       background-color: #ffff00; /* Cor da faixa para notas */
@@ -46,7 +46,7 @@ mat-card{
       color: #00ff00;
     }
     mat-card.card_jobs .destaque{
-      color: #4d83ff;
+      color: #00b7ff;
     }
     mat-card.card_porcentagem .destaque{
       color: #ffff00;
