@@ -2,23 +2,27 @@
   <span class="logo_open">OPEN</span>&nbsp;<span class="logo_storm">STORM</span>
 
   <div class="projects">
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 300px;">
       <mat-label>Projects</mat-label>
-      <mat-select [(value)]="selectedProjectId" (selectionChange)="onSelectChange($event)">
+      <mat-select [(value)]="selectedProject" (selectionChange)="onSelectChange($event)">
         <mat-option value="" ></mat-option>
-        <mat-option *ngFor="let project of projects" [value]="project.id">
+        <mat-option *ngFor="let project of projects" [value]="project">
           {{ project.projectName }}
         </mat-option>
       </mat-select>
     </mat-form-field>
 
-    <button matIconButton class="button" (click)="openEditDialog(null)">
+    <button matIconButton class="button" (click)="openEditDialog(null)" [matTooltip]="'Adicionar novo projeto'">
       <mat-icon>add_circle_outline</mat-icon>
     </button>
 
-    @if (selectedProjectId) {
-    <button matIconButton class="button" (click)="openEditDialog(selectedProjectId)">
-      <mat-icon>settings</mat-icon>
+    @if (selectedProject) {
+    <button matIconButton class="button" (click)="openEditDialog(selectedProject)" [matTooltip]="'Editar projeto'">
+      <mat-icon>settings_outline</mat-icon>
+    </button>
+
+    <button matIconButton class="button" (click)="removeProject(selectedProject)" style="color: red;" [matTooltip]="'Remover projeto'">
+      <mat-icon>delete_outline</mat-icon>
     </button>
     }
 

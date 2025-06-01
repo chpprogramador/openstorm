@@ -1,0 +1,17 @@
+
+mat-form-field{
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.tileContent{
+    padding: 10px 0px;
+    width: 100%;
+}
+
+.database {
+    display: grid; 
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+

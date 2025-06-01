@@ -54,4 +54,18 @@ export class ProjectService {
   listProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(this.apiUrl);
   }
+
+  /**
+   * Atualiza um projeto existente
+   */
+  updateProject(project: Project): Observable<Project> {
+    return this.http.put<Project>(`${this.apiUrl}/${project.id}`, project);
+  }
+
+  /**
+ * Exclui um projeto pelo ID
+ */
+deleteProject(id: string): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/${id}`);
+}
 }

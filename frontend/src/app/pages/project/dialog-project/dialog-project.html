@@ -1,11 +1,53 @@
 <h2 mat-dialog-title>Projeto</h2>
 
-<mat-dialog-content>
-  
+<mat-dialog-content [formGroup]="form" >
 
+  <div class="tileContent">
+
+    <div style="display: none">
+      <input matInput formControlName="id">
+      <input matInput formControlName="jobs">
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nome do Projeto</mat-label>
+      <input matInput formControlName="projectName" required>
+      <mat-error>fgh</mat-error>
+    </mat-form-field>
+
+  </div>
+  <div class="database">
+    <div class="sourceDatabase">
+
+      <h3>Banco de Origem</h3>
+      <div formGroupName="sourceDatabase" class="db-group">
+        <mat-form-field appearance="outline"><mat-label>Tipo</mat-label><input matInput formControlName="type"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Host</mat-label><input matInput formControlName="host"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Porta</mat-label><input matInput type="number" formControlName="port"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Usuário</mat-label><input matInput formControlName="user"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Senha</mat-label><input matInput type="password" formControlName="password"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Database</mat-label><input matInput formControlName="database"></mat-form-field>
+      </div>
+
+    </div>
+    <div class="destinationDatabase">
+    
+      <h3>Banco de Destino</h3>
+      <div formGroupName="destinationDatabase" class="db-group">
+        <mat-form-field appearance="outline"><mat-label>Tipo</mat-label><input matInput formControlName="type"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Host</mat-label><input matInput formControlName="host"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Porta</mat-label><input matInput type="number" formControlName="port"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Usuário</mat-label><input matInput formControlName="user"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Senha</mat-label><input matInput type="password" formControlName="password"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Database</mat-label><input matInput formControlName="database"></mat-form-field>
+      </div>
+
+    </div>
+  </div>
+  
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Cancelar</button>
-  <button mat-flat-button color="primary" (click)="onSave()">Salvar</button>
+  <button mat-flat-button color="secundary" (click)="onSave()" [disabled]="!this.form.valid">Salvar</button>
 </mat-dialog-actions>

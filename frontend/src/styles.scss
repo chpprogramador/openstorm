@@ -12,6 +12,7 @@ html {
 *{
   font-weight: lighter;
   color: #c9e0f8;
+  --mat-form-field-outlined-error-outline-color: #ff0000; // vermelho
 }
 
 html, body { height: 100%;  background-color: transparent !important;}
@@ -20,6 +21,10 @@ body {
   margin: 0; 
   font-family: Roboto, "Helvetica Neue", sans-serif; 
   background-image: linear-gradient(to left bottom, #010912, #030f1a, #051422, #05182b, #031b33, #031b33, #031b34, #031b34, #04182c, #051424, #04101c, #010a14);
+}
+
+h2{
+  margin: 20px 0px;
 }
 
 mat-toolbar, mat-sidenav-container, mat-sidenav, mat-nav-list, mat-list-item, mat-card, mat-card-header, mat-card-title, mat-card-content, mat-card-actions, mat-form-field {
@@ -32,9 +37,25 @@ mat-toolbar, mat-sidenav-container, mat-sidenav, mat-nav-list, mat-list-item, ma
   border: none !important;
 }
 
-.mat-mdc-list-item.mat-mdc-list-item-interactive .mat-focus-indicator {
+.mdc-list-item:focus::before {
   background-color: transparent !important;
-  opacity: 0 !important;
-  transition: none !important;
 }
 
+
+.mat-mdc-dialog-surface.mdc-dialog__surface {
+  background-color: transparent !important;
+  background-image: linear-gradient(to left bottom, #010912, #030f1a, #051422, #05182b, #031b33, #031b33, #031b34, #031b34, #04182c, #051424, #04101c, #010a14);
+}
+
+mat-dialog-content.mat-mdc-dialog-content.mdc-dialog__content{
+  max-height: 90vh !important;
+}
+
+button.mdc-button.mat-mdc-button-base.mdc-button--unelevated.mat-mdc-unelevated-button.mat-secundary {
+  background-color: rgba($color: #000000, $alpha: 0.4);
+}
+
+
+.mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--invalid .mat-mdc-notch-piece {
+    border-color: #ff0000;
+}

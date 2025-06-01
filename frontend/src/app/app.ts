@@ -9,10 +9,12 @@ import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { ConfirmDialogComponent } from './pages/dialog-confirm/dialog-confirm';
 import { DialogProject } from './pages/project/dialog-project/dialog-project';
 import { AppState } from './services/app-state';
-import { ProjectService } from './services/project.service';
+import { Project, ProjectService } from './services/project.service';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +30,8 @@ import { ProjectService } from './services/project.service';
     HttpClientModule,
     CommonModule,
     NgForOf, 
-    MatOptionModule
+    MatOptionModule,
+    MatTooltipModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
@@ -38,10 +41,11 @@ import { ProjectService } from './services/project.service';
   providedIn: 'root'
 })
 export class App {
+[x: string]: any;
   protected title = 'frontend';
 
     projects: any[] = [];
-    selectedProjectId?: number;
+    selectedProject?: Project | null;
 
   constructor(
     private projectservice: ProjectService,
@@ -62,26 +66,78 @@ export class App {
   }
 
    onSelectChange(event: any) {
-    this.appState.projectID = event.value;  
-    console.log(this.appState.projectID);
+    this.appState.project = event.value;  
   }
 
-  openEditDialog(job: any | null) {
+  openEditDialog(project: Project | null) {
     const dialogRef = this.dialog.open(DialogProject, {
       panelClass: 'custom-dialog-container',
-      minWidth: '90vw',
-      height: '90vh',
-      data: { ...job } // passa uma cópia do job
+      minWidth: '60vw',
+      data: project 
     });
 
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Aqui você pode salvar o resultado
-        console.log('Configurações atualizadas:', result);
-        // Pode chamar um service aqui para salvar no backend
+        console.log('Projeto salvo:', result);
+        if (result.id) {
+          this.projectservice.updateProject(result).subscribe({
+            next: (updatedProject) => {
+              const index = this.projects.findIndex(p => p.id === updatedProject.id);
+              if (index !== -1) {
+                this.projects[index] = updatedProject;
+              }
+              this.selectedProject = updatedProject;
+            },
+            error: (error) => {
+              console.error('Erro ao atualizar projeto:', error);
+            }
+          });
+        } else {
+          this.projectservice.createProject(result).subscribe({
+            next: (newProject) => {
+              this.projects.push(newProject);
+              this.appState.project = newProject; 
+              this.selectedProject = newProject;
+            },
+            error: (error) => {
+              console.error('Erro ao criar projeto:', error);
+            }
+          });
+        }
       }
     });
+  }
+
+  removeProject(project: Project) {
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      minWidth: '30vw',
+      minHeight: '20vh',
+      data: {
+        title: 'Remover Projeto',
+        message: 'Tem certeza que deseja remover este projeto?'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        
+        this.projectservice.deleteProject(project.id).subscribe({
+          next: () => { 
+            this.projects = this.projects.filter(p => p.id !== project.id);
+            if (this.appState.project?.id === project.id) {
+              this.appState.project = null; 
+            }
+            this.selectedProject = null;
+          }
+        });
+
+      }
+    });
+
+
+    
   }
 
 }
