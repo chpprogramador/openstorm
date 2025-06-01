@@ -1,6 +1,6 @@
 {
   "id": "c3e2a5f2-1d98-4d75-9c7c-2a56de901b6e",
-  "projectName": "ETL Clientes e Vendas",
+  "projectName": "Migração São Gabriel",
   "jobs": [
     "jobs/job1.json",
     "jobs/job2.json"

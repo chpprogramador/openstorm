@@ -10,9 +10,12 @@ func main() {
 	router := gin.Default()
 
 	// Projetos
+	router.GET("/projects", handlers.ListProjects)
 	router.POST("/projects", handlers.CreateProject)
 	router.GET("/projects/:id", handlers.GetProjectByID)
 	router.POST("/projects/:id/close", handlers.CloseProject)
+	router.PUT("/projects/:id", handlers.UpdateProject)
+	router.DELETE("/projects/:id", handlers.DeleteProject)
 
 	// Jobs
 	router.GET("/projects/:id/jobs", handlers.ListJobs)

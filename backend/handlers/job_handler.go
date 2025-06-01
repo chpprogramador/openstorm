@@ -17,7 +17,7 @@ func ListJobs(c *gin.Context) {
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")
 	projectBytes, err := ioutil.ReadFile(projectPath)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Projeto não encontrado"})
+		c.JSON(500, gin.H{"error": "Projeto não encontrado"})
 		return
 	}
 
@@ -46,7 +46,7 @@ func AddJob(c *gin.Context) {
 	projectID := c.Param("id")
 	var job models.Job
 	if err := c.BindJSON(&job); err != nil {
-		c.JSON(400, gin.H{"error": "JSON inválido"})
+		c.JSON(500, gin.H{"error": "JSON inválido"})
 		return
 	}
 
@@ -121,4 +121,22 @@ func DeleteJob(c *gin.Context) {
 	_ = ioutil.WriteFile(projectPath, updatedBytes, 0644)
 
 	c.JSON(200, gin.H{"message": "Job removido com sucesso!"})
+}
+
+func DeleteProject(c *gin.Context) {
+	projectID := c.Param("id")
+	projectDir := filepath.Join("data", "projects", projectID)
+
+	if _, err := os.Stat(projectDir); os.IsNotExist(err) {
+		c.JSON(404, gin.H{"error": "Projeto não encontrado"})
+		return
+	}
+
+	err := os.RemoveAll(projectDir)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Erro ao excluir o projeto"})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Projeto excluído com sucesso"})
 }
