@@ -13,10 +13,16 @@ export interface DatabaseConfig {
   database: string;
 }
 
+export interface JobConnection {
+  source: string;
+  target: string;
+}
+
 export interface Project {
   id: string;
   projectName: string;
   jobs: string[];
+  connections: JobConnection[]; // nova propriedade
   sourceDatabase: DatabaseConfig;
   destinationDatabase: DatabaseConfig;
 }

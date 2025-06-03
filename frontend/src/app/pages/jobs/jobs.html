@@ -1,19 +1,4 @@
 <h1>Jobs</h1>
 
-<div class="menu-job">
-    <mat-nav-list>
-    @for (job of jobs; track job) {
-        <a mat-list-item (click)="job_click(job)" >{{ job.jobName }}</a>
-    }
-    </mat-nav-list>
-</div>
 
-<div class="job-details">
-    
-        {{ selectedJob?.jobName }}
- 
-    
-    
-</div>
-
-<app-diagram></app-diagram>
+<app-diagram [jobs]="jobs" [project]="appState.project"></app-diagram>

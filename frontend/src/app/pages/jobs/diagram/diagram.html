@@ -1,8 +1,48 @@
+<div class="toolbar">
+  
+    @if(isSaving == true) {
+      <button matIconButton extended [matTooltip]="'Salvando...'" color="secundary"><mat-icon class="sync" class="spin" >sync_outline</mat-icon></button>
+    }
+    @if(isSaving == false) {   
+      <button matIconButton extended [matTooltip]="'Salvo'" color="secundary"><mat-icon class="done">cloud_done_outline</mat-icon></button>
+    }
+  
+
+  <button matButton extended color="secundary" (click)="addNewJob()">
+    <mat-icon>bookmark_border_outline</mat-icon> SQL Insert
+  </button>
+</div>
+
 <div id="diagramContainer" class="diagram-container">
-  <div id="box1" class="box" style="left: 100px; top: 100px;">
-    <div class="handle">Box 1</div>
-  </div>
-  <div id="box2" class="box" style="left: 400px; top: 100px;">
-    <div class="handle">Box 2</div>
-  </div>
+  @for (job of jobs; track job) {
+    <div
+      [id]="job.id"
+      class="box"
+      [style.left.px]="job.left"
+      [style.top.px]="job.top"
+      #jobEl
+      (contextmenu)="onRightClick($event, job)"
+      [cdkContextMenuTriggerFor]="contextMenu"
+    >
+      <div class="icons">
+        <mat-icon>bookmark_border_outline</mat-icon> SQL
+      </div>
+      <div class="handle">{{ job.jobName }}</div>
+      <div class="icons">
+        <mat-icon>notes_outline</mat-icon> {{ job.recordsPerPage }}
+        <span>|</span>
+        <mat-icon>layers_outline</mat-icon> {{ job.concurrency }}
+      </div>
+    </div>
+  }
+
+  <ng-template #contextMenu>
+    <div class="context-menu" cdkMenu cdkMenuPanel>
+
+      <button class="context-menu-item" cdkMenuItem ><mat-icon>edit_outline</mat-icon> Editar</button>
+
+      <button class="context-menu-item" cdkMenuItem (click)="removeJob(selectedJob)"><mat-icon>delete_outline</mat-icon> Excluir</button>
+
+    </div>
+  </ng-template>
 </div>

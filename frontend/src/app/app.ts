@@ -135,8 +135,6 @@ export class App {
 
       }
     });
-
-
     
   }
 

@@ -10,6 +10,8 @@ export interface Job {
   insertSql: string;
   recordsPerPage: number;
   concurrency: number;
+  top: number;
+  left: number;
 }
 
 @Injectable({ providedIn: 'root' })

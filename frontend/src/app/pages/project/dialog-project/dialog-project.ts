@@ -35,11 +35,10 @@ export class DialogProject {
   }
 
   ngOnInit() {
-
-
     this.form = this.fb.group({
       id: [this.data?.id || ''],
       jobs: [this.data?.jobs || []],
+      connections: [this.data?.connections || []],
       projectName: [this.data?.projectName || '', [Validators.required]],
       sourceDatabase: this.fb.group({
         type: [this.data?.sourceDatabase?.type || '', [Validators.required]],

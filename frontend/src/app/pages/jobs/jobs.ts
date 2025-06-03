@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { AppState } from '../../services/app-state';
-import { JobService } from '../../services/job.service';
+import { Job, JobService } from '../../services/job.service';
 import { Diagram } from "./diagram/diagram";
 
 @Component({
@@ -24,12 +24,12 @@ import { Diagram } from "./diagram/diagram";
 })
 export class Jobs {
 
-  jobs: any[] = [];
-  selectedJob: any;
+  jobs: Job[] = [];
+  selectedJob: Job | null = null;
 
   constructor(
     private jobservice: JobService,
-    private appState: AppState
+    public appState: AppState
   ) {}
 
   ngOnInit() {
@@ -37,16 +37,21 @@ export class Jobs {
     if (projectId) {
       this.jobservice.listJobs(projectId).subscribe({
         next: (jobs) => {
+          if (!Array.isArray(jobs) || jobs.length === 0) {
+            this.jobs = [];
+            return;
+          }
           this.jobs = jobs;
+
           console.log('Jobs listados com sucesso:', this.jobs);
         },
         error: (error) => {
           console.error('Erro ao listar projetos:', error);
         }
       });
-    } else {
-      console.error('Project ID is undefined. Cannot list jobs.');
-    }
+    } //else {
+      //console.error('Project ID is undefined. Cannot list jobs.');
+    //}
   }
 
   job_click(job: any) {
