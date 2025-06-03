@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 func ListJobs(c *gin.Context) {
@@ -50,7 +49,7 @@ func AddJob(c *gin.Context) {
 		return
 	}
 
-	job.ID = uuid.New().String()
+	//job.ID = uuid.New().String()
 	jobFileName := job.ID + ".json"
 	projectDir := filepath.Join("data", "projects", projectID)
 	jobsDir := filepath.Join(projectDir, "jobs")

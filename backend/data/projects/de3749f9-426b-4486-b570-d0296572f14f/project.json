@@ -1,0 +1,22 @@
+{
+  "id": "de3749f9-426b-4486-b570-d0296572f14f",
+  "projectName": "Migração São Gabriel",
+  "jobs": [],
+  "connections": [],
+  "sourceDatabase": {
+    "type": "45656",
+    "host": "456",
+    "port": 456,
+    "user": "dev@elabbora.com.br",
+    "password": "developer",
+    "database": "456"
+  },
+  "destinationDatabase": {
+    "type": "456",
+    "host": "456",
+    "port": 456,
+    "user": "456",
+    "password": "456",
+    "database": "46"
+  }
+}
