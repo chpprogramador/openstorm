@@ -21,4 +21,5 @@ type Project struct {
 	Connections         []JobConnection `json:"connections"`
 	SourceDatabase      DatabaseConfig  `json:"sourceDatabase"`
 	DestinationDatabase DatabaseConfig  `json:"destinationDatabase"`
+	Concurrency         int             `json:"concurrency"`
 }

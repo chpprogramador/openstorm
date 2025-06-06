@@ -2,6 +2,7 @@ package main
 
 import (
 	"etl/handlers"
+	"etl/status"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,6 +23,14 @@ func main() {
 	router.POST("/projects/:id/jobs", handlers.AddJob)
 	router.PUT("/projects/:id/jobs/:jobId", handlers.UpdateJob)
 	router.DELETE("/projects/:id/jobs/:jobId", handlers.DeleteJob)
+
+	// Executar projeto
+	router.POST("/projects/:id/run", handlers.RunProject)
+
+	// Status de jobs via WebSocket
+	router.GET("/ws/status", func(c *gin.Context) {
+		status.JobStatusWS(c.Writer, c.Request)
+	})
 
 	router.Run(":8080")
 }

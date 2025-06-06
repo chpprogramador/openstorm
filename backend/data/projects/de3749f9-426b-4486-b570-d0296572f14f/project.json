@@ -1,22 +1,31 @@
 {
   "id": "de3749f9-426b-4486-b570-d0296572f14f",
   "projectName": "Migração São Gabriel",
-  "jobs": [],
-  "connections": [],
+  "jobs": [
+    "jobs/bc877701-cea2-4d6d-8d8b-9fa9fb741ffe.json",
+    "jobs/1b4f2e23-767a-4157-8753-39760973a822.json"
+  ],
+  "connections": [
+    {
+      "source": "bc877701-cea2-4d6d-8d8b-9fa9fb741ffe",
+      "target": "1b4f2e23-767a-4157-8753-39760973a822"
+    }
+  ],
   "sourceDatabase": {
-    "type": "45656",
-    "host": "456",
-    "port": 456,
-    "user": "dev@elabbora.com.br",
-    "password": "developer",
-    "database": "456"
+    "type": "postgres",
+    "host": "192.168.0.177",
+    "port": 5432,
+    "user": "admin",
+    "password": "Elabbora@2025",
+    "database": "migracao"
   },
   "destinationDatabase": {
-    "type": "456",
-    "host": "456",
-    "port": 456,
-    "user": "456",
-    "password": "456",
-    "database": "46"
-  }
+    "type": "postgres",
+    "host": "192.168.0.177",
+    "port": 5432,
+    "user": "admin",
+    "password": "Elabbora@2025",
+    "database": "migracao"
+  },
+  "concurrency": 4
 }

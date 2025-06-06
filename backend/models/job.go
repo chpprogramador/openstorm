@@ -6,7 +6,6 @@ type Job struct {
 	SelectSQL      string `json:"selectSql"`
 	InsertSQL      string `json:"insertSql"`
 	RecordsPerPage int    `json:"recordsPerPage"`
-	Concurrency    int    `json:"concurrency"`
 	Left           int    `json:"left"`
 	Top            int    `json:"top"`
 }
