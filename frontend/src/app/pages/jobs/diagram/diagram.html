@@ -31,7 +31,7 @@
       <div class="icons">
         <mat-icon>notes_outline</mat-icon> {{ job.recordsPerPage }}
         <span>|</span>
-        <mat-icon>layers_outline</mat-icon> {{ job.concurrency }}
+        <mat-icon>layers_outline</mat-icon> {{ project?.concurrency }}
       </div>
     </div>
   }
@@ -39,7 +39,7 @@
   <ng-template #contextMenu>
     <div class="context-menu" cdkMenu cdkMenuPanel>
 
-      <button class="context-menu-item" cdkMenuItem ><mat-icon>edit_outline</mat-icon> Editar</button>
+      <button class="context-menu-item" cdkMenuItem (click)="openEditDialog(selectedJob)"><mat-icon>edit_outline</mat-icon> Editar</button>
 
       <button class="context-menu-item" cdkMenuItem (click)="removeJob(selectedJob)"><mat-icon>delete_outline</mat-icon> Excluir</button>
 

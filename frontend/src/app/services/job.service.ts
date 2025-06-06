@@ -9,7 +9,6 @@ export interface Job {
   selectSql: string;
   insertSql: string;
   recordsPerPage: number;
-  concurrency: number;
   top: number;
   left: number;
 }

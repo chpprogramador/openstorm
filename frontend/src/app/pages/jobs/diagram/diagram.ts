@@ -21,6 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Job, JobService } from '../../../services/job.service';
 import { Project, ProjectService } from '../../../services/project.service';
 import { ConfirmDialogComponent } from '../../dialog-confirm/dialog-confirm';
+import { DialogJobs } from '../dialog-jobs/dialog-jobs';
 
 @Component({
   selector: 'app-diagram',
@@ -226,7 +227,6 @@ export class Diagram implements AfterViewInit {
       selectSql: '',
       insertSql: '',
       recordsPerPage: 1000,
-      concurrency: 1,
       top: -100,
       left: 350,
     };
@@ -296,9 +296,42 @@ export class Diagram implements AfterViewInit {
   }
 
   isSaved() {
-    of(null).pipe(delay(500)).subscribe(() => {
+    of(null).pipe(delay(200)).subscribe(() => {
       this.isSaving = false;
     });
   }
+
+  openEditDialog(job: Job | null) {
+      const dialogRef = this.dialog.open(DialogJobs, {
+        panelClass: 'custom-dialog-container',
+        minWidth: '90vw',
+        minHeight: '90vh',
+        data: job 
+      });
+  
+  
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          console.log('Job salvo:', result);
+          if (result.id) {
+            
+            this.jobService.updateJob(this.project?.id || '', result.id, result).subscribe({
+              next: (updatedJob) => {
+                const index = this.jobs.findIndex(j => j.id === updatedJob.id);
+                if (index !== -1) {
+                  this.jobs[index] = updatedJob;
+                }
+                this.selectedJob = updatedJob;
+                this.saveProject();
+              },
+              error: (error) => {
+                console.error('Erro ao atualizar job:', error);
+              }
+            });
+            
+          }
+        }
+      });
+    }
 
 }

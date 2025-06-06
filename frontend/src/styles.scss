@@ -59,3 +59,8 @@ button.mdc-button.mat-mdc-button-base.mdc-button--unelevated.mat-mdc-unelevated-
 .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--invalid .mat-mdc-notch-piece {
     border-color: #ff0000;
 }
+
+ngx-monaco-editor {
+  flex: 1 1 auto;
+  height: 100% !important;
+}

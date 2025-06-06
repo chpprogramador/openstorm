@@ -6,6 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { Project } from '../../../services/project.service';
 
 @Component({
@@ -18,7 +19,8 @@ import { Project } from '../../../services/project.service';
     MatInputModule,
     MatButtonModule,
     ReactiveFormsModule,
-    MatGridListModule
+    MatGridListModule,
+    MatSelectModule
   ],
   templateUrl: './dialog-project.html',
   styleUrl: './dialog-project.scss',
@@ -40,6 +42,7 @@ export class DialogProject {
       jobs: [this.data?.jobs || []],
       connections: [this.data?.connections || []],
       projectName: [this.data?.projectName || '', [Validators.required]],
+      concurrency: [this.data?.concurrency || 1, [Validators.required, Validators.min(1)]],
       sourceDatabase: this.fb.group({
         type: [this.data?.sourceDatabase?.type || '', [Validators.required]],
         host: [this.data?.sourceDatabase?.host || '', [Validators.required]],

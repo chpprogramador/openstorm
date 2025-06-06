@@ -15,3 +15,36 @@ mat-form-field{
     gap: 40px;
 }
 
+.lineFull {
+    width: 100%;
+    display: flex;
+    align-items: start;
+    justify-content: start;
+    gap: 10px;
+    flex-grow: 1;
+    align-items: stretch;
+}
+
+.w50 {
+    width: 50%;
+}
+
+.w50 mat-form-field{
+    width: 100%;
+}
+
+.w75 {
+    width: 75%;
+}
+
+.w75 mat-form-field{
+    width: 100%;
+}
+
+.w25 {
+    width: 25%;
+}
+
+.w25 mat-form-field {
+    width: 100%;
+}

@@ -25,6 +25,7 @@ export interface Project {
   connections: JobConnection[]; // nova propriedade
   sourceDatabase: DatabaseConfig;
   destinationDatabase: DatabaseConfig;
+  concurrency: number;
 }
 
 @Injectable({ providedIn: 'root' })
