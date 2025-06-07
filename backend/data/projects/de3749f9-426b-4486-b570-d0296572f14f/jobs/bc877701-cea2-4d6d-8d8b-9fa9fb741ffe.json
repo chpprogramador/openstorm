@@ -1,7 +1,7 @@
 {
   "id": "bc877701-cea2-4d6d-8d8b-9fa9fb741ffe",
   "jobName": "Insert Ligação 1",
-  "selectSql": "select id, id, nomeinquilino \r\nfrom ligacao",
+  "selectSql": "select id, idligacaoantiga, nomeinquilino \r\nfrom ligacao",
   "insertSql": "insert into teste_etl (id, ligacao, nome)",
   "recordsPerPage": 50000,
   "left": 0,

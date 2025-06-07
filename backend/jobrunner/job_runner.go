@@ -35,6 +35,7 @@ func NewJobRunner(sourceDB, destDB *sql.DB, dialect dialects.SQLDialect, concurr
 }
 
 func (jr *JobRunner) RunJob(jobID string) {
+
 	job, ok := jr.JobMap[jobID]
 	if !ok {
 		log.Printf("Job %s não encontrado\n", jobID)

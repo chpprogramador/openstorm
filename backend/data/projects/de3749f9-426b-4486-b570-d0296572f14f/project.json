@@ -3,12 +3,17 @@
   "projectName": "Migração São Gabriel",
   "jobs": [
     "jobs/bc877701-cea2-4d6d-8d8b-9fa9fb741ffe.json",
-    "jobs/1b4f2e23-767a-4157-8753-39760973a822.json"
+    "jobs/1b4f2e23-767a-4157-8753-39760973a822.json",
+    "jobs/37e6d6d6-cd8b-40c3-8516-88ce647f7880.json"
   ],
   "connections": [
     {
       "source": "bc877701-cea2-4d6d-8d8b-9fa9fb741ffe",
       "target": "1b4f2e23-767a-4157-8753-39760973a822"
+    },
+    {
+      "source": "1b4f2e23-767a-4157-8753-39760973a822",
+      "target": "37e6d6d6-cd8b-40c3-8516-88ce647f7880"
     }
   ],
   "sourceDatabase": {
@@ -27,5 +32,5 @@
     "password": "Elabbora@2025",
     "database": "migracao"
   },
-  "concurrency": 4
+  "concurrency": 30
 }

@@ -23,6 +23,7 @@ func main() {
 	router.POST("/projects/:id/jobs", handlers.AddJob)
 	router.PUT("/projects/:id/jobs/:jobId", handlers.UpdateJob)
 	router.DELETE("/projects/:id/jobs/:jobId", handlers.DeleteJob)
+	router.POST("/jobs/validate", handlers.ValidateJobHandler)
 
 	// Executar projeto
 	router.POST("/projects/:id/run", handlers.RunProject)

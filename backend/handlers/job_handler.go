@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"etl/models"
+	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -138,4 +141,111 @@ func DeleteProject(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "Projeto excluído com sucesso"})
+}
+
+var db *sql.DB // Add this at the package level and initialize it elsewhere in your application
+
+func ValidateJobHandler(c *gin.Context) {
+	var req models.ValidateJobRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
+			Valid: false, Message: "Erro ao parsear JSON",
+		})
+		return
+	}
+
+	if req.Limit <= 0 {
+		req.Limit = 10
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ValidateJobResponse{
+			Valid: false, Message: "Erro ao iniciar transação",
+		})
+		return
+	}
+	defer tx.Rollback()
+
+	// Tenta extrair colunas com SELECT * LIMIT 0
+	testSQL := fmt.Sprintf("SELECT * FROM (%s) AS t LIMIT 0", req.SelectSQL)
+	rows, err := tx.Query(testSQL)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
+			Valid: false, Message: fmt.Sprintf("Erro no SELECT: %v", err),
+		})
+		return
+	}
+	defer rows.Close()
+
+	columns, _ := rows.Columns()
+	insertCols, err := extractInsertColumns(req.InsertSQL)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
+			Valid: false, Message: fmt.Sprintf("Erro no INSERT: %v", err),
+		})
+		return
+	}
+
+	if len(columns) != len(insertCols) {
+		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
+			Valid:   false,
+			Message: fmt.Sprintf("Número de colunas incompatível. SELECT tem %d, INSERT tem %d", len(columns), len(insertCols)),
+		})
+		return
+	}
+
+	// Coleta dados para preview
+	previewSQL := fmt.Sprintf("SELECT * FROM (%s) AS t LIMIT %d", req.SelectSQL, req.Limit)
+	rowsPreview, err := tx.Query(previewSQL)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
+			Valid: false, Message: fmt.Sprintf("Erro ao buscar preview: %v", err),
+		})
+		return
+	}
+	defer rowsPreview.Close()
+
+	var preview []map[string]interface{}
+	cols, _ := rowsPreview.Columns()
+	for rowsPreview.Next() {
+		values := make([]interface{}, len(cols))
+		ptrs := make([]interface{}, len(cols))
+		for i := range values {
+			ptrs[i] = &values[i]
+		}
+		rowsPreview.Scan(ptrs...)
+		row := make(map[string]interface{})
+		for i, col := range cols {
+			if b, ok := values[i].([]byte); ok {
+				row[col] = string(b)
+			} else {
+				row[col] = values[i]
+			}
+		}
+		preview = append(preview, row)
+	}
+
+	c.JSON(http.StatusOK, models.ValidateJobResponse{
+		Columns: columns,
+		Preview: preview,
+		Valid:   true,
+		Message: "Validação bem-sucedida",
+	})
+}
+
+func extractInsertColumns(sql string) ([]string, error) {
+	start := strings.Index(sql, "(")
+	end := strings.Index(sql, ")")
+	if start == -1 || end == -1 || end <= start {
+		return nil, fmt.Errorf("não foi possível extrair colunas do INSERT")
+	}
+
+	raw := sql[start+1 : end]
+	split := strings.Split(raw, ",")
+	cols := make([]string, 0, len(split))
+	for _, col := range split {
+		cols = append(cols, strings.TrimSpace(col))
+	}
+	return cols, nil
 }

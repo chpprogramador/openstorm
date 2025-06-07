@@ -1,0 +1,9 @@
+{
+  "id": "37e6d6d6-cd8b-40c3-8516-88ce647f7880",
+  "jobName": "Insert Fatura",
+  "selectSql": "select f.id, f.idligacao, f.nome\r\nfrom fatura f\r\nlimit 250000",
+  "insertSql": "insert into teste_etl (id, ligacao, nome)",
+  "recordsPerPage": 50000,
+  "left": 800,
+  "top": 0
+}

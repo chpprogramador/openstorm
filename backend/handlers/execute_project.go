@@ -6,6 +6,7 @@ import (
 	"etl/dialects"
 	"etl/jobrunner"
 	"etl/models"
+	"etl/status"
 	"fmt"
 	"log"
 	"net/http"
@@ -75,6 +76,19 @@ func RunProject(c *gin.Context) {
 		if err := json.Unmarshal(jobBytes, &job); err == nil {
 			runner.JobMap[job.ID] = job
 			log.Printf("Job %s carregado do caminho %s", job.ID, fullPath)
+
+			// Atualizar status de todos os jobs para pendente
+			status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+				js.Status = "pending"
+				js.StartedAt = nil
+				js.EndedAt = nil
+				js.Processed = 0
+				js.Total = 0
+				js.Progress = 0
+				js.Error = ""
+				status.NotifySubscribers()
+			})
+
 			jobCount++
 		} else {
 			log.Printf("Erro ao interpretar job %s: %v", jobPath, err)
