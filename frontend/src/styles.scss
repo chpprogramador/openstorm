@@ -1,12 +1,29 @@
 @use '@angular/material' as mat;
 
+@include mat.core();
+
+:root {
+  --mdc-theme-primary: #7e57c2;  /* Violeta (um tom parecido com mat.$violet-palette) */
+  --mdc-theme-primary-variant: #5e35b1; /* variante escura */
+  
+  --mdc-theme-secondary: #ff4081; /* rosa para o accent */
+  
+  --mdc-theme-error: #f44336; /* vermelho warn */
+}
+
 html {
   color-scheme: dark;
-  @include mat.theme((
-    color: mat.$violet-palette,
-    typography: Roboto,
-    density: 0
-  ));
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #121212;
+  color: #c9e0f8;
+}
+
+button.mat-icon-button, button.mat-button {
+  color: white !important;
+}
+
+mat-icon svg {
+  fill: white !important;
 }
 
 *{

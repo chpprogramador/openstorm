@@ -70,9 +70,16 @@ export class ProjectService {
   }
 
   /**
- * Exclui um projeto pelo ID
- */
-deleteProject(id: string): Observable<any> {
-  return this.http.delete(`${this.apiUrl}/${id}`);
-}
+   * Exclui um projeto pelo ID
+   */
+  deleteProject(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Executa um projeto
+   */
+  runProject(id: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/run`, {});
+  }
 }

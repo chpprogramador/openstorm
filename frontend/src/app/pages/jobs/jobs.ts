@@ -6,7 +6,18 @@ import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { AppState } from '../../services/app-state';
 import { Job, JobService } from '../../services/job.service';
+import { StatusService } from '../../services/status.service';
 import { Diagram } from "./diagram/diagram";
+
+export interface JobExtended extends Job {
+  total?: number;
+  processed?: number;
+  progress?: number;
+  status?: 'pending' | 'running' | 'done' | 'error';
+  startedAt?: string;
+  endedAt?: string;
+  error?: string;
+}
 
 @Component({
   standalone: true,
@@ -24,12 +35,16 @@ import { Diagram } from "./diagram/diagram";
 })
 export class Jobs {
 
-  jobs: Job[] = [];
-  selectedJob: Job | null = null;
+  
+
+  jobs: JobExtended[] = [];
+  selectedJob: JobExtended | null = null;
+  isRunning = false;
 
   constructor(
     private jobservice: JobService,
-    public appState: AppState
+    public appState: AppState,
+    public statusService: StatusService
   ) {}
 
   ngOnInit() {
@@ -49,9 +64,33 @@ export class Jobs {
           console.error('Erro ao listar projetos:', error);
         }
       });
-    } //else {
-      //console.error('Project ID is undefined. Cannot list jobs.');
-    //}
+    }
+
+    
+
+    this.statusService.listen().subscribe(statuses => {
+      console.log('Status dos jobs recebidos:', statuses);
+      this.jobs.forEach(job => {
+        const status = statuses.find(s => s.id === job.id);
+        if (status) {
+          job.progress = status.progress;
+          job.status = status.status;
+          job.startedAt = status.startedAt;
+          job.endedAt = status.endedAt;
+          job.error = status.error;
+          job.total = status.total;
+          job.processed = status.processed;
+        }
+        if (job.status === 'done' || job.status === 'error') {
+          this.isRunning = false;
+          console.log(`Job ${job.jobName} concluído com status: ${job.status}`);
+        } else {
+          this.isRunning = true;
+          console.log(`Job ${job.jobName} ainda está em execução.`);
+        }
+
+      });
+    });
   }
 
   job_click(job: any) {

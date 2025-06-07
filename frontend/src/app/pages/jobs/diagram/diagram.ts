@@ -14,6 +14,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -22,6 +23,7 @@ import { Job, JobService } from '../../../services/job.service';
 import { Project, ProjectService } from '../../../services/project.service';
 import { ConfirmDialogComponent } from '../../dialog-confirm/dialog-confirm';
 import { DialogJobs } from '../dialog-jobs/dialog-jobs';
+import { JobExtended } from '../jobs';
 
 @Component({
   selector: 'app-diagram',
@@ -31,18 +33,20 @@ import { DialogJobs } from '../dialog-jobs/dialog-jobs';
     MatButtonModule,
     CdkContextMenuTrigger,
     CdkMenuModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatProgressBarModule
   ],
   templateUrl: './diagram.html',
   styleUrls: ['./diagram.scss'],
 })
 export class Diagram implements AfterViewInit {
-  @Input() jobs: Job[] = [];
+  @Input() jobs: JobExtended[] = [];
   @Input() project: Project | null = null;
+  @Input() isRunning = false;
   @ViewChildren('jobEl') jobElements!: QueryList<ElementRef>;
   @ViewChild('diagramContainer') containerRef!: ElementRef;
 
-  selectedJob: Job | null = null;
+  selectedJob: JobExtended | null = null;
   isLoading = false;
   isSaving = false;
   isBrowser: boolean;
@@ -302,36 +306,67 @@ export class Diagram implements AfterViewInit {
   }
 
   openEditDialog(job: Job | null) {
-      const dialogRef = this.dialog.open(DialogJobs, {
-        panelClass: 'custom-dialog-container',
-        minWidth: '90vw',
-        minHeight: '90vh',
-        data: job 
-      });
-  
-  
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          console.log('Job salvo:', result);
-          if (result.id) {
-            
-            this.jobService.updateJob(this.project?.id || '', result.id, result).subscribe({
-              next: (updatedJob) => {
-                const index = this.jobs.findIndex(j => j.id === updatedJob.id);
-                if (index !== -1) {
-                  this.jobs[index] = updatedJob;
-                }
-                this.selectedJob = updatedJob;
-                this.saveProject();
-              },
-              error: (error) => {
-                console.error('Erro ao atualizar job:', error);
+    const dialogRef = this.dialog.open(DialogJobs, {
+      panelClass: 'custom-dialog-container',
+      minWidth: '90vw',
+      minHeight: '90vh',
+      data: job
+    });
+
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log('Job salvo:', result);
+        if (result.id) {
+
+          this.jobService.updateJob(this.project?.id || '', result.id, result).subscribe({
+            next: (updatedJob) => {
+              const index = this.jobs.findIndex(j => j.id === updatedJob.id);
+              if (index !== -1) {
+                this.jobs[index] = updatedJob;
               }
-            });
-            
-          }
+              this.selectedJob = updatedJob;
+              this.saveProject();
+            },
+            error: (error) => {
+              console.error('Erro ao atualizar job:', error);
+            }
+          });
+
         }
-      });
-    }
+      }
+    });
+  }
+
+  runProject() {
+    if (!this.project) return;
+
+    this.isSaving = true;
+    this.isRunning = true;
+
+    this.jobs.forEach(job => {
+      job.total = 0;
+      job.processed = 0;
+      job.progress = 0;
+      job.status = 'pending';
+      job.startedAt = '';
+      job.endedAt = '';
+      job.error = '';
+    });
+
+
+    this.projectService.runProject(this.project.id).subscribe({
+      next: (response) => {
+        console.log('Projeto executado com sucesso:', response);
+        this.isSaved();
+      },
+      error: (error) => {
+        console.error('Erro ao executar projeto:', error);
+        this.isSaved();
+      }
+    });
+  }
+
+  stopProject() {}
 
 }

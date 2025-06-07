@@ -1,11 +1,22 @@
 <div class="toolbar">
   
-    @if(isSaving == true) {
-      <button matIconButton extended [matTooltip]="'Salvando...'" color="secundary"><mat-icon class="sync" class="spin" >sync_outline</mat-icon></button>
-    }
-    @if(isSaving == false) {   
-      <button matIconButton extended [matTooltip]="'Salvo'" color="secundary"><mat-icon class="done">cloud_done_outline</mat-icon></button>
-    }
+  @if(isSaving == true) {
+    <button matIconButton extended [matTooltip]="'Salvando...'" color="secundary"><mat-icon class="sync" class="spin" >sync_outline</mat-icon></button>
+  }
+  @if(isSaving == false) {   
+    <button matIconButton extended [matTooltip]="'Salvo'" color="secundary"><mat-icon class="done">cloud_done_outline</mat-icon></button>
+  }
+   
+  @if(isRunning == false) {
+    <button matIconButton extended color="secundary" class="run" (click)="runProject()">
+      <mat-icon>play_circle_filled</mat-icon>
+    </button>
+  }
+  @if(isRunning == true) {
+    <button matButton extended color="secundary" class="stop" (click)="stopProject()">
+      <mat-icon>stop_circle</mat-icon> Executando...
+    </button>
+  }
   
 
   <button matButton extended color="secundary" (click)="addNewJob()">
@@ -24,6 +35,31 @@
       (contextmenu)="onRightClick($event, job)"
       [cdkContextMenuTriggerFor]="contextMenu"
     >
+      <div class="status">
+        @if (job.status === 'running') {
+          <mat-icon class="running">play_circle_filled</mat-icon>
+        }
+        @if (job.status === 'done') {
+          <mat-icon class="done">check_circle</mat-icon>
+        }
+        @if (job.status === 'error') {
+          <mat-icon class="error">error_outline</mat-icon>
+        }
+        @if (job.status === 'pending') {
+          <mat-icon class="pending">hourglass_empty</mat-icon>
+        }
+      </div>
+      @if (job.status) {
+      <div class="progress">
+        <mat-progress-bar
+            [mode]="job.status === 'pending' ? 'indeterminate' : 'determinate'"
+            [value]="job.progress"
+            color="warn"
+            >
+        </mat-progress-bar>
+        {{ job.processed }} / {{ job.total }}
+      </div>
+      }
       <div class="icons">
         <mat-icon>bookmark_border_outline</mat-icon> SQL
       </div>
