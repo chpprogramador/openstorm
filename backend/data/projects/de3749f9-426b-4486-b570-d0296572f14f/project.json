@@ -18,7 +18,7 @@
   ],
   "sourceDatabase": {
     "type": "postgres",
-    "host": "192.168.0.177",
+    "host": "100.88.11.112",
     "port": 5432,
     "user": "admin",
     "password": "Elabbora@2025",
@@ -26,7 +26,7 @@
   },
   "destinationDatabase": {
     "type": "postgres",
-    "host": "192.168.0.177",
+    "host": "100.88.11.112",
     "port": 5432,
     "user": "admin",
     "password": "Elabbora@2025",

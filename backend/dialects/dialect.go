@@ -118,6 +118,8 @@ func (d PostgresDialect) InsertBatch(db *sql.DB, insertSQL string, batch [][]any
 	query := sb.String()
 	log.Printf("Executando insert de %d linhas", len(batch))
 
+	log.Panicf(query)
+
 	_, err := db.Exec(query)
 	return err
 }
