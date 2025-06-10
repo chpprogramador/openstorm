@@ -19,6 +19,8 @@ import (
 )
 
 func RunProject(c *gin.Context) {
+
+	//lê o JSON do projeto
 	projectID := c.Param("id")
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")
 	projectBytes, err := os.ReadFile(projectPath)
@@ -29,6 +31,7 @@ func RunProject(c *gin.Context) {
 	}
 	log.Printf("Lendo projeto %s de %s", projectID, projectPath)
 
+	// Deserializa o JSON do projeto
 	var project models.Project
 	if err := json.Unmarshal(projectBytes, &project); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao ler project.json"})
@@ -37,6 +40,7 @@ func RunProject(c *gin.Context) {
 	}
 	log.Printf("Projeto %s carregado com sucesso", project.ProjectName)
 
+	// Busca o dialeto apropriado
 	dialect, err := dialects.NewDialect(project.SourceDatabase.Type)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -45,6 +49,7 @@ func RunProject(c *gin.Context) {
 	}
 	log.Printf("Dialeto %s criado com sucesso", project.SourceDatabase.Type)
 
+	// Conecta ao banco de dados de origem
 	sourceDB, err := sql.Open(project.SourceDatabase.Type, buildDSN(project.SourceDatabase))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao conectar no banco de origem"})
@@ -53,6 +58,7 @@ func RunProject(c *gin.Context) {
 	}
 	log.Printf("Conexão com o banco de origem %s estabelecida", project.SourceDatabase.Database)
 
+	// Conecta ao banco de dados de destino
 	destDB, err := sql.Open(project.DestinationDatabase.Type, buildDSN(project.DestinationDatabase))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao conectar no banco de destino"})
@@ -61,17 +67,22 @@ func RunProject(c *gin.Context) {
 	}
 	log.Printf("Conexão com o banco de destino %s estabelecida", project.DestinationDatabase.Database)
 
+	// cria o JobRunner
 	runner := jobrunner.NewJobRunner(sourceDB, destDB, dialect, project.Concurrency)
 
 	// Carregar os jobs
 	jobCount := 0
 	for _, jobPath := range project.Jobs {
+
+		// Lê o JSON do job
 		fullPath := filepath.Join("data", "projects", projectID, jobPath)
 		jobBytes, err := os.ReadFile(fullPath)
 		if err != nil {
 			log.Printf("Erro ao ler job %s: %v", jobPath, err)
 			continue
 		}
+
+		// Deserializa o JSON do job
 		var job models.Job
 		if err := json.Unmarshal(jobBytes, &job); err == nil {
 			runner.JobMap[job.ID] = job
