@@ -15,7 +15,7 @@ html {
   color-scheme: dark;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   background-color: #121212;
-  color: #c9e0f8;
+  color: #c9e0f8 !important;
 }
 
 button.mat-icon-button, button.mat-button {
@@ -80,4 +80,93 @@ button.mdc-button.mat-mdc-button-base.mdc-button--unelevated.mat-mdc-unelevated-
 ngx-monaco-editor {
   flex: 1 1 auto;
   height: 100% !important;
+}
+
+div.mat-mdc-select-panel{
+  background-color: #1d3248 !important;
+  color: #fff !important;
+}
+
+.mdc-list-item__primary-text{
+  color: #fff !important;
+}
+
+.mdc-notched-outline__leading,
+.mdc-notched-outline__notch,
+.mdc-notched-outline__trailing {
+  border-color: white !important;
+}
+
+.mdc-text-field--invalid .mdc-notched-outline__leading,
+.mdc-text-field--invalid .mdc-notched-outline__notch,
+.mdc-text-field--invalid .mdc-notched-outline__trailing {
+  border-color: rgb(255, 0, 0) !important;
+}
+
+
+/* Para o estado focado */
+.mdc-text-field--focused .mdc-notched-outline__leading,
+.mdc-text-field--focused .mdc-notched-outline__notch,
+.mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: white !important;
+}
+
+/* Para o estado hover */
+.mdc-text-field:not(.mdc-text-field--disabled):hover .mdc-notched-outline__leading,
+.mdc-text-field:not(.mdc-text-field--disabled):hover .mdc-notched-outline__notch,
+.mdc-text-field:not(.mdc-text-field--disabled):hover .mdc-notched-outline__trailing {
+  //border-color: white !important;
+}
+
+/* Texto do input */
+.mat-mdc-input-element {
+  color: white !important;
+}
+
+/* Label/placeholder */
+.mdc-floating-label {
+  color: white !important;
+}
+
+/* Label quando focado */
+.mdc-text-field--focused .mdc-floating-label {
+  color: white !important;
+}
+
+/* Placeholder quando não há label flutuante */
+.mat-mdc-input-element::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-notched-outline__notch {
+  border-left: none !important;
+}
+
+mat-card-content .destaque {
+    padding-bottom: 27px;
+}
+.mat-mdc-card-content:last-child {
+    padding-bottom: 8px !important;
+}
+.mat-mdc-card-content:first-child {
+    padding-top: 8px !important;
+}
+
+/* Cor da barra de progresso */
+.mat-mdc-progress-bar .mdc-linear-progress__bar-inner {
+  border-color: #00b7ff !important;
+}
+
+/* Cor de fundo da barra */
+.mat-mdc-progress-bar .mdc-linear-progress__buffer {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Para versões mais antigas do Angular Material */
+.mat-progress-bar-fill::after {
+  background-color: #00b7ff !important;
+}
+
+.mat-progress-bar-buffer {
+  background-color: rgba(255, 255, 255, 0.2) !important;
 }
