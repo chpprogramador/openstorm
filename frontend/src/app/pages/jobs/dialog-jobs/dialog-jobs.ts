@@ -3,11 +3,13 @@ import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
-import { Job } from '../../../services/job.service';
+import { AppState } from '../../../services/app-state';
+import { Job, JobService, ValidateJob } from '../../../services/job.service';
+import { InformComponent } from '../../dialog-inform/dialog-inform';
 import { SqlEditor } from './sql-editor/sql-editor';
 
 
@@ -37,8 +39,11 @@ export class DialogJobs {
 
   constructor(
     public dialogRef: MatDialogRef<DialogJobs>,
+    private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: Job,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private jobService: JobService,
+    private appState: AppState
   ) {
     this.form = this.fb.group({
       id: [this.data?.id || ''],  
@@ -47,7 +52,8 @@ export class DialogJobs {
       insertSql: [this.data?.insertSql || '', []],
       recordsPerPage: [this.data?.recordsPerPage || 100, []],
       top: [this.data?.top || 0, []],
-      left: [this.data?.left || 0, []]
+      left: [this.data?.left || 0, []],
+      columns: [this.data?.columns || []]
     });
     this.sqlSelect = this.data?.selectSql || '';
     this.sqlInsert = this.data?.insertSql || '';
@@ -60,11 +66,48 @@ export class DialogJobs {
 
   onSave() {
     if (this.form.valid) {
-      this.dialogRef.close(this.form.value);
+
+      let validateJob: ValidateJob = {
+        selectSQL: this.form.value.selectSql, 
+        insertSQL: this.form.value.insertSql,
+        limit: this.form.value.recordsPerPage,
+        projectId: this.appState.project?.id || ''
+      };
+
+      this.jobService.validate(validateJob).subscribe({
+        next: (response) => { 
+          this.data.columns = response.columns || [];
+          this.form.patchValue({ columns: response.columns });
+          this.openInformDialog('Querys validadas com sucesso!', true);
+        },
+        error: (error) => {
+          console.error('Validation failed:', error);
+          this.openInformDialog('Erro na validação: ' + error.error.message, false);
+        }
+      });
+      
     }
   }
 
-  
+  //open InformComponent Dialog
+  openInformDialog(message: string, success: boolean) {
+    const dialogRefInf = this.dialog.open(InformComponent, {
+      panelClass: 'custom-dialog-container',
+      data: {
+        title: 'Informação',
+        message: message
+      }
+    });
+
+    dialogRefInf.afterClosed().subscribe((result: any) => {
+      if (success) {
+        dialogRefInf.close(this.form.value);
+        this.dialogRef.close(this.form.value);
+      }      
+      
+    });
+  }
+
 
   onSelectAtualizado(novoSql: string) {
     this.selectAtualizado = novoSql;

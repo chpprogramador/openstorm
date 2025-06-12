@@ -230,6 +230,7 @@ export class Diagram implements AfterViewInit {
       jobName: 'Novo Job',
       selectSql: '',
       insertSql: '',
+      columns: [],
       recordsPerPage: 1000,
       top: -100,
       left: 350,
