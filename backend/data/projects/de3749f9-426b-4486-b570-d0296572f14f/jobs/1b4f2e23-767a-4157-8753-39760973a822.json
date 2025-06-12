@@ -3,6 +3,11 @@
   "jobName": "Insert Ligação 2",
   "selectSql": "select id, idligacaoantiga, nomeinquilino \r\nfrom ligacao",
   "insertSql": "insert into teste_etl (id, ligacao, nome)",
+  "columns": [
+    "id",
+    "idligacaoantiga",
+    "nomeinquilino"
+  ],
   "recordsPerPage": 50000,
   "left": 400,
   "top": 0

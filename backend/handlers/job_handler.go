@@ -143,14 +143,43 @@ func DeleteProject(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Projeto excluído com sucesso"})
 }
 
-var db *sql.DB // Add this at the package level and initialize it elsewhere in your application
-
 func ValidateJobHandler(c *gin.Context) {
+
+	println("Validando job...\n")
 	var req models.ValidateJobRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
 			Valid: false, Message: "Erro ao parsear JSON",
 		})
+		println("Erro ao parsear JSON: %v\n", err)
+		return
+	}
+
+	projectID := req.ProjectID
+	projectPath := filepath.Join("data", "projects", projectID, "project.json")
+	projectBytes, err := ioutil.ReadFile(projectPath)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Projeto não encontrado"})
+		return
+	}
+
+	var project models.Project
+	if err := json.Unmarshal(projectBytes, &project); err != nil {
+		c.JSON(500, gin.H{"error": "Erro ao ler project.json"})
+		return
+	}
+
+	// Conecta ao banco de dados de origem
+	sourceDB, err := sql.Open(project.SourceDatabase.Type, buildDSN(project.SourceDatabase))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao conectar no banco de origem"})
+		return
+	}
+
+	// Conecta ao banco de dados de destino
+	destDB, err := sql.Open(project.DestinationDatabase.Type, buildDSN(project.DestinationDatabase))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao conectar no banco de destino"})
 		return
 	}
 
@@ -158,7 +187,7 @@ func ValidateJobHandler(c *gin.Context) {
 		req.Limit = 10
 	}
 
-	tx, err := db.Begin()
+	tx, err := sourceDB.Begin()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ValidateJobResponse{
 			Valid: false, Message: "Erro ao iniciar transação",
@@ -192,60 +221,75 @@ func ValidateJobHandler(c *gin.Context) {
 			Valid:   false,
 			Message: fmt.Sprintf("Número de colunas incompatível. SELECT tem %d, INSERT tem %d", len(columns), len(insertCols)),
 		})
+
 		return
 	}
 
-	// Coleta dados para preview
-	previewSQL := fmt.Sprintf("SELECT * FROM (%s) AS t LIMIT %d", req.SelectSQL, req.Limit)
-	rowsPreview, err := tx.Query(previewSQL)
+	// Teste de INSERT com rollback
+
+	txd, err := destDB.Begin()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
-			Valid: false, Message: fmt.Sprintf("Erro ao buscar preview: %v", err),
+		c.JSON(http.StatusInternalServerError, models.ValidateJobResponse{
+			Valid: false, Message: "Erro ao iniciar transação para INSERT",
 		})
 		return
 	}
-	defer rowsPreview.Close()
+	defer txd.Rollback() // Garante o rollback
 
-	var preview []map[string]interface{}
-	cols, _ := rowsPreview.Columns()
-	for rowsPreview.Next() {
-		values := make([]interface{}, len(cols))
-		ptrs := make([]interface{}, len(cols))
-		for i := range values {
-			ptrs[i] = &values[i]
-		}
-		rowsPreview.Scan(ptrs...)
-		row := make(map[string]interface{})
-		for i, col := range cols {
-			if b, ok := values[i].([]byte); ok {
-				row[col] = string(b)
-			} else {
-				row[col] = values[i]
+	// Obter um registro do SourceDB para o INSERT
+	var values []interface{}
+	selectTestSQL := req.SelectSQL
+	selectColumns := columns
+	rows2, err := sourceDB.Query(selectTestSQL)
+	if err == nil {
+		defer rows2.Close()
+		if rows2.Next() {
+			values = make([]interface{}, len(selectColumns))
+			scanArgs := make([]interface{}, len(selectColumns))
+			for i := range values {
+				scanArgs[i] = &values[i]
 			}
+			rows2.Scan(scanArgs...)
 		}
-		preview = append(preview, row)
+	}
+
+	if len(values) > 0 {
+
+		testSQL := fmt.Sprintf(" SELECT * FROM (%s) AS t LIMIT 0", req.SelectSQL)
+		insertStmt := fmt.Sprintf("%s %s", req.InsertSQL, testSQL)
+
+		_, err = txd.Exec(insertStmt)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
+				Valid: false, Message: fmt.Sprintf("Erro no INSERT: %v", err),
+			})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, models.ValidateJobResponse{
 		Columns: columns,
-		Preview: preview,
 		Valid:   true,
 		Message: "Validação bem-sucedida",
 	})
 }
 
 func extractInsertColumns(sql string) ([]string, error) {
+	println("Extraindo colunas do INSERT...\n")
 	start := strings.Index(sql, "(")
 	end := strings.Index(sql, ")")
 	if start == -1 || end == -1 || end <= start {
+		println("Erro: não foi possível encontrar parênteses no INSERT\n")
 		return nil, fmt.Errorf("não foi possível extrair colunas do INSERT")
 	}
 
+	println("Colunas encontradas entre parênteses: %s\n", sql[start+1:end])
 	raw := sql[start+1 : end]
 	split := strings.Split(raw, ",")
 	cols := make([]string, 0, len(split))
 	for _, col := range split {
 		cols = append(cols, strings.TrimSpace(col))
 	}
+	println("Colunas extraídas: %v\n", cols)
 	return cols, nil
 }

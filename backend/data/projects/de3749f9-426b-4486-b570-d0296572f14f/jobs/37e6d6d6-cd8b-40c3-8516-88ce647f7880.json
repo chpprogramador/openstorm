@@ -3,6 +3,7 @@
   "jobName": "Insert Fatura",
   "selectSql": "select f.id, f.idligacao, f.nome\r\nfrom fatura f\r\nlimit 250000",
   "insertSql": "insert into teste_etl (id, ligacao, nome)",
+  "columns": [],
   "recordsPerPage": 50000,
   "left": 800,
   "top": 0
