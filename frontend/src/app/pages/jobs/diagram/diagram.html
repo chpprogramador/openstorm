@@ -28,7 +28,7 @@
   @for (job of jobs; track job) {
     <div
       [id]="job.id"
-      class="box"
+      [class]="'box ' + job.status"
       [style.left.px]="job.left"
       [style.top.px]="job.top"
       #jobEl
@@ -52,7 +52,7 @@
       @if (job.status) {
       <div class="progress">
         <mat-progress-bar
-            [mode]="job.status === 'pending' ? 'indeterminate' : 'determinate'"
+            [mode]="'determinate'"
             [value]="job.progress"
             color="warn"
             >

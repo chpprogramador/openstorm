@@ -1,5 +1,5 @@
 import { CdkContextMenuTrigger, CdkMenuModule } from '@angular/cdk/menu';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -34,7 +34,8 @@ import { JobExtended } from '../jobs';
     CdkContextMenuTrigger,
     CdkMenuModule,
     MatTooltipModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    CommonModule
   ],
   templateUrl: './diagram.html',
   styleUrls: ['./diagram.scss'],

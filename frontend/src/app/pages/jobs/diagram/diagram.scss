@@ -72,6 +72,18 @@
   z-index: 9999;
 }
 
+.box.done::before {
+  background-color: #00ff00;
+}
+
+.box.running::before, .box.pending::before {
+  background-color: #00b7ff;
+}
+
+.box.error::before {
+  background-color: #ff0000;
+}
+
 .context-menu {
   display: inline-flex;
   flex-direction: column;
