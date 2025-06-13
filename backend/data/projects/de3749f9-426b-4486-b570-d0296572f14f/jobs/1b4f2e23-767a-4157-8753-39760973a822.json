@@ -1,7 +1,7 @@
 {
   "id": "1b4f2e23-767a-4157-8753-39760973a822",
   "jobName": "Insert Ligação 2",
-  "selectSql": "select id, idligacaoantiga, nomeinquilino \r\nfrom ligacao",
+  "selectSql": "select id, idligacaoantiga, nomeinquilino \r\nfrom ligacao ",
   "insertSql": "insert into teste_etl (id, ligacao, nome)",
   "columns": [
     "id",
