@@ -10,6 +10,8 @@ import (
 type SQLDialect interface {
 	FetchTotalCount(db *sql.DB, job models.Job) (int, error)
 	BuildPaginatedInsertQuery(job models.Job, offset, limit int) string
+	BuildInsertQuery(job models.Job, records []map[string]interface{}) (string, []interface{})
+	BuildPaginatedSelectQuery(job models.Job, offset int, limit int) string
 }
 
 type PostgresDialect struct{}
@@ -39,6 +41,36 @@ LIMIT %d;`,
 		offset,
 		limit,
 	)
+}
+
+func (d PostgresDialect) BuildPaginatedSelectQuery(job models.Job, offset, limit int) string {
+	return fmt.Sprintf("SELECT %s FROM (%s) LIMIT %d OFFSET %d",
+		strings.Join(job.Columns, ", "),
+		job.SelectSQL,
+		limit,
+		offset,
+	)
+}
+
+func (d PostgresDialect) BuildInsertQuery(job models.Job, records []map[string]interface{}) (string, []interface{}) {
+	columns := job.Columns
+	valueStrings := []string{}
+
+	for _, record := range records {
+		vals := []string{}
+		for _, col := range columns {
+			val := record[col]
+			vals = append(vals, escapeValue(val))
+		}
+		valueStrings = append(valueStrings, fmt.Sprintf("(%s)", strings.Join(vals, ", ")))
+	}
+
+	query := fmt.Sprintf("%s VALUES %s",
+		job.InsertSQL,
+		strings.Join(valueStrings, ", "),
+	)
+
+	return query, nil
 }
 
 type MySQLDialect struct{}
@@ -71,6 +103,40 @@ LIMIT %d;`,
 	)
 }
 
+// BuildPaginatedSelectQuery constrói uma consulta paginada para MySQL
+func (d MySQLDialect) BuildPaginatedSelectQuery(job models.Job, offset int, limit int) string {
+	return fmt.Sprintf("SELECT %s FROM (%s) AS sub LIMIT %d OFFSET %d",
+		strings.Join(job.Columns, ", "),
+		job.SelectSQL,
+		limit,
+		offset,
+	)
+}
+
+// BuildInsertQuery constrói uma consulta de inserção para MySQL
+func (d MySQLDialect) BuildInsertQuery(job models.Job, records []map[string]interface{}) (string, []interface{}) {
+	columns := job.Columns
+	valueStrings := []string{}
+	var args []interface{}
+
+	for _, record := range records {
+		vals := []string{}
+		for _, col := range columns {
+			val := record[col]
+			vals = append(vals, escapeValue(val))
+			args = append(args, val) // Adiciona o valor para os parâmetros
+		}
+		valueStrings = append(valueStrings, fmt.Sprintf("(%s)", strings.Join(vals, ", ")))
+	}
+
+	query := fmt.Sprintf("%s VALUES %s",
+		job.InsertSQL,
+		strings.Join(valueStrings, ", "),
+	)
+
+	return query, args
+}
+
 type SQLServerDialect struct{}
 
 func (d SQLServerDialect) FetchTotalCount(db *sql.DB, job models.Job) (int, error) {
@@ -99,6 +165,38 @@ ORDER BY rn;`,
 	)
 }
 
+func (d SQLServerDialect) BuildPaginatedSelectQuery(job models.Job, offset int, limit int) string {
+	return fmt.Sprintf("SELECT %s FROM (%s) AS sub WHERE rn > %d AND rn <= %d",
+		strings.Join(job.Columns, ", "),
+		job.SelectSQL,
+		offset,
+		offset+limit,
+	)
+}
+
+func (d SQLServerDialect) BuildInsertQuery(job models.Job, records []map[string]interface{}) (string, []interface{}) {
+	columns := job.Columns
+	valueStrings := []string{}
+	var args []interface{}
+
+	for _, record := range records {
+		vals := []string{}
+		for _, col := range columns {
+			val := record[col]
+			vals = append(vals, escapeValue(val))
+			args = append(args, val) // Adiciona o valor para os parâmetros
+		}
+		valueStrings = append(valueStrings, fmt.Sprintf("(%s)", strings.Join(vals, ", ")))
+	}
+
+	query := fmt.Sprintf("%s VALUES %s",
+		job.InsertSQL,
+		strings.Join(valueStrings, ", "),
+	)
+
+	return query, args
+}
+
 type AccessDialect struct{}
 
 func (d AccessDialect) FetchTotalCount(db *sql.DB, job models.Job) (int, error) {
@@ -107,4 +205,50 @@ func (d AccessDialect) FetchTotalCount(db *sql.DB, job models.Job) (int, error) 
 
 func (d AccessDialect) BuildPaginatedInsertQuery(job models.Job, offset, limit int) string {
 	return ""
+}
+
+func (d AccessDialect) BuildPaginatedSelectQuery(job models.Job, offset int, limit int) string {
+	return fmt.Sprintf("SELECT TOP %d %s FROM (%s) AS sub WHERE rn > %d",
+		limit,
+		strings.Join(job.Columns, ", "),
+		job.SelectSQL,
+		offset,
+	)
+}
+
+// BuildInsertQuery constrói uma consulta de inserção para Access
+func (d AccessDialect) BuildInsertQuery(job models.Job, records []map[string]interface{}) (string, []interface{}) {
+	columns := job.Columns
+	valueStrings := []string{}
+	var args []interface{}
+
+	for _, record := range records {
+		vals := []string{}
+		for _, col := range columns {
+			val := record[col]
+			vals = append(vals, escapeValue(val))
+			args = append(args, val) // Adiciona o valor para os parâmetros
+		}
+		valueStrings = append(valueStrings, fmt.Sprintf("(%s)", strings.Join(vals, ", ")))
+	}
+
+	query := fmt.Sprintf("%s VALUES %s",
+		job.InsertSQL,
+		strings.Join(valueStrings, ", "),
+	)
+
+	return query, args
+}
+
+func escapeValue(value interface{}) string {
+	switch v := value.(type) {
+	case nil:
+		return "NULL"
+	case string:
+		return "'" + strings.ReplaceAll(v, "'", "''") + "'"
+	case []byte:
+		return "'" + strings.ReplaceAll(string(v), "'", "''") + "'"
+	default:
+		return fmt.Sprintf("%v", v)
+	}
 }

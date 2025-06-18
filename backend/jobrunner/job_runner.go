@@ -11,26 +11,30 @@ import (
 )
 
 type JobRunner struct {
-	SourceDB      *sql.DB
-	DestinationDB *sql.DB
-	Dialect       dialects.SQLDialect
-	Concurrency   int
-	Semaphore     chan struct{}
-	WaitGroup     *sync.WaitGroup
-	JobMap        map[string]models.Job
-	ConnMap       map[string][]string
+	SourceDB       *sql.DB
+	DestinationDB  *sql.DB
+	SourceDSN      string
+	DestinationDSN string
+	Dialect        dialects.SQLDialect
+	Concurrency    int
+	Semaphore      chan struct{}
+	WaitGroup      *sync.WaitGroup
+	JobMap         map[string]models.Job
+	ConnMap        map[string][]string
 }
 
-func NewJobRunner(sourceDB, destDB *sql.DB, dialect dialects.SQLDialect, concurrency int) *JobRunner {
+func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect dialects.SQLDialect, concurrency int) *JobRunner {
 	return &JobRunner{
-		SourceDB:      sourceDB,
-		DestinationDB: destDB,
-		Dialect:       dialect,
-		Concurrency:   concurrency,
-		Semaphore:     make(chan struct{}, concurrency),
-		WaitGroup:     &sync.WaitGroup{},
-		JobMap:        make(map[string]models.Job),
-		ConnMap:       make(map[string][]string),
+		SourceDB:       sourceDB,
+		DestinationDB:  destDB,
+		SourceDSN:      sourceDSN,
+		DestinationDSN: destDSN,
+		Dialect:        dialect,
+		Concurrency:    concurrency,
+		Semaphore:      make(chan struct{}, concurrency),
+		WaitGroup:      &sync.WaitGroup{},
+		JobMap:         make(map[string]models.Job),
+		ConnMap:        make(map[string][]string),
 	}
 }
 
@@ -81,22 +85,37 @@ func (jr *JobRunner) RunJob(jobID string) {
 				batchWG.Done()
 			}()
 
-			batchSQL := jr.Dialect.BuildPaginatedInsertQuery(job, offset, job.RecordsPerPage)
+			var affected int64
 
-			res, err := jr.DestinationDB.Exec(batchSQL)
-			if err != nil {
-				log.Printf("Erro ao executar batch: %v\nSQL: %s\n", err, batchSQL)
-				status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
-					js.Status = "error"
-					js.Error = err.Error()
-					status.NotifySubscribers()
-				})
-				return
-			}
-
-			affected, err := res.RowsAffected()
-			if err != nil {
-				log.Printf("Erro ao obter RowsAffected: %v\n", err)
+			if jr.SourceDSN == jr.DestinationDSN {
+				batchSQL := jr.Dialect.BuildPaginatedInsertQuery(job, offset, job.RecordsPerPage)
+				res, err := jr.DestinationDB.Exec(batchSQL)
+				if err != nil {
+					log.Printf("Erro ao executar batch: %v\n", err)
+					status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+						js.Status = "error"
+						js.Error = err.Error()
+						status.NotifySubscribers()
+					})
+					return
+				}
+				affected, err = res.RowsAffected()
+				if err != nil {
+					log.Printf("Erro ao obter RowsAffected: %v\n", err)
+				}
+			} else {
+				err := jr.runBatchDataTransfer(job, offset, job.RecordsPerPage)
+				if err != nil {
+					log.Printf("Erro na transferência de dados entre bancos: %v\n", err)
+					status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+						js.Status = "error"
+						js.Error = err.Error()
+						status.NotifySubscribers()
+					})
+					return
+				}
+				// For data transfer, we don't know affected rows, so just count batch size
+				affected = int64(job.RecordsPerPage)
 			}
 
 			mu.Lock()
@@ -142,4 +161,46 @@ func (jr *JobRunner) Run(startIDs []string) {
 		jr.RunJob(id)
 	}
 	jr.WaitGroup.Wait()
+}
+
+func (jr *JobRunner) runBatchDataTransfer(job models.Job, offset int, batchSize int) error {
+	query := jr.Dialect.BuildPaginatedSelectQuery(job, offset, batchSize)
+	rows, err := jr.SourceDB.Query(query)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	columns, err := rows.Columns()
+	if err != nil {
+		return err
+	}
+
+	var records []map[string]interface{}
+
+	for rows.Next() {
+		values := make([]interface{}, len(columns))
+		valuePtrs := make([]interface{}, len(columns))
+		for i := range columns {
+			valuePtrs[i] = &values[i]
+		}
+
+		if err := rows.Scan(valuePtrs...); err != nil {
+			return err
+		}
+
+		record := make(map[string]interface{})
+		for i, col := range columns {
+			record[col] = values[i]
+		}
+		records = append(records, record)
+	}
+
+	if len(records) == 0 {
+		return nil
+	}
+
+	insertSQL, args := jr.Dialect.BuildInsertQuery(job, records)
+	_, err = jr.DestinationDB.Exec(insertSQL, args...)
+	return err
 }

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"etl/dialects"
-	"etl/jobrunner"
 	"etl/models"
 	"etl/status"
 	"fmt"
@@ -12,6 +11,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"etl/jobrunner"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql" // MySQL
@@ -68,7 +69,7 @@ func RunProject(c *gin.Context) {
 	log.Printf("Conexão com o banco de destino %s estabelecida", project.DestinationDatabase.Database)
 
 	// cria o JobRunner
-	runner := jobrunner.NewJobRunner(sourceDB, destDB, dialect, project.Concurrency)
+	runner := jobrunner.NewJobRunner(sourceDB, destDB, buildDSN(project.SourceDatabase), buildDSN(project.DestinationDatabase), dialect, project.Concurrency)
 
 	// Carregar os jobs
 	jobCount := 0

@@ -32,5 +32,5 @@
     "password": "Elabbora@2025",
     "database": "migracao"
   },
-  "concurrency": 2
+  "concurrency": 20
 }

@@ -8,7 +8,7 @@
     "idligacao",
     "nome"
   ],
-  "recordsPerPage": 50000,
+  "recordsPerPage": 5000,
   "left": 800,
   "top": 0
 }
