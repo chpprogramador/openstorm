@@ -233,6 +233,8 @@ export class Diagram implements AfterViewInit {
       insertSql: '',
       columns: [],
       recordsPerPage: 1000,
+      type: 'insert',
+      stopOnError: true,
       top: -100,
       left: 350,
     };

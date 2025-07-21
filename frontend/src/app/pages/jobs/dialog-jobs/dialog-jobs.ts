@@ -3,10 +3,13 @@ import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatOptionModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AppState } from '../../../services/app-state';
 import { Job, JobService, ValidateJob } from '../../../services/job.service';
 import { InformComponent } from '../../dialog-inform/dialog-inform';
@@ -24,7 +27,10 @@ import { SqlEditor } from './sql-editor/sql-editor';
     MatInputModule,
     MatButtonModule,
     ReactiveFormsModule,
-    MatGridListModule
+    MatGridListModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatSlideToggleModule
   ],
   templateUrl: './dialog-jobs.html',
   styleUrl: './dialog-jobs.scss'
@@ -51,6 +57,8 @@ export class DialogJobs {
       selectSql: [this.data?.selectSql || '', []],
       insertSql: [this.data?.insertSql || '', []],
       recordsPerPage: [this.data?.recordsPerPage || 100, []],
+      type: [this.data?.type || 'insert', []],
+      stopOnError: [this.data?.stopOnError || true, []],
       top: [this.data?.top || 0, []],
       left: [this.data?.left || 0, []],
       columns: [this.data?.columns || []]

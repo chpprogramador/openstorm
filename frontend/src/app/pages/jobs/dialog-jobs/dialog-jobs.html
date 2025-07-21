@@ -21,6 +21,24 @@
 
         </div>
 
+        <div class="lineFull">
+            <div class="w75">
+                 <mat-form-field appearance="outline">
+                    <mat-label>Tipo</mat-label>
+                    <mat-select formControlName="type">
+                        <mat-option value="insert">Insert</mat-option>
+                        <mat-option value="execution">Execução</mat-option>
+                        <mat-option value="condition">Condição</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="w25">
+                <mat-slide-toggle formControlName="stopOnError">Parar quando erro?</mat-slide-toggle>
+            </div>
+
+        </div>
+
         <input type="hidden" formControlName="id">
         <input type="hidden" formControlName="left">
         <input type="hidden" formControlName="top">

@@ -10,6 +10,8 @@ export interface Job {
   insertSql: string;
   columns: string[];
   recordsPerPage: number;
+  "type": string;
+  stopOnError: boolean;
   top: number;
   left: number;
 }
