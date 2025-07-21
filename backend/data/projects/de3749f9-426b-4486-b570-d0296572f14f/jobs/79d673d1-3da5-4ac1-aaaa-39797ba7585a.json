@@ -1,0 +1,14 @@
+{
+  "id": "79d673d1-3da5-4ac1-aaaa-39797ba7585a",
+  "jobName": "Execution",
+  "selectSql": "select false",
+  "insertSql": "insert into usuario (usuario)",
+  "columns": [
+    "?column?"
+  ],
+  "recordsPerPage": 1000,
+  "type": "condition",
+  "stopOnError": true,
+  "left": 0,
+  "top": 100
+}

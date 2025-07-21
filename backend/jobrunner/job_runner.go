@@ -6,6 +6,7 @@ import (
 	"etl/models"
 	"etl/status"
 	"log"
+	"strings"
 	"sync"
 	"time"
 )
@@ -44,6 +45,20 @@ func (jr *JobRunner) RunJob(jobID string) {
 		log.Printf("Job %s não encontrado\n", jobID)
 		return
 	}
+
+	switch strings.ToLower(job.Type) {
+	case "insert":
+		jr.runInsertJob(jobID, job)
+	case "execution":
+		jr.runExecutionJob(jobID, job)
+	case "condition":
+		jr.runConditionJob(jobID, job)
+	default:
+		log.Printf("Tipo de job desconhecido: %s", job.Type)
+	}
+}
+
+func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 	jr.WaitGroup.Add(1)
 	go func() {
@@ -148,12 +163,103 @@ func (jr *JobRunner) RunJob(jobID string) {
 			status.NotifySubscribers()
 		})
 
+		// Verifica se job falhou e se deve parar em erro
+		jobStatus := status.GetJobStatus(jobID)
+		if job.StopOnError && jobStatus != nil && jobStatus.Status == "error" {
+			log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
+			return
+		}
+
 		// Executa os próximos jobs dependentes
 		nextJobs := jr.ConnMap[jobID]
 		for _, nextID := range nextJobs {
 			jr.RunJob(nextID)
 		}
 	}()
+}
+
+func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
+	log.Printf("Executando job de execução: %s\n", job.JobName)
+	status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+		js.Name = job.JobName
+		js.Status = "running"
+		status.NotifySubscribers()
+	})
+
+	_, err := jr.DestinationDB.Exec(job.SelectSQL)
+	if err != nil {
+		log.Printf("Erro no job de execução: %v\n", err)
+		status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+			js.Status = "error"
+			js.Error = err.Error()
+			status.NotifySubscribers()
+		})
+		return
+	}
+
+	status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+		js.Status = "done"
+		status.NotifySubscribers()
+	})
+
+	// Verifica se job falhou e se deve parar em erro
+	jobStatus := status.GetJobStatus(jobID)
+	if job.StopOnError && jobStatus != nil && jobStatus.Status == "error" {
+		log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
+		return
+	}
+
+	// Chama próximos jobs
+	for _, nextID := range jr.ConnMap[jobID] {
+		jr.RunJob(nextID)
+	}
+}
+
+func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
+	log.Printf("Executando job de condição: %s\n", job.JobName)
+	status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+		js.Name = job.JobName
+		js.Status = "running"
+		status.NotifySubscribers()
+	})
+
+	var result bool
+	err := jr.SourceDB.QueryRow(job.SelectSQL).Scan(&result)
+	if err != nil {
+		log.Printf("Erro ao executar condição: %v\n", err)
+		status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+			js.Status = "error"
+			js.Error = err.Error()
+			status.NotifySubscribers()
+		})
+		return
+	}
+
+	if !result {
+		log.Printf("Condição falhou: %s\n", job.JobName)
+		status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+			js.Status = "error"
+			js.Error = "Condição retornou falso"
+			status.NotifySubscribers()
+		})
+		return
+	}
+
+	status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+		js.Status = "done"
+		status.NotifySubscribers()
+	})
+
+	// Verifica se job falhou e se deve parar em erro
+	jobStatus := status.GetJobStatus(jobID)
+	if job.StopOnError && jobStatus != nil && jobStatus.Status == "error" {
+		log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
+		return
+	}
+
+	for _, nextID := range jr.ConnMap[jobID] {
+		jr.RunJob(nextID)
+	}
 }
 
 func (jr *JobRunner) Run(startIDs []string) {

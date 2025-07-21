@@ -2,18 +2,13 @@
   "id": "de3749f9-426b-4486-b570-d0296572f14f",
   "projectName": "Migração São Gabriel",
   "jobs": [
-    "jobs/bc877701-cea2-4d6d-8d8b-9fa9fb741ffe.json",
-    "jobs/1b4f2e23-767a-4157-8753-39760973a822.json",
-    "jobs/37e6d6d6-cd8b-40c3-8516-88ce647f7880.json"
+    "jobs/79d673d1-3da5-4ac1-aaaa-39797ba7585a.json",
+    "jobs/d1831b08-fec3-4a51-bbd0-6623bd2390df.json"
   ],
   "connections": [
     {
-      "source": "bc877701-cea2-4d6d-8d8b-9fa9fb741ffe",
-      "target": "1b4f2e23-767a-4157-8753-39760973a822"
-    },
-    {
-      "source": "1b4f2e23-767a-4157-8753-39760973a822",
-      "target": "37e6d6d6-cd8b-40c3-8516-88ce647f7880"
+      "source": "79d673d1-3da5-4ac1-aaaa-39797ba7585a",
+      "target": "d1831b08-fec3-4a51-bbd0-6623bd2390df"
     }
   ],
   "sourceDatabase": {

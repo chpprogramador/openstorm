@@ -90,3 +90,9 @@ func JobStatusWS(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func GetJobStatus(id string) *JobStatus {
+	jobStatusMu.Lock()
+	defer jobStatusMu.Unlock()
+	return jobStatusMap[id]
+}

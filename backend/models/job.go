@@ -7,6 +7,8 @@ type Job struct {
 	InsertSQL      string   `json:"insertSql"`
 	Columns        []string `json:"columns"`
 	RecordsPerPage int      `json:"recordsPerPage"`
+	Type           string   `json:"type"`
+	StopOnError    bool     `json:"stopOnError"`
 	Left           int      `json:"left"`
 	Top            int      `json:"top"`
 }
