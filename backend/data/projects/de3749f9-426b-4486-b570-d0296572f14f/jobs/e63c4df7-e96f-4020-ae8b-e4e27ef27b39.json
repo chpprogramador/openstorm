@@ -1,0 +1,12 @@
+{
+  "id": "e63c4df7-e96f-4020-ae8b-e4e27ef27b39",
+  "jobName": "Cria tabela teste",
+  "selectSql": "CREATE TABLE IF NOT EXISTS teste2 (\r\n    teste2 varchar\r\n);",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 0,
+  "top": 100
+}

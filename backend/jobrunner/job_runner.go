@@ -8,6 +8,7 @@ import (
 	"log"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -59,13 +60,15 @@ func (jr *JobRunner) RunJob(jobID string) {
 }
 
 func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
+	log.Printf("Iniciando job de inserção: %s\n", job.JobName)
 
 	jr.WaitGroup.Add(1)
 	go func() {
 		defer jr.WaitGroup.Done()
 
-		log.Printf("Executando job: %s\n", job.JobName)
+		log.Printf("Iniciando job %s\n", job.JobName)
 		start := time.Now()
+
 		status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
 			js.Name = job.JobName
 			js.Status = "running"
@@ -91,22 +94,32 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 		var batchWG sync.WaitGroup
 		var mu sync.Mutex
-		processed := 0
+		var processed int
+		var jobHadError atomic.Bool
+		var lastErr atomic.Value // armazena string
 
-		// Função para executar um batch paralelo
+		log.Printf("Total de registros a serem processados: %d\n", total)
+
 		runBatch := func(offset int) {
 			defer func() {
 				<-jr.Semaphore
 				batchWG.Done()
 			}()
 
+			log.Printf("Iniciando batch de offset %d\n", offset)
+
 			var affected int64
 
 			if jr.SourceDSN == jr.DestinationDSN {
 				batchSQL := jr.Dialect.BuildPaginatedInsertQuery(job, offset, job.RecordsPerPage)
+				log.Printf("SQL gerado: %s\n", batchSQL)
+
 				res, err := jr.DestinationDB.Exec(batchSQL)
 				if err != nil {
 					log.Printf("Erro ao executar batch: %v\n", err)
+					jobHadError.Store(true)
+					lastErr.Store(err.Error())
+
 					status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
 						js.Status = "error"
 						js.Error = err.Error()
@@ -122,6 +135,9 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 				err := jr.runBatchDataTransfer(job, offset, job.RecordsPerPage)
 				if err != nil {
 					log.Printf("Erro na transferência de dados entre bancos: %v\n", err)
+					jobHadError.Store(true)
+					lastErr.Store(err.Error())
+
 					status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
 						js.Status = "error"
 						js.Error = err.Error()
@@ -129,7 +145,6 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					})
 					return
 				}
-				// For data transfer, we don't know affected rows, so just count batch size
 				affected = int64(job.RecordsPerPage)
 			}
 
@@ -145,38 +160,48 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			})
 		}
 
-		// Inicia os batches em paralelo limitados por Semaphore
 		for offset := 0; offset < total; offset += job.RecordsPerPage {
 			jr.Semaphore <- struct{}{}
 			batchWG.Add(1)
 			go runBatch(offset)
 		}
 
-		// Espera todos batches terminarem
 		batchWG.Wait()
 
-		log.Printf("Job %s finalizado\n", job.JobName)
 		end := time.Now()
-		status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
-			js.Status = "done"
-			js.EndedAt = &end
-			status.NotifySubscribers()
-		})
 
-		// Verifica se job falhou e se deve parar em erro
-		jobStatus := status.GetJobStatus(jobID)
-		if job.StopOnError && jobStatus != nil && jobStatus.Status == "error" {
-			log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
-			status.UpdateProjectStatus("error")
+		// Se houve erro, finalize como erro e pare se necessário
+		if jobHadError.Load() {
+			errMsg := "erro durante a execução dos batches"
+			if last := lastErr.Load(); last != nil {
+				errMsg = last.(string)
+			}
+
+			log.Printf("Job %s terminou com erro: %s\n", job.JobName, errMsg)
+
 			status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
 				js.Status = "error"
-				js.Error = err.Error()
+				js.EndedAt = &end
+				js.Error = errMsg
 				status.NotifySubscribers()
 			})
-			return
+
+			if job.StopOnError {
+				log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
+				status.UpdateProjectStatus("error")
+				return
+			}
+			// Mesmo com erro, continua se StopOnError for false
+		} else {
+			log.Printf("Job %s finalizado com sucesso\n", job.JobName)
+			status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+				js.Status = "done"
+				js.EndedAt = &end
+				status.NotifySubscribers()
+			})
 		}
 
-		// Executa os próximos jobs dependentes
+		// Executa os próximos jobs, se houver
 		nextJobs := jr.ConnMap[jobID]
 		for _, nextID := range nextJobs {
 			jr.RunJob(nextID)

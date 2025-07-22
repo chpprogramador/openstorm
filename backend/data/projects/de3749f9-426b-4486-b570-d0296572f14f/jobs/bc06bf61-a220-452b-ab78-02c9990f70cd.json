@@ -1,0 +1,14 @@
+{
+  "id": "bc06bf61-a220-452b-ab78-02c9990f70cd",
+  "jobName": "Insert teste",
+  "selectSql": "select '123' as teste2",
+  "insertSql": "insert into teste2 (teste2)",
+  "columns": [
+    "teste2"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": false,
+  "left": 400,
+  "top": 100
+}

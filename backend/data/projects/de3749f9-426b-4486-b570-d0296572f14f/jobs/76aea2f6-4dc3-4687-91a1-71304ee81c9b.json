@@ -1,0 +1,12 @@
+{
+  "id": "76aea2f6-4dc3-4687-91a1-71304ee81c9b",
+  "jobName": "Teste insert",
+  "selectSql": "select case when count(*) \u003e 0 then true else false end from teste2;",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "condition",
+  "stopOnError": true,
+  "left": 800,
+  "top": 100
+}
