@@ -33,5 +33,10 @@ func main() {
 		status.JobStatusWS(c.Writer, c.Request)
 	})
 
+	// Status de projeto via WebSocket
+	router.GET("/ws/project-status", func(c *gin.Context) {
+		status.ProjectStatusWS(c.Writer, c.Request)
+	})
+
 	router.Run(":8080")
 }

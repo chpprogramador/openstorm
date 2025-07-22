@@ -167,6 +167,12 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		jobStatus := status.GetJobStatus(jobID)
 		if job.StopOnError && jobStatus != nil && jobStatus.Status == "error" {
 			log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
+			status.UpdateProjectStatus("error")
+			status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+				js.Status = "error"
+				js.Error = err.Error()
+				status.NotifySubscribers()
+			})
 			return
 		}
 
@@ -194,19 +200,18 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 			js.Error = err.Error()
 			status.NotifySubscribers()
 		})
-		return
-	}
-
-	status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
-		js.Status = "done"
-		status.NotifySubscribers()
-	})
-
-	// Verifica se job falhou e se deve parar em erro
-	jobStatus := status.GetJobStatus(jobID)
-	if job.StopOnError && jobStatus != nil && jobStatus.Status == "error" {
-		log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
-		return
+		// Verifica se job falhou e se deve parar em erro
+		jobStatus := status.GetJobStatus(jobID)
+		if job.StopOnError && jobStatus != nil && jobStatus.Status == "error" {
+			log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
+			status.UpdateProjectStatus("error")
+			return
+		}
+	} else {
+		status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+			js.Status = "done"
+			status.NotifySubscribers()
+		})
 	}
 
 	// Chama próximos jobs
@@ -242,19 +247,18 @@ func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 			js.Error = "Condição retornou falso"
 			status.NotifySubscribers()
 		})
-		return
-	}
+		jobStatus := status.GetJobStatus(jobID)
+		if job.StopOnError && jobStatus != nil {
+			log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
+			status.UpdateProjectStatus("error")
+			return
+		}
 
-	status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
-		js.Status = "done"
-		status.NotifySubscribers()
-	})
-
-	// Verifica se job falhou e se deve parar em erro
-	jobStatus := status.GetJobStatus(jobID)
-	if job.StopOnError && jobStatus != nil && jobStatus.Status == "error" {
-		log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
-		return
+	} else {
+		status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+			js.Status = "done"
+			status.NotifySubscribers()
+		})
 	}
 
 	for _, nextID := range jr.ConnMap[jobID] {

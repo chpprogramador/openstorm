@@ -1,11 +1,11 @@
 {
   "id": "d1831b08-fec3-4a51-bbd0-6623bd2390df",
   "jobName": "Novo Job",
-  "selectSql": "",
+  "selectSql": "select true",
   "insertSql": "",
   "columns": [],
   "recordsPerPage": 1000,
-  "type": "insert",
+  "type": "condition",
   "stopOnError": true,
   "left": 400,
   "top": 100

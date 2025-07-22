@@ -9,6 +9,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type ProjectStatus struct {
+	Status string `json:"status"` // "running" ou "stop"
+}
+
 type JobStatus struct {
 	ID        string     `json:"id"`
 	Name      string     `json:"name"`
@@ -22,11 +26,35 @@ type JobStatus struct {
 }
 
 var (
+	currentStatus   = &ProjectStatus{Status: "stop"}
+	projectSubs     = make(map[*websocket.Conn]chan struct{})
+	projectSubsMu   sync.Mutex
+	currentStatusMu sync.Mutex
+
 	jobStatusMap  = make(map[string]*JobStatus)
 	jobStatusMu   sync.Mutex
 	subscribers   = make(map[*websocket.Conn]chan struct{})
 	subscribersMu sync.Mutex
 )
+
+func UpdateProjectStatus(status string) {
+	currentStatusMu.Lock()
+	currentStatus.Status = status
+	currentStatusMu.Unlock()
+	notifyProjectSubscribers()
+}
+
+func notifyProjectSubscribers() {
+	projectSubsMu.Lock()
+	defer projectSubsMu.Unlock()
+
+	for _, ch := range projectSubs {
+		select {
+		case ch <- struct{}{}:
+		default:
+		}
+	}
+}
 
 func NotifySubscribers() {
 	subscribersMu.Lock()
@@ -61,6 +89,37 @@ func GetAllJobStatus() []*JobStatus {
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
+}
+
+func ProjectStatusWS(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+
+	ch := make(chan struct{}, 1)
+	projectSubsMu.Lock()
+	projectSubs[conn] = ch
+	projectSubsMu.Unlock()
+
+	defer func() {
+		projectSubsMu.Lock()
+		delete(projectSubs, conn)
+		projectSubsMu.Unlock()
+	}()
+
+	for range ch {
+		currentStatusMu.Lock()
+		statusCopy := *currentStatus
+		currentStatusMu.Unlock()
+
+		if data, err := json.Marshal(statusCopy); err == nil {
+			if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
+				break
+			}
+		}
+	}
 }
 
 func JobStatusWS(w http.ResponseWriter, r *http.Request) {
