@@ -51,6 +51,7 @@ export class DialogJobs {
     private jobService: JobService,
     private appState: AppState
   ) {
+    console.log('DialogJobs data:', data.stopOnError);
     this.form = this.fb.group({
       id: [this.data?.id || ''],  
       jobName: [this.data?.jobName || '', []],
@@ -58,7 +59,7 @@ export class DialogJobs {
       insertSql: [this.data?.insertSql || '', []],
       recordsPerPage: [this.data?.recordsPerPage || 100, []],
       type: [this.data?.type || 'insert', []],
-      stopOnError: [this.data?.stopOnError || true, []],
+      stopOnError: [this.data?.stopOnError, []],
       top: [this.data?.top || 0, []],
       left: [this.data?.left || 0, []],
       columns: [this.data?.columns || []]
@@ -74,26 +75,31 @@ export class DialogJobs {
 
   onSave() {
     if (this.form.valid) {
-
-      let validateJob: ValidateJob = {
-        selectSQL: this.form.value.selectSql, 
-        insertSQL: this.form.value.insertSql,
-        limit: this.form.value.recordsPerPage,
-        projectId: this.appState.project?.id || ''
-      };
-
-      this.jobService.validate(validateJob).subscribe({
-        next: (response) => { 
-          this.data.columns = response.columns || [];
-          this.form.patchValue({ columns: response.columns });
-          this.openInformDialog('Querys validadas com sucesso!', true);
-        },
-        error: (error) => {
-          console.error('Validation failed:', error);
-          this.openInformDialog('Erro na validação: ' + error.error.message, false);
-        }
-      });
       
+      if (this.form.get('type')?.value === 'insert') {
+
+        let validateJob: ValidateJob = {
+          selectSQL: this.form.value.selectSql, 
+          insertSQL: this.form.value.insertSql,
+          limit: this.form.value.recordsPerPage,
+          projectId: this.appState.project?.id || ''
+        };
+
+        this.jobService.validate(validateJob).subscribe({
+          next: (response) => { 
+            this.data.columns = response.columns || [];
+            this.form.patchValue({ columns: response.columns });
+            this.openInformDialog('Querys validadas com sucesso!', true);
+          },
+          error: (error) => {
+            console.error('Validation failed:', error);
+            this.openInformDialog('Erro na validação: ' + error.error.message, false);
+          }
+        });
+
+      } else {
+        this.dialogRef.close(this.form.value);
+      }
     }
   }
 
@@ -128,5 +134,7 @@ export class DialogJobs {
     this.data.insertSql = novoSql;  
     this.form.patchValue({ insertSql: novoSql });
   }
+
+
 
 }

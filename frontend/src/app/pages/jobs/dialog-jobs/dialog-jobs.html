@@ -5,7 +5,7 @@
     <form [formGroup]="form">
 
         <div class="lineFull">
-            <div class="w75">
+            <div class="w50">
                 <mat-form-field appearance="outline">
                     <mat-label>Nome do Job</mat-label>
                     <input matInput formControlName="jobName" required>
@@ -19,10 +19,7 @@
                 </mat-form-field>
             </div>
 
-        </div>
-
-        <div class="lineFull">
-            <div class="w75">
+            <div class="w15">
                  <mat-form-field appearance="outline">
                     <mat-label>Tipo</mat-label>
                     <mat-select formControlName="type">
@@ -33,7 +30,7 @@
                 </mat-form-field>
             </div>
 
-            <div class="w25">
+            <div class="w10">
                 <mat-slide-toggle formControlName="stopOnError">Parar quando erro?</mat-slide-toggle>
             </div>
 
@@ -46,7 +43,7 @@
     </form>
 
     <div class="lineFull editors">
-        <div class="w50 editor">
+        <div class="w50 editor" *ngIf="form.get('type')?.value === 'insert'">
             
             <h2>insert</h2>
             <app-sql-editor
@@ -57,7 +54,8 @@
         </div>
         <div class="w50 editor" >
 
-            <h2>Select</h2>
+            <h2 *ngIf="form.get('type')?.value === 'insert'">Select</h2>
+            <h2 *ngIf="form.get('type')?.value != 'insert'">Query</h2>
             <app-sql-editor
             [initialSql]="sqlSelect"
             (sqlChanged)="onSelectAtualizado($event)">

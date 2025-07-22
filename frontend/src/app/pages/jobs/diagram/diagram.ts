@@ -319,6 +319,7 @@ export class Diagram implements AfterViewInit {
 
 
     dialogRef.afterClosed().subscribe((result) => {
+      console.log('Dialog closed with result:', result);
       if (result) {
         console.log('Job salvo:', result);
         if (result.id) {
@@ -371,6 +372,8 @@ export class Diagram implements AfterViewInit {
     });
   }
 
-  stopProject() {}
+  stopProject() {
+    this.isRunning = true;
+  }
 
 }

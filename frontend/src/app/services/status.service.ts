@@ -15,6 +15,7 @@ export interface JobStatus {
   error?: string;
 }
 
+
 @Injectable({ providedIn: 'root' })
 export class StatusService {
   private socket$: WebSocketSubject<JobStatus[]>;
