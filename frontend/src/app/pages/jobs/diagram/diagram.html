@@ -49,7 +49,7 @@
           <mat-icon class="pending">hourglass_empty</mat-icon>
         } -->
       </div>
-      @if (job.status) {
+      @if (job.status && job.type === 'insert') {
       <div class="progress">
         <mat-progress-bar
             [mode]="'determinate'"
