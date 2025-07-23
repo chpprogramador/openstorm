@@ -69,7 +69,7 @@ func RunProject(c *gin.Context) {
 	log.Printf("Conexão com o banco de destino %s estabelecida", project.DestinationDatabase.Database)
 
 	// cria o JobRunner
-	runner := jobrunner.NewJobRunner(sourceDB, destDB, buildDSN(project.SourceDatabase), buildDSN(project.DestinationDatabase), dialect, project.Concurrency)
+	runner := jobrunner.NewJobRunner(sourceDB, destDB, buildDSN(project.SourceDatabase), buildDSN(project.DestinationDatabase), dialect, project.Concurrency, project.ProjectName)
 
 	// Carregar os jobs
 	jobCount := 0

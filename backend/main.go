@@ -2,7 +2,10 @@ package main
 
 import (
 	"etl/handlers"
+	"etl/logger"
 	"etl/status"
+	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,6 +40,31 @@ func main() {
 	router.GET("/ws/project-status", func(c *gin.Context) {
 		status.ProjectStatusWS(c.Writer, c.Request)
 	})
+
+	api := router.Group("/api")
+	{
+		// Download do PDF
+		api.GET("/pipeline/:pipelineId/report", logger.PipelineReportHandler)
+
+		// Visualização inline do PDF
+		api.GET("/pipeline/:pipelineId/report/preview", logger.PipelineReportInlineHandler)
+
+		// Lista de pipelines disponíveis
+		api.GET("/pipelines/reports", logger.ListPipelineReportsHandler)
+
+		// Estatísticas de um pipeline específico (JSON)
+		api.GET("/pipeline/:pipelineId/stats", func(c *gin.Context) {
+			pipelineID := c.Param("pipelineId")
+			stats, err := logger.GetPipelineStats(pipelineID)
+			if err != nil {
+				c.JSON(http.StatusNotFound, gin.H{
+					"error": fmt.Sprintf("Pipeline não encontrado: %v", err),
+				})
+				return
+			}
+			c.JSON(http.StatusOK, stats)
+		})
+	}
 
 	router.Run(":8080")
 }
