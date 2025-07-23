@@ -19,11 +19,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
+import { JobExtended } from '../../../services/job-state.service';
 import { Job, JobService } from '../../../services/job.service';
 import { Project, ProjectService } from '../../../services/project.service';
 import { ConfirmDialogComponent } from '../../dialog-confirm/dialog-confirm';
 import { DialogJobs } from '../dialog-jobs/dialog-jobs';
-import { JobExtended } from '../jobs';
 
 @Component({
   selector: 'app-diagram',

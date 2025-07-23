@@ -8,6 +8,8 @@ import { AppState } from '../../services/app-state';
 import { Job, JobService } from '../../services/job.service';
 import { ProjectStatusService } from '../../services/project-status.service';
 import { StatusService } from '../../services/status.service';
+// Update the import path to the correct location if the file was moved or renamed
+import { isRunning_, jobs_, updateJobsWithStatus } from '../../services/job-state.service';
 import { Diagram } from "./diagram/diagram";
 
 export interface JobExtended extends Job {
@@ -36,12 +38,9 @@ export interface JobExtended extends Job {
 })
 export class Jobs {
 
-  
-
-  jobs: JobExtended[] = [];
-  isRunning = false;
+  jobs: JobExtended[] = jobs_;
+  isRunning = isRunning_;
   selectedJob: JobExtended | null = null;
-
 
   constructor(
     private jobservice: JobService,
@@ -51,17 +50,23 @@ export class Jobs {
   ) {}
 
   ngOnInit() {
+    // Sempre aponta para as variáveis globais
+    this.jobs = jobs_;
+    this.isRunning = isRunning_;
+
     const projectId = this.appState.project?.id;
     if (projectId) {
       this.jobservice.listJobs(projectId).subscribe({
         next: (jobs) => {
           if (!Array.isArray(jobs) || jobs.length === 0) {
-            this.jobs = [];
+            jobs_.length = 0;
             return;
           }
-          this.jobs = jobs;
-
-          console.log('Jobs listados com sucesso:', this.jobs);
+          
+          // Usa a nova função que preserva status
+          updateJobsWithStatus(jobs);
+          
+          console.log('Jobs listados com sucesso:', jobs_);
         },
         error: (error) => {
           console.error('Erro ao listar projetos:', error);
@@ -69,12 +74,22 @@ export class Jobs {
       });
     }
 
-    
-
     this.statusService.listen().subscribe(statuses => {
       console.log('Status dos jobs recebidos:', statuses);
-      this.jobs.forEach(job => {
-        const status = statuses.find(s => s.id === job.id);
+      
+      interface JobStatus {
+        id: string;
+        progress?: number;
+        status?: 'pending' | 'running' | 'done' | 'error';
+        startedAt?: string;
+        endedAt?: string;
+        error?: string;
+        total?: number;
+        processed?: number;
+      }
+
+      jobs_.forEach((job: JobExtended) => {
+        const status: JobStatus | undefined = statuses.find((s: JobStatus) => s.id === job.id);
         if (status) {
           job.progress = status.progress;
           job.status = status.status;
@@ -84,44 +99,29 @@ export class Jobs {
           job.total = status.total;
           job.processed = status.processed;
         }
+        
         if (job.status === 'done' || job.status === 'error') {
           this.isRunning = false;
           console.log(`Job ${job.jobName} concluído com status: ${job.status}`);
-        } else {
+        } else if (job.status === 'running') {
           this.isRunning = true;
           console.log(`Job ${job.jobName} ainda está em execução.`);
         }
-
       });
-
-      this.jobs.forEach(job => {
-        if (job.status === 'running') {
-          console.log(`Job ${job.jobName} está em execução.`);
-        } else if (job.status === 'done') {
-          console.log(`Job ${job.jobName} foi concluído com sucesso.`);
-        } else if (job.status === 'error') {
-          console.error(`Job ${job.jobName} falhou: ${job.error}`);
-        }
-      });
-
     });
 
     this.projectStatusService.listen().subscribe(projectStatuses => {
       console.log('Status do projeto recebido:', projectStatuses);
 
-        if (projectStatuses.status === 'running') {
-          this.isRunning = true;
-        } else {
-          this.isRunning = false;
-        }
-
+      if (projectStatuses.status === 'running') {
+        this.isRunning = true;
+      } else {
+        this.isRunning = false;
+      }
     });
-
   }
 
   job_click(job: any) {
     this.selectedJob = job;
   }
-
-
 }
