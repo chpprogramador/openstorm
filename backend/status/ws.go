@@ -25,6 +25,11 @@ type JobStatus struct {
 	Error     string     `json:"error,omitempty"`
 }
 
+type LogEntry struct {
+	Timestamp time.Time `json:"timestamp"`
+	Message   string    `json:"message"`
+}
+
 var (
 	currentStatus   = &ProjectStatus{Status: "stop"}
 	projectSubs     = make(map[*websocket.Conn]chan struct{})
@@ -35,7 +40,19 @@ var (
 	jobStatusMu   sync.Mutex
 	subscribers   = make(map[*websocket.Conn]chan struct{})
 	subscribersMu sync.Mutex
+
+	logConns   = make(map[*websocket.Conn]chan struct{})
+	logConnsMu sync.Mutex
+
+	jobLogs   = make(map[string][]LogEntry)
+	jobLogsMu sync.Mutex
 )
+
+func ClearJobLogs() {
+	jobLogsMu.Lock()
+	defer jobLogsMu.Unlock()
+	jobLogs = make(map[string][]LogEntry)
+}
 
 func UpdateProjectStatus(status string) {
 	currentStatusMu.Lock()
@@ -63,6 +80,31 @@ func NotifySubscribers() {
 		select {
 		case ch <- struct{}{}:
 		default: // Não bloquear se o canal já estiver cheio
+		}
+	}
+}
+
+func AppendLog(message string) {
+	jobLogsMu.Lock()
+	defer jobLogsMu.Unlock()
+
+	entry := LogEntry{
+		Timestamp: time.Now(),
+		Message:   message,
+	}
+	jobLogs["default"] = append(jobLogs["default"], entry)
+
+	notifyLogSubscribers() // <- versão sem jobID
+}
+
+func notifyLogSubscribers() {
+	logConnsMu.Lock()
+	defer logConnsMu.Unlock()
+
+	for _, ch := range logConns {
+		select {
+		case ch <- struct{}{}:
+		default:
 		}
 	}
 }
@@ -143,6 +185,38 @@ func JobStatusWS(w http.ResponseWriter, r *http.Request) {
 	for range ch {
 		statuses := GetAllJobStatus()
 		if data, err := json.Marshal(statuses); err == nil {
+			if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
+				break
+			}
+		}
+	}
+}
+
+func LogsWS(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+
+	ch := make(chan struct{}, 1)
+
+	logConnsMu.Lock()
+	logConns[conn] = ch
+	logConnsMu.Unlock()
+
+	defer func() {
+		logConnsMu.Lock()
+		delete(logConns, conn)
+		logConnsMu.Unlock()
+	}()
+
+	for range ch {
+		jobLogsMu.Lock()
+		logCopy := append([]LogEntry(nil), jobLogs["default"]...)
+		jobLogsMu.Unlock()
+
+		if data, err := json.Marshal(logCopy); err == nil {
 			if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
 				break
 			}

@@ -21,6 +21,8 @@ import (
 
 func RunProject(c *gin.Context) {
 
+	status.ClearJobLogs()
+
 	//lê o JSON do projeto
 	projectID := c.Param("id")
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")

@@ -41,6 +41,11 @@ func main() {
 		status.ProjectStatusWS(c.Writer, c.Request)
 	})
 
+	// Logs de jobs via WebSocket
+	router.GET("/ws/logs", func(c *gin.Context) {
+		status.LogsWS(c.Writer, c.Request)
+	})
+
 	api := router.Group("/api")
 	{
 		// Download do PDF

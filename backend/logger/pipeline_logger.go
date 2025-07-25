@@ -2,6 +2,7 @@ package logger
 
 import (
 	"encoding/json"
+	"etl/status"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -90,6 +91,8 @@ func AddJob(log *PipelineLog, job JobLog) {
 	defer mu.Unlock()
 	log.Jobs = append(log.Jobs, job)
 	fmt.Printf("Job adicionado: %s (Status: %s)\n", job.JobName, job.Status)
+
+	status.AppendLog(log.Project + " - Job: " + job.JobName + " iniciado")
 }
 
 func UpdateJob(log *PipelineLog, jobID string, updater func(*JobLog)) {
@@ -100,6 +103,13 @@ func UpdateJob(log *PipelineLog, jobID string, updater func(*JobLog)) {
 			oldStatus := log.Jobs[i].Status
 			updater(&log.Jobs[i])
 			fmt.Printf("Job atualizado: %s (%s -> %s)\n", log.Jobs[i].JobName, oldStatus, log.Jobs[i].Status)
+
+			//status.AppendLog(log.Project + " - " + log.Jobs[i].JobName + " atualizado de " + oldStatus + " para " + log.Jobs[i].Status)
+			if log.Jobs[i].Status == "done" {
+				status.AppendLog(log.Project + " - Job: " + log.Jobs[i].JobName + " finalizado")
+			} else if log.Jobs[i].Status == "error" {
+				status.AppendLog(log.Project + " - Job: " + log.Jobs[i].JobName + " falhou")
+			}
 			break
 		}
 	}
@@ -113,6 +123,7 @@ func AddBatch(log *PipelineLog, jobID string, batch BatchLog) {
 			log.Jobs[i].Batches = append(log.Jobs[i].Batches, batch)
 			fmt.Printf("Batch adicionado ao job %s: offset %d, status %s\n",
 				log.Jobs[i].JobName, batch.Offset, batch.Status)
+			status.AppendLog(log.Project + " - Job: " + log.Jobs[i].JobName + " - Batch adicionado: offset " + fmt.Sprintf("%d", batch.Offset) + ", status " + batch.Status)
 			break
 		}
 	}
