@@ -39,7 +39,9 @@
     align-items: start;
     justify-content: flex-start;
     gap: 0px;
-    font-size: 12px;;
+    font-size: 12px;
+    font-weight: bold;
+    align-items: center;
   }
 
   .icons mat-icon {
@@ -201,6 +203,34 @@ button {
     margin: 0 auto;
 }
 
+.log-box {
+  //background: #c0c0c0;
+  position: relative;
+  bottom: 0;
+  left: 50px;
+  width: 80%;
+  height: 200px;
+  border-radius: 8px;
+  border: solid 2px #c0c0c0;
+}
 
 
 
+
+
+.log-box mat-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  float: left;
+  vertical-align: baseline;
+  cursor: pointer;
+  color: #fff;
+  padding: 5px 0px 0px 5px;
+}
+
+.log-box h3 {
+  color: #fff;
+  float: left;
+  margin-left: 10px;
+}

@@ -19,6 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
+import { LogViewerComponent } from "../../../components/app-log-viewer.component";
 import { JobExtended } from '../../../services/job-state.service';
 import { Job, JobService } from '../../../services/job.service';
 import { Project, ProjectService } from '../../../services/project.service';
@@ -35,8 +36,9 @@ import { DialogJobs } from '../dialog-jobs/dialog-jobs';
     CdkMenuModule,
     MatTooltipModule,
     MatProgressBarModule,
-    CommonModule
-  ],
+    CommonModule,
+    LogViewerComponent
+],
   templateUrl: './diagram.html',
   styleUrls: ['./diagram.scss'],
 })
@@ -54,6 +56,7 @@ export class Diagram implements AfterViewInit {
   instance: any;
   gridX = 350;
   gridY = 100;
+  showLogs = false;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -374,6 +377,10 @@ export class Diagram implements AfterViewInit {
 
   stopProject() {
     this.isRunning = true;
+  }
+
+  showHideLogs() {
+    this.showLogs = !this.showLogs;
   }
 
 }

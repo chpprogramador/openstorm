@@ -17,10 +17,13 @@
       <mat-icon>stop_circle</mat-icon> Executando...
     </button>
   }
-  
 
   <button matButton extended color="secundary" (click)="addNewJob()">
     <mat-icon>bookmark_border_outline</mat-icon> SQL Insert
+  </button>
+
+  <button matButton extended color="secundary" class="logs" (click)="showHideLogs()">
+    <mat-icon>wysiwyg</mat-icon> Logs
   </button>
 </div>
 
@@ -49,7 +52,7 @@
           <mat-icon class="pending">hourglass_empty</mat-icon>
         } -->
       </div>
-      @if (job.status && job.type === 'insert') {
+      @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
       <div class="progress">
         <mat-progress-bar
             [mode]="'determinate'"
@@ -61,7 +64,7 @@
       </div>
       }
       <div class="icons">
-        <mat-icon>bookmark_border_outline</mat-icon> SQL
+        <mat-icon>bookmark_border_outline</mat-icon> SQL {{ job.type.toUpperCase() }}
       </div>
       <div class="handle">{{ job.jobName }}</div>
       <div class="icons">
@@ -82,3 +85,13 @@
     </div>
   </ng-template>
 </div>
+
+
+
+  <div class="log-box" [ngStyle]="{'display': showLogs ? 'block' : 'none'}">
+      <mat-icon (click)="showHideLogs()">close</mat-icon>
+      <h3>Log Viewer</h3>
+
+    <app-log-viewer></app-log-viewer>
+  </div>
+
