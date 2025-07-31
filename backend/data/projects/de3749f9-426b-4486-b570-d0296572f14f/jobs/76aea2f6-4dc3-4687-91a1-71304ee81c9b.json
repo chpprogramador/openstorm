@@ -7,6 +7,6 @@
   "recordsPerPage": 1000,
   "type": "condition",
   "stopOnError": true,
-  "left": 800,
-  "top": 100
+  "left": 900,
+  "top": 180
 }

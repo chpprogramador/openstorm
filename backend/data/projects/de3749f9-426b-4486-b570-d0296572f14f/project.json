@@ -32,5 +32,19 @@
     "password": "Elabbora@2025",
     "database": "migracao"
   },
-  "concurrency": 30
+  "concurrency": 30,
+  "variables": [
+    {
+      "name": "schema",
+      "value": "sgs",
+      "description": "",
+      "type": ""
+    },
+    {
+      "name": "teste_numero",
+      "value": 123,
+      "description": "Teste de n�mero",
+      "type": "number"
+    }
+  ]
 }

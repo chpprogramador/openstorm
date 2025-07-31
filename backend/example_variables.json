@@ -1,0 +1,24 @@
+{
+  "variables": [
+    {
+      "name": "data_inicio",
+      "value": "2024-01-01",
+      "description": "Data de início para filtros nas consultas"
+    },
+    {
+      "name": "data_fim", 
+      "value": "2024-12-31",
+      "description": "Data de fim para filtros nas consultas"
+    },
+    {
+      "name": "limite_registros",
+      "value": "1000",
+      "description": "Limite de registros para processamento"
+    },
+    {
+      "name": "tabela_origem",
+      "value": "vendas_2024",
+      "description": "Nome da tabela de origem"
+    }
+  ]
+}

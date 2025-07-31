@@ -2,12 +2,15 @@ package jobrunner
 
 import (
 	"database/sql"
+	"encoding/json"
 	"etl/dialects"
 	"etl/logger"
 	"etl/models"
 	"etl/status"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -25,10 +28,11 @@ type JobRunner struct {
 	WaitGroup      *sync.WaitGroup
 	JobMap         map[string]models.Job
 	ConnMap        map[string][]string
+	Variables      map[string]string
 	PipelineLog    *logger.PipelineLog // Adicionado para logging
 }
 
-func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect dialects.SQLDialect, concurrency int, project string) *JobRunner {
+func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect dialects.SQLDialect, concurrency int, project string, projectID string) *JobRunner {
 	// Inicializa o log do pipeline
 	pipelineLog := &logger.PipelineLog{
 		PipelineID: logger.GeneratePipelineID(project),
@@ -51,6 +55,7 @@ func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect d
 		WaitGroup:      &sync.WaitGroup{},
 		JobMap:         make(map[string]models.Job),
 		ConnMap:        make(map[string][]string),
+		Variables:      LoadProjectVariables(projectID),
 		PipelineLog:    pipelineLog,
 	}
 
@@ -124,6 +129,10 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			js.StartedAt = &start
 			status.NotifySubscribers()
 		})
+
+		// Substitui variáveis no SQL
+		job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
+		job.InsertSQL = jr.SubstituteVariables(job.InsertSQL)
 
 		total, err := jr.Dialect.FetchTotalCount(jr.SourceDB, job)
 		if err != nil {
@@ -352,6 +361,9 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 		status.NotifySubscribers()
 	})
 
+	// Substitui variáveis no SQL
+	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
+
 	_, err := jr.DestinationDB.Exec(job.SelectSQL)
 	end := time.Now()
 
@@ -425,6 +437,9 @@ func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 		js.Status = "running"
 		status.NotifySubscribers()
 	})
+
+	// Substitui variáveis no SQL
+	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
 
 	var result bool
 	err := jr.SourceDB.QueryRow(job.SelectSQL).Scan(&result)
@@ -538,7 +553,58 @@ func (jr *JobRunner) GetPipelineID() string {
 	return jr.PipelineLog.PipelineID
 }
 
+// LoadProjectVariables carrega as variáveis de um projeto específico
+func LoadProjectVariables(projectID string) map[string]string {
+	variables := make(map[string]string)
+	projectPath := filepath.Join("data", "projects", projectID, "project.json")
+
+	projectBytes, err := os.ReadFile(projectPath)
+	if err != nil {
+		log.Printf("Erro ao ler project.json: %v\n", err)
+		return variables
+	}
+
+	var project models.Project
+	if err := json.Unmarshal(projectBytes, &project); err != nil {
+		log.Printf("Erro ao interpretar project.json: %v\n", err)
+		return variables
+	}
+
+	// Converte as variáveis do projeto para um mapa
+	for _, variable := range project.Variables {
+		// Converte o valor para string, independentemente do tipo
+		var valueStr string
+		switch v := variable.Value.(type) {
+		case string:
+			valueStr = v
+		case int, int64, float64:
+			valueStr = fmt.Sprintf("%v", v)
+		case bool:
+			valueStr = fmt.Sprintf("%t", v)
+		default:
+			valueStr = fmt.Sprintf("%v", v)
+		}
+		variables[variable.Name] = valueStr
+	}
+
+	log.Printf("Carregadas %d variáveis do projeto %s\n", len(variables), projectID)
+	return variables
+}
+
+// SubstituteVariables substitui placeholders nas queries SQL com os valores das variáveis
+func (jr *JobRunner) SubstituteVariables(query string) string {
+	for key, value := range jr.Variables {
+		placeholder := fmt.Sprintf("${%s}", key)
+		query = strings.ReplaceAll(query, placeholder, value)
+	}
+	return query
+}
+
 func (jr *JobRunner) runBatchDataTransfer(job models.Job, offset int, batchSize int) error {
+	// Substitui variáveis antes de executar a query
+	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
+	job.InsertSQL = jr.SubstituteVariables(job.InsertSQL)
+
 	query := jr.Dialect.BuildPaginatedSelectQuery(job, offset, batchSize)
 	rows, err := jr.SourceDB.Query(query)
 	if err != nil {

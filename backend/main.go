@@ -28,6 +28,13 @@ func main() {
 	router.DELETE("/projects/:id/jobs/:jobId", handlers.DeleteJob)
 	router.POST("/jobs/validate", handlers.ValidateJobHandler)
 
+	// Variáveis
+	router.GET("/projects/:id/variables", handlers.ListVariables)
+	router.POST("/projects/:id/variables", handlers.CreateVariable)
+	router.GET("/projects/:id/variables/:variableName", handlers.GetVariable)
+	router.PUT("/projects/:id/variables/:variableName", handlers.UpdateVariable)
+	router.DELETE("/projects/:id/variables/:variableName", handlers.DeleteVariable)
+
 	// Executar projeto
 	router.POST("/projects/:id/run", handlers.RunProject)
 

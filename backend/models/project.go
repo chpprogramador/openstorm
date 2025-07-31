@@ -14,6 +14,13 @@ type JobConnection struct {
 	Target string `json:"target"`
 }
 
+type Variable struct {
+	Name        string      `json:"name"`
+	Value       interface{} `json:"value"`
+	Description string      `json:"description"`
+	Type        string      `json:"type"`
+}
+
 type Project struct {
 	ID                  string          `json:"id"`
 	ProjectName         string          `json:"projectName"`
@@ -22,4 +29,5 @@ type Project struct {
 	SourceDatabase      DatabaseConfig  `json:"sourceDatabase"`
 	DestinationDatabase DatabaseConfig  `json:"destinationDatabase"`
 	Concurrency         int             `json:"concurrency"`
+	Variables           []Variable      `json:"variables"`
 }
