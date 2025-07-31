@@ -15,6 +15,7 @@ import { ConfirmDialogComponent } from './pages/dialog-confirm/dialog-confirm';
 import { DialogProject } from './pages/project/dialog-project/dialog-project';
 import { AppState } from './services/app-state';
 import { Project, ProjectService } from './services/project.service';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -50,8 +51,16 @@ export class App {
   constructor(
     private projectservice: ProjectService,
     private appState: AppState,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    public themeService: ThemeService
+  ) {
+    // Inicializa o tema
+    this.themeService.setTheme(this.themeService.getCurrentTheme());
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 
   ngOnInit() {
     this.projectservice.listProjects().subscribe({

@@ -2,48 +2,145 @@
 
 @include mat.core();
 
-
-//html.dark {
-
+// Variáveis CSS para temas
 :root {
-  --mdc-theme-primary: #7e57c2;  /* Violeta (um tom parecido com mat.$violet-palette) */
-  --mdc-theme-primary-variant: #5e35b1; /* variante escura */
+  --mdc-theme-primary: #7e57c2;
+  --mdc-theme-primary-variant: #5e35b1;
+  --mdc-theme-secondary: #ff4081;
+  --mdc-theme-error: #f44336;
+}
+
+// Tema Dark (padrão) - Melhor contraste
+.dark-theme,
+body:not(.light-theme) {
+  --primary-color: #3b82f6;
+  --secondary-color: #1e40af;
+  --accent-color: #06b6d4;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
   
-  --mdc-theme-secondary: #ff4081; /* rosa para o accent */
+  --bg-primary: #0f172a;
+  --bg-secondary: rgba(59, 130, 246, 0.08);
+  --bg-tertiary: rgba(59, 130, 246, 0.12);
+  --bg-card: rgba(255, 255, 255, 0.08);
   
-  --mdc-theme-error: #f44336; /* vermelho warn */
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  
+  --border-color: rgba(59, 130, 246, 0.2);
+  --border-hover: rgba(59, 130, 246, 0.3);
+  
+  --shadow-primary: rgba(0, 0, 0, 0.4);
+  --shadow-secondary: rgba(0, 0, 0, 0.25);
+}
+
+// Tema Light - Inspirado no SB Admin 2
+.light-theme {
+  --primary-color: #4e73df;
+  --secondary-color: #224abe;
+  --accent-color: #36b9cc;
+  --success-color: #1cc88a;
+  --warning-color: #f6c23e;
+  --error-color: #e74a3b;
+  
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f0f0;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  
+  --text-primary: #5a5c69;
+  --text-secondary: #858796;
+  --text-muted: #b7b9cc;
+  
+  --border-color: #e3e6f0;
+  --border-hover: #d1d3e2;
+  
+  --shadow-primary: rgba(0, 0, 0, 0.15);
+  --shadow-secondary: rgba(0, 0, 0, 0.1);
 }
 
 html {
-  color-scheme: light;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  background-color: #121212;
-  color: #c9e0f8 !important;
-  --mat-dialog-container-color: white;
-  --mat-dialog-subhead-color: rgba(255, 255, 255, 0.87);
-  --mat-dialog-supporting-text-color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
 }
 
-button.mat-icon-button, button.mat-button {
-  color: white !important;
+html, body { 
+  height: 100%;
+  margin: 0;
+  transition: all 0.3s ease;
 }
 
-mat-icon svg {
-  fill: white !important;
-}
-
-*{
-  font-weight: lighter;
-  color: #c9e0f8;
-  --mat-form-field-outlined-error-outline-color: #ff0000; // vermelho
-}
-
-html, body { height: 100%;  background-color: transparent !important;}
-body { 
-  background-color: transparent !important;
-  margin: 0; 
-  font-family: Roboto, "Helvetica Neue", sans-serif; 
+// Estilos para tema dark
+.dark-theme,
+body:not(.light-theme) {
+  background-color: var(--bg-primary);
   background-image: linear-gradient(to left bottom, #010912, #030f1a, #051422, #05182b, #031b33, #031b33, #031b34, #031b34, #04182c, #051424, #04101c, #010a14);
+  color: var(--text-primary) !important;
+  
+  button.mat-icon-button, button.mat-button {
+    color: var(--text-secondary) !important;
+  }
+  
+  mat-icon svg {
+    fill: var(--text-secondary) !important;
+  }
+  
+  * {
+    color: var(--text-primary);
+  }
+}
+
+// Estilos para tema light - Clean e minimalista
+.light-theme {
+  background-color: var(--bg-primary);
+  background-image: linear-gradient(135deg, #f5f5f5 0%, #f0f0f0 50%, #ebebeb 100%);
+  color: var(--text-primary) !important;
+  
+  button.mat-icon-button, button.mat-button {
+    color: var(--text-secondary) !important;
+  }
+  
+  mat-icon svg {
+    fill: var(--text-secondary) !important;
+  }
+  
+  * {
+    color: var(--text-primary);
+  }
+  
+  // Override para elementos específicos no tema light
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--border-color) !important;
+  }
+  
+  .mat-mdc-input-element {
+    color: var(--text-primary) !important;
+  }
+  
+  .mdc-floating-label {
+    color: var(--text-muted) !important;
+  }
+  
+  .mdc-text-field--focused .mdc-floating-label {
+    color: var(--primary-color) !important;
+  }
+  
+  div.mat-mdc-select-panel {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 25px var(--shadow-primary);
+  }
+  
+  .mdc-list-item__primary-text {
+    color: var(--text-primary) !important;
+  }
 }
 
 h2{
@@ -88,18 +185,26 @@ ngx-monaco-editor {
   height: 100% !important;
 }
 
-div.mat-mdc-select-panel{
+/* Dark theme select panel */
+.dark-theme div.mat-mdc-select-panel,
+body:not(.light-theme) div.mat-mdc-select-panel {
   background-color: #1d3248 !important;
   color: #fff !important;
 }
 
-.mdc-list-item__primary-text{
+/* Dark theme list items */
+.dark-theme .mdc-list-item__primary-text,
+body:not(.light-theme) .mdc-list-item__primary-text {
   color: #fff !important;
 }
 
-.mdc-notched-outline__leading,
-.mdc-notched-outline__notch,
-.mdc-notched-outline__trailing {
+/* Dark theme borders */
+.dark-theme .mdc-notched-outline__leading,
+.dark-theme .mdc-notched-outline__notch,
+.dark-theme .mdc-notched-outline__trailing,
+body:not(.light-theme) .mdc-notched-outline__leading,
+body:not(.light-theme) .mdc-notched-outline__notch,
+body:not(.light-theme) .mdc-notched-outline__trailing {
   border-color: white !important;
 }
 
@@ -110,10 +215,13 @@ div.mat-mdc-select-panel{
 }
 
 
-/* Para o estado focado */
-.mdc-text-field--focused .mdc-notched-outline__leading,
-.mdc-text-field--focused .mdc-notched-outline__notch,
-.mdc-text-field--focused .mdc-notched-outline__trailing {
+/* Para o estado focado - Dark theme only */
+.dark-theme .mdc-text-field--focused .mdc-notched-outline__leading,
+.dark-theme .mdc-text-field--focused .mdc-notched-outline__notch,
+.dark-theme .mdc-text-field--focused .mdc-notched-outline__trailing,
+body:not(.light-theme) .mdc-text-field--focused .mdc-notched-outline__leading,
+body:not(.light-theme) .mdc-text-field--focused .mdc-notched-outline__notch,
+body:not(.light-theme) .mdc-text-field--focused .mdc-notched-outline__trailing {
   border-color: white !important;
 }
 
@@ -124,18 +232,21 @@ div.mat-mdc-select-panel{
   //border-color: white !important;
 }
 
-/* Texto do input */
-.mat-mdc-input-element {
+/* Texto do input - Dark theme only */
+.dark-theme .mat-mdc-input-element,
+body:not(.light-theme) .mat-mdc-input-element {
   color: white !important;
 }
 
-/* Label/placeholder */
-.mdc-floating-label {
+/* Label/placeholder - Dark theme only */
+.dark-theme .mdc-floating-label,
+body:not(.light-theme) .mdc-floating-label {
   color: white !important;
 }
 
-/* Label quando focado */
-.mdc-text-field--focused .mdc-floating-label {
+/* Label quando focado - Dark theme only */
+.dark-theme .mdc-text-field--focused .mdc-floating-label,
+body:not(.light-theme) .mdc-text-field--focused .mdc-floating-label {
   color: white !important;
 }
 

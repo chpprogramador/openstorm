@@ -27,6 +27,19 @@
     }
 
   </div>
+
+  <!-- Spacer para empurrar o botão para a direita -->
+  <div class="spacer"></div>
+
+  <!-- Botão de toggle de tema -->
+  <button 
+    matIconButton 
+    class="theme-toggle" 
+    (click)="toggleTheme()" 
+    [matTooltip]="themeService.isDark() ? 'Modo Claro' : 'Modo Escuro'"
+  >
+    <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">

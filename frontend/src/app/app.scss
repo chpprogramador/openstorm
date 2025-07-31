@@ -20,51 +20,95 @@ html, body {
 
 
 
-mat-nav-list a.active mat-icon {
-  color: #00FF00;
-}
-
-mat-nav-list a.active {
-  background-color: rgba(0, 0, 0, 0.3) !important;
-}
-
-mat-nav-list a.active, mat-nav-list a::focus{
-  background-color: none !important;
-}
-
-
-mat-nav-list a:hover{
-  background-color: none !important;
-}
-
-
-
+// Sidebar inspirada no SB Admin 2
 mat-sidenav {
-  width: 120px; /* largura do menu lateral */
+  width: 224px !important;
+  background: var(--bg-sidebar) !important;
+  box-shadow: 0 0.15rem 1.75rem 0 var(--shadow-primary);
+  border-right: none;
 }
 
 mat-sidenav-content {
-  padding: 16px;
+  padding: 0;
+  background: var(--bg-primary);
   box-sizing: border-box;
   overflow: auto;
-  height: 100%; /* importante para ocupar toda a altura disponível */
+  height: 100%;
+}
+
+.content {
+  padding: 1.5rem !important;
+  background: var(--bg-primary) !important;
+  min-height: calc(100vh - 140px);
+  border-top-left-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+mat-nav-list {
+  padding: 0.5rem 0;
 }
 
 mat-nav-list a {
-  height: 80px;
-  border-radius: 10px;
-  margin: 10px 0;
+  height: auto !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0.75rem 1rem !important;
+  transition: all 0.3s ease;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  
+  &:hover {
+    background-color: rgba(78, 115, 223, 0.05) !important;
+    border-left: 4px solid var(--primary-color) !important;
+    transform: none !important;
+    
+    mat-icon {
+      color: var(--primary-color) !important;
+      transform: none !important;
+    }
+    
+    span {
+      color: var(--primary-color) !important;
+    }
+  }
+  
+  &.active {
+    background: rgba(78, 115, 223, 0.1) !important;
+    border-left: 4px solid var(--primary-color) !important;
+    box-shadow: none !important;
+    
+    mat-icon, span {
+      color: var(--primary-color) !important;
+      font-weight: 600 !important;
+    }
+  }
 }
 
-mat-nav-list a:hover mat-icon {
-  color: #00FF00;
+mat-nav-list a mat-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  padding: 0 !important;
+  margin-right: 0.75rem !important;
+  transition: all 0.3s ease;
+  color: var(--text-muted);
+  font-size: 1rem !important;
+  flex-shrink: 0;
 }
 
-mat-nav-list a mat-icon, mat-nav-list a span {
-  display: block;
-  text-align: center;
-  width: 100%;
-  padding: 8px 0;
+mat-nav-list a span {
+  display: flex !important;
+  align-items: center !important;
+  flex: 1 !important;
+  padding: 0 !important;
+  transition: all 0.3s ease;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25rem;
 }
 
 .logo_open{
@@ -82,6 +126,36 @@ mat-nav-list a mat-icon, mat-nav-list a span {
   font-size: 12px;;
 }
 
+// Spacer para empurrar o botão para a direita
+.spacer {
+  flex: 1 1 auto;
+}
+
+// Botão de toggle de tema
+.theme-toggle {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  border-radius: 50% !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  transition: all 0.3s ease !important;
+  margin-right: 8px !important;
+  
+  &:hover {
+    background: var(--bg-tertiary) !important;
+    border-color: var(--border-hover) !important;
+    transform: scale(1.05) !important;
+  }
+  
+  mat-icon {
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
 .projects {
   display: flex;
   justify-content: start;
@@ -94,8 +168,9 @@ mat-nav-list a mat-icon, mat-nav-list a span {
   margin-top: 20px;
 } 
 
-
 .projects mat-form-field {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: var(--bg-secondary) !important;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 }
 

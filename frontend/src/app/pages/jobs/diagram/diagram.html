@@ -1,30 +1,50 @@
+<div class="jobs-header">
+  <div class="jobs-title-section">
+    <h1 class="jobs-title">Pipeline Visual</h1>
+    <p class="jobs-subtitle">Configure e monitore seus processos ETL</p>
+  </div>
+</div>
+
 <div class="toolbar">
-  
-  @if(isSaving == true) {
-    <button matIconButton extended [matTooltip]="'Salvando...'" color="secundary"><mat-icon class="sync" class="spin" >sync_outline</mat-icon></button>
-  }
-  @if(isSaving == false) {   
-    <button matIconButton extended [matTooltip]="'Salvo'" color="secundary"><mat-icon class="done">cloud_done_outline</mat-icon></button>
-  }
-   
-  @if(isRunning == false) {
-    <button matIconButton extended color="secundary" class="run" (click)="runProject()">
-      <mat-icon>play_circle_filled</mat-icon>
-    </button>
-  }
-  @if(isRunning == true) {
-    <button matButton extended color="secundary" class="stop" (click)="stopProject()">
-      <mat-icon>stop_circle</mat-icon> Executando...
-    </button>
-  }
+  <div class="toolbar-section status-section">
+    @if(isSaving == true) {
+      <div class="status-indicator saving">
+        <mat-icon class="status-icon spin">sync</mat-icon>
+        <span class="status-text">Salvando...</span>
+      </div>
+    }
+    @if(isSaving == false) {   
+      <div class="status-indicator saved">
+        <mat-icon class="status-icon">cloud_done</mat-icon>
+        <span class="status-text">Salvo</span>
+      </div>
+    }
+  </div>
 
-  <button matButton extended color="secundary" (click)="addNewJob()">
-    <mat-icon>bookmark_border_outline</mat-icon> SQL Insert
-  </button>
+  <div class="toolbar-section actions-section">
+    @if(isRunning == false) {
+      <button mat-flat-button class="action-btn run-btn" (click)="runProject()">
+        <mat-icon>play_arrow</mat-icon>
+        <span>Executar Pipeline</span>
+      </button>
+    }
+    @if(isRunning == true) {
+      <button mat-flat-button class="action-btn stop-btn" (click)="stopProject()">
+        <mat-icon>stop</mat-icon>
+        <span>Parar Execução</span>
+      </button>
+    }
 
-  <button matButton extended color="secundary" class="logs" (click)="showHideLogs()">
-    <mat-icon>wysiwyg</mat-icon> Logs
-  </button>
+    <button mat-stroked-button class="action-btn add-btn" (click)="addNewJob()">
+      <mat-icon>add_box</mat-icon>
+      <span>Novo Job SQL</span>
+    </button>
+
+    <button mat-stroked-button class="action-btn logs-btn" (click)="showHideLogs()">
+      <mat-icon>terminal</mat-icon>
+      <span>Logs</span>
+    </button>
+  </div>
 </div>
 
 <div id="diagramContainer" class="diagram-container">

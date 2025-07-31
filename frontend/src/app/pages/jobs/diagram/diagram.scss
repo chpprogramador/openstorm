@@ -1,8 +1,41 @@
+// Jobs Header
+.jobs-header {
+  margin-bottom: 2rem;
+  
+  .jobs-title-section {
+    text-align: center;
+    
+    .jobs-title {
+      font-size: 2.2rem;
+      font-weight: 300;
+      margin: 0;
+      background: linear-gradient(135deg, #00b7ff, #7e57c2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .jobs-subtitle {
+      font-size: 1rem;
+      opacity: 0.7;
+      margin: 0.5rem 0 0 0;
+      font-weight: 300;
+    }
+  }
+}
+
 .diagram-container {
   position: relative;
   width: 100%;
-  height: 400px;
-  //background: #f5f5f5;
+  min-height: 500px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 2px solid var(--border-color);
+  padding: 2rem;
+  box-sizing: border-box;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 16px var(--shadow-secondary);
+  transition: all 0.3s ease;
 }
 
 .box {
@@ -126,28 +159,124 @@
   margin-right: 12px;
 }
 
+// Toolbar Styles
 .toolbar {
-  margin-bottom: 30px;
+  margin-bottom: 2rem;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-}
-
-.toolbar .done {
-  color: #00ff00;
-}
-
-.toolbar .sync {
-  color: #00b7ff;
-}
-
-.toolbar .run {
-  color: #00b7ff;
-}
-
-.toolbar .stop {
-  color: red;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  
+  .toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    &.status-section {
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        
+        .status-icon {
+          font-size: 1.2rem;
+          width: 1.2rem;
+          height: 1.2rem;
+        }
+        
+        &.saving {
+          background: rgba(0, 183, 255, 0.1);
+          color: #00b7ff;
+          
+          .status-icon {
+            color: #00b7ff;
+          }
+        }
+        
+        &.saved {
+          background: rgba(74, 222, 128, 0.1);
+          color: #4ade80;
+          
+          .status-icon {
+            color: #4ade80;
+          }
+        }
+      }
+    }
+    
+    &.actions-section {
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        text-transform: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        mat-icon {
+          font-size: 1.2rem;
+          width: 1.2rem;
+          height: 1.2rem;
+        }
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        &.run-btn {
+          background: linear-gradient(135deg, #4ade80, #22c55e);
+          color: white;
+          border: none;
+          
+          &:hover {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+          }
+        }
+        
+        &.stop-btn {
+          background: linear-gradient(135deg, #ef4444, #dc2626);
+          color: white;
+          border: none;
+          
+          &:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+          }
+        }
+        
+        &.add-btn {
+          border: 1px solid rgba(0, 183, 255, 0.5);
+          color: #00b7ff;
+          background: rgba(0, 183, 255, 0.1);
+          
+          &:hover {
+            background: rgba(0, 183, 255, 0.2);
+            border-color: #00b7ff;
+          }
+        }
+        
+        &.logs-btn {
+          border: 1px solid rgba(126, 87, 194, 0.5);
+          color: #7e57c2;
+          background: rgba(126, 87, 194, 0.1);
+          
+          &:hover {
+            background: rgba(126, 87, 194, 0.2);
+            border-color: #7e57c2;
+          }
+        }
+      }
+    }
+  }
 }
 
 button {
@@ -204,9 +333,8 @@ button {
 }
 
 .log-box {
-  //background: #c0c0c0;
   position: relative;
-  bottom: 0;
+  bottom: 200px;
   left: 50px;
   width: 80%;
   height: 200px;
@@ -214,19 +342,15 @@ button {
   border: solid 2px #c0c0c0;
 }
 
-
-
-
-
 .log-box mat-icon {
   font-size: 20px !important;
   width: 20px !important;
   height: 20px !important;
-  float: left;
+  float: right;
   vertical-align: baseline;
   cursor: pointer;
   color: #fff;
-  padding: 5px 0px 0px 5px;
+  padding: 5px 5px 0px 5px;
 }
 
 .log-box h3 {
