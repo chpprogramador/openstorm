@@ -169,7 +169,7 @@ export class Diagram implements AfterViewInit {
     });
 
     const gridX = 100;
-    const gridY = 100;
+    const gridY = 60;
 
     const snapToGrid = (x: number, y: number): [number, number] => {
       return [Math.round(x / gridX) * gridX, Math.round(y / gridY) * gridY];

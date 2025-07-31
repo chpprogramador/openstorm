@@ -1,0 +1,104 @@
+<h2 mat-dialog-title>
+  {{data.isEdit ? 'Editar Variável' : 'Nova Variável'}}
+</h2>
+
+<mat-dialog-content>
+  <form>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nome da Variável</mat-label>
+      <input 
+        matInput 
+        [(ngModel)]="variable.name" 
+        name="name"
+        placeholder="Ex: data_inicio"
+        required
+        [disabled]="data.isEdit"
+      />
+      <mat-hint>Use apenas letras, números e underscore</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tipo da Variável</mat-label>
+      <mat-select [(ngModel)]="variable.type" name="type" required>
+        <mat-option *ngFor="let type of variableTypes" [value]="type.value">
+          {{type.label}}
+        </mat-option>
+      </mat-select>
+      <mat-hint>Selecione o tipo de dado da variável</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="variable.type === 'string'">
+      <mat-label>Valor</mat-label>
+      <input 
+        matInput 
+        [(ngModel)]="variable.value" 
+        name="value"
+        placeholder="Ex: vendas_2024"
+        required
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="variable.type === 'number'">
+      <mat-label>Valor</mat-label>
+      <input 
+        matInput 
+        type="number"
+        [(ngModel)]="variable.value" 
+        name="value"
+        placeholder="Ex: 1000"
+        required
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="variable.type === 'boolean'">
+      <mat-label>Valor</mat-label>
+      <mat-select [(ngModel)]="variable.value" name="value" required>
+        <mat-option value="true">Verdadeiro</mat-option>
+        <mat-option value="false">Falso</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="variable.type === 'date'">
+      <mat-label>Valor</mat-label>
+      <input 
+        matInput 
+        type="date"
+        [(ngModel)]="variable.value" 
+        name="value"
+        required
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descrição</mat-label>
+      <textarea 
+        matInput 
+        [(ngModel)]="variable.description" 
+        name="description"
+        placeholder="Descreva para que serve esta variável"
+        rows="3"
+      ></textarea>
+      <mat-hint>Opcional: adicione uma descrição para facilitar o uso</mat-hint>
+    </mat-form-field>
+  </form>
+
+  <div class="preview-section" *ngIf="variable.name">
+    <h4>Prévia da Referência:</h4>
+    <div class="preview-code">
+      <code>${{ '{' + variable.name + '}' }}</code>
+    </div>
+    <small>Use esta sintaxe nas suas queries SQL</small>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="save()"
+    [disabled]="!variable.name || !variable.value"
+  >
+    {{data.isEdit ? 'Salvar' : 'Criar'}}
+  </button>
+</mat-dialog-actions>

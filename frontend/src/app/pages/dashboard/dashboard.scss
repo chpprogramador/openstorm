@@ -38,11 +38,12 @@
 // Stat Cards - SB Admin 2 Style
 .stat-card {
   background: var(--bg-card);
-  border-radius: 0.35rem;
+  border-radius: 0.60rem;
   border: 1px solid var(--border-color);
   box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
   transition: all 0.3s ease;
   overflow: hidden;
+  padding: 20px;
   
   &:hover {
     box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
@@ -78,6 +79,7 @@
       line-height: 1;
       margin-bottom: 0.5rem;
       color: var(--text-primary);
+
     }
     
     .stat-label {
@@ -165,7 +167,7 @@
 .activity-section {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 0.35rem;
+  border-radius: 0.60rem;
   box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
   padding: 1.5rem;
   

@@ -3,7 +3,7 @@
   margin-bottom: 2rem;
   
   .jobs-title-section {
-    text-align: center;
+    text-align: left;
     
     .jobs-title {
       font-size: 2.2rem;
@@ -28,21 +28,21 @@
   position: relative;
   width: 100%;
   min-height: 500px;
-  background: var(--bg-card);
+  background: var(--bg-diagram);
   border-radius: 16px;
   border: 2px solid var(--border-color);
   padding: 2rem;
   box-sizing: border-box;
   backdrop-filter: blur(15px);
-  box-shadow: 0 4px 16px var(--shadow-secondary);
+  //box-shadow: 0 4px 16px var(--shadow-secondary);
   transition: all 0.3s ease;
 }
 
 .box {
   position: absolute;
   width: 300px;
-  height: 80px;
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  height: 100px;
+  background-color: var(--bg-primary) !important;
   border: none !important;
   border-radius: 5px;
   cursor: move;
@@ -53,6 +53,7 @@
   gap: 8px;
   padding-left: 20px;
   box-sizing: border-box;
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
 
 
   .handle {
@@ -166,9 +167,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: #fff;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
   backdrop-filter: blur(10px);
   
   .toolbar-section {

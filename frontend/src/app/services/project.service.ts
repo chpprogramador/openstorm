@@ -18,6 +18,13 @@ export interface JobConnection {
   target: string;
 }
 
+export interface Variable {
+  name: string;
+  value: string;
+  description: string;
+  type?: 'string' | 'number' | 'boolean' | 'date';
+}
+
 export interface Project {
   id: string;
   projectName: string;
@@ -26,6 +33,7 @@ export interface Project {
   sourceDatabase: DatabaseConfig;
   destinationDatabase: DatabaseConfig;
   concurrency: number;
+  variables?: Variable[];
 }
 
 @Injectable({ providedIn: 'root' })

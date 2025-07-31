@@ -36,7 +36,7 @@ body:not(.light-theme) {
   --shadow-secondary: rgba(0, 0, 0, 0.25);
 }
 
-// Tema Light - Inspirado no SB Admin 2
+// Tema Light
 .light-theme {
   --primary-color: #4e73df;
   --secondary-color: #224abe;
@@ -45,22 +45,27 @@ body:not(.light-theme) {
   --warning-color: #f6c23e;
   --error-color: #e74a3b;
   
-  --bg-primary: #f5f5f5;
+  --bg-primary: 241, 245, 249;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #f0f0f0;
+  --bg-tertiary: #fff;
   --bg-card: #ffffff;
   --bg-sidebar: #ffffff;
+  --bg-diagram: #FFF;
+  --bg-toolbar: #203d65;
   
   --text-primary: #5a5c69;
   --text-secondary: #858796;
+  --text-tertiary: #FFF;
   --text-muted: #b7b9cc;
   
-  --border-color: #e3e6f0;
-  --border-hover: #d1d3e2;
+  --border-color: rgba(65, 197, 250, 0.5);
+  --border-hover: rgba(130, 220, 255, 0.5);
   
   --shadow-primary: rgba(0, 0, 0, 0.15);
   --shadow-secondary: rgba(0, 0, 0, 0.1);
 }
+
+
 
 html {
   font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -161,10 +166,80 @@ mat-toolbar, mat-sidenav-container, mat-sidenav, mat-nav-list, mat-list-item, ma
   background-color: transparent !important;
 }
 
-
+// Global styles for dialogs
 .mat-mdc-dialog-surface.mdc-dialog__surface {
-  background-color: transparent !important;
-  background-image: linear-gradient(to left bottom, #010912, #030f1a, #051422, #05182b, #031b33, #031b33, #031b34, #031b34, #04182c, #051424, #04101c, #010a14);
+  box-shadow: 0 8px 16px var(--shadow-primary) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+}
+
+// Dark theme dialogs
+.dark-theme .mat-mdc-dialog-surface.mdc-dialog__surface,
+body:not(.light-theme) .mat-mdc-dialog-surface.mdc-dialog__surface {
+  background: linear-gradient(to left bottom, #010912, #030f1a, #051422, #05182b, #031b33, #031b33, #031b34, #031b34, #04182c, #051424, #04101c, #010a14) !important;
+}
+
+// Light theme dialogs
+.light-theme .mat-mdc-dialog-surface.mdc-dialog__surface {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #f1f3f4 100%) !important;
+}
+
+.mat-mdc-dialog-content {
+  padding: 1.5rem !important;
+}
+
+.mat-mdc-dialog-actions {
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--border-color) !important;
+  gap: 0.75rem !important;
+}
+
+button.mat-mdc-button {
+  min-width: 80px;
+  height: 36px;
+  border-radius: 6px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+button.mat-mdc-button.cancel-btn {
+  color: var(--text-secondary) !important;
+}
+
+// Dialog header specific styles
+.dialog-header {
+  padding: 1.5rem 1.5rem 0 1.5rem !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  margin-bottom: 0 !important;
+}
+
+.dialog-header h2 {
+  margin: 0 0 1rem 0 !important;
+  color: var(--text-primary) !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+}
+
+.dialog-content {
+  padding: 1.5rem !important;
+}
+
+.dialog-actions {
+  padding: 1rem 1.5rem 1.5rem 1.5rem !important;
+  border-top: 1px solid var(--border-color) !important;
+  gap: 0.75rem !important;
+}
+
+.cancel-btn, .save-btn, .confirm-btn, .ok-btn {
+  min-width: 80px !important;
+  height: 36px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+}
+
+.cancel-btn {
+  color: var(--text-secondary) !important;
 }
 
 mat-dialog-content.mat-mdc-dialog-content.mdc-dialog__content{

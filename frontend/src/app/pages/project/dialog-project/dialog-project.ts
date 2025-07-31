@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -24,6 +24,7 @@ import { Project } from '../../../services/project.service';
   ],
   templateUrl: './dialog-project.html',
   styleUrl: './dialog-project.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class DialogProject {
   form!: FormGroup;

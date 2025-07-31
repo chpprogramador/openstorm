@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewEncapsulation } from '@angular/core';
 // Update the path below to the correct relative path and extension for SqlEditorComponent
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -33,7 +33,8 @@ import { SqlEditor } from './sql-editor/sql-editor';
     MatSlideToggleModule
   ],
   templateUrl: './dialog-jobs.html',
-  styleUrl: './dialog-jobs.scss'
+  styleUrl: './dialog-jobs.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class DialogJobs {
 

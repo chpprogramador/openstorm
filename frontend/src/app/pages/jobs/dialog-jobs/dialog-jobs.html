@@ -1,4 +1,6 @@
-<h1>Jobs</h1>
+<div class="dialog-header">
+    <h2 mat-dialog-title>Jobs</h2>
+</div>
 
 <mat-dialog-content class="dialog-content">
 
@@ -66,7 +68,7 @@
 
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Cancelar</button>
-  <button mat-flat-button color="secundary" (click)="onSave()" [disabled]="!this.form.valid">Salvar</button>
+<mat-dialog-actions class="dialog-actions" align="end">
+  <button mat-button class="cancel-btn" (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" class="save-btn" (click)="onSave()" [disabled]="!this.form.valid">Salvar</button>
 </mat-dialog-actions>

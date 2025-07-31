@@ -1,4 +1,4 @@
-<mat-toolbar color="primary">
+<mat-toolbar >
   <span class="logo_open">OPEN</span>&nbsp;<span class="logo_storm">STORM</span>
 
   <div class="projects">
@@ -44,20 +44,24 @@
 
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="side" opened>
-    <mat-nav-list>
-      <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" disableRipple>
+    <div class="custom-nav-list">
+      <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
         <mat-icon fontIcon="leaderboard"></mat-icon>
         <span>Dashboard</span>
       </a>
-      <a mat-list-item routerLink="/jobs" routerLinkActive="active" disableRipple>
+      <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
         <mat-icon fontIcon="dns"></mat-icon>
         <span>Jobs</span>
       </a>
-      <a mat-list-item routerLink="/history" routerLinkActive="active" disableRipple>
+      <a class="nav-item" routerLink="/history" routerLinkActive="active">
         <mat-icon fontIcon="list_alt"></mat-icon>
         <span>Histórico</span>
       </a>
-    </mat-nav-list>
+      <a class="nav-item" routerLink="/variables" routerLinkActive="active">
+        <mat-icon fontIcon="settings"></mat-icon>
+        <span>Variáveis</span>
+      </a>
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content style="padding: 16px;">
