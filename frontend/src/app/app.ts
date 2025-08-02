@@ -35,7 +35,8 @@ import { ThemeService } from './services/theme.service';
     MatTooltipModule
   ],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
+  //encapsulation: ViewEncapsulation.None
 })
 
 @Injectable({

@@ -5,7 +5,7 @@ html, body {
   }
 
 .sidenav-container {
-  height: calc(100vh - 120px); /* Ajuste conforme a altura dos seus toolbars */
+  height: calc(100vh - 80px); /* Ajuste conforme a altura dos seus toolbars */
   width: 100%; /* Ocupa toda a largura disponível */
     }
 
@@ -30,6 +30,7 @@ mat-sidenav {
   background: var(--bg-toolbar) !important;
   box-shadow: 0 0.15rem 1.75rem 0 var(--shadow-primary);
   border-right: none;
+
 }
 
 mat-sidenav-content {
@@ -51,9 +52,10 @@ mat-sidenav-content {
 
 // Custom navigation list
 .custom-nav-list {
-  padding: 0.5rem 0;
+  padding: 0px 30px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  height: 100%;;
 }
 
 .nav-item {
@@ -63,6 +65,7 @@ mat-sidenav-content {
   padding: 0.75rem 1rem !important;
   transition: all 0.3s ease;
   border: none !important;
+  border-bottom: 4px solid transparent !important;
   display: flex !important;
   align-items: center !important;
   flex-direction: row !important;
@@ -71,7 +74,7 @@ mat-sidenav-content {
   
   &:hover {
     background-color: rgba(78, 115, 223, 0.05) !important;
-    border-left: 4px solid var(--primary-color) !important;
+    border-bottom: 4px solid var(--primary-color) !important;
     transform: none !important;
     
     mat-icon {
@@ -86,7 +89,7 @@ mat-sidenav-content {
   
   &.active {
     background: rgba(78, 115, 223, 0.1) !important;
-    border-left: 4px solid var(--primary-color) !important;
+    border-bottom: 4px solid var(--primary-color) !important;
     box-shadow: none !important;
     
     mat-icon, span {
@@ -119,7 +122,7 @@ mat-sidenav-content {
   padding: 0 !important;
   margin: 0 !important;
   transition: all 0.3s ease;
-  color: var(--text-muted);
+  color: var(--text-menu);
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.25rem;
@@ -182,15 +185,85 @@ mat-sidenav-content {
   box-sizing: border-box;
 } 
 
-.projects mat-form-field {
-  background-color: var(--bg-tertiary) !important;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-}
+
 
 .mat-toolbar-row, .mat-toolbar-single-row {
   height: 80px !important;
   background-color: var(--bg-toolbar) !important;
-  color: var(--text-primary) !important;
+  //color: var(--text-primary) !important;
+  color: #FFF !important;
 }
 
+.button{
+  --mdc-icon-button-state-layer-size: 20px;   /* controla a área clicável */
+  width: 20px;
+  height: 20px;
+  padding: 0; /* opcional */
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+}
+
+.projects mat-form-field {
+  background-color: var(--bg-select-topo) !important;
+  color: #FFF !important;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.project-select {
+  /* Borda verde limão */
+  --mdc-outlined-text-field-outline-color: var(--bg-select-topo);
+  --mdc-outlined-text-field-hover-outline-color: var(--bg-select-topo);
+  --mdc-outlined-text-field-focus-outline-color: var(--bg-select-topo);
+
+  /* Fundo verde limão e texto amarelo gritante */
+  .mat-mdc-select {
+    background-color: var(--bg-select-topo) !important;
+    color: #ffffff !important;
+    font-weight: bold;
+  }
+
+  /* Valor selecionado */
+  .mat-mdc-select-value {
+    color: #FFF !important;
+    font-weight: bold;
+  }
+
+  /* Texto do valor selecionado */
+  .mat-mdc-select-value-text {
+    color: #FFF !important;
+    font-weight: bold;
+  }
+
+  /* Cor do ícone da seta amarelo gritante */
+  .mat-mdc-select-arrow {
+    color: #FFF !important;
+  }
+
+  /* Cor do placeholder/label amarelo gritante */
+  .mat-mdc-floating-label {
+    color: #FFF !important;
+    font-weight: bold;
+  }
+
+  /* Label quando focado */
+  .mdc-text-field--focused .mat-mdc-floating-label {
+    color: #FFF !important;
+  }
+
+  /* Fundo do campo de formulário */
+  .mat-mdc-form-field-flex {
+    background-color: var(--bg-select-topo) !important;
+  }
+
+  /* Container do select */
+  .mat-mdc-select-trigger {
+    background-color: var(--bg-select-topo) !important;
+    color: #FFF !important;
+  }
+}

@@ -1,10 +1,29 @@
 <mat-toolbar >
   <span class="logo_open">OPEN</span>&nbsp;<span class="logo_storm">STORM</span>
 
-  <div class="projects">
-    <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 300px;">
-      <mat-label>Projects</mat-label>
-      <mat-select [(value)]="selectedProject" (selectionChange)="onSelectChange($event)">
+  <div class="custom-nav-list">
+      <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <mat-icon fontIcon="leaderboard"></mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
+        <mat-icon fontIcon="dns"></mat-icon>
+        <span>Jobs</span>
+      </a>
+      <a class="nav-item" routerLink="/history" routerLinkActive="active">
+        <mat-icon fontIcon="list_alt"></mat-icon>
+        <span>Histórico</span>
+      </a>
+      <a class="nav-item" routerLink="/variables" routerLinkActive="active">
+        <mat-icon fontIcon="settings"></mat-icon>
+        <span>Variáveis</span>
+      </a>
+    </div>
+
+  <div class="projects">    
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="project-select">
+      <mat-select [(value)]="selectedProject" (selectionChange)="onSelectChange($event)" placeholder="Projects" panelClass="project-select-panel">
         <mat-option value="" ></mat-option>
         <mat-option *ngFor="let project of projects" [value]="project">
           {{ project.projectName }}
@@ -26,6 +45,8 @@
     </button>
     }
 
+    
+
   </div>
 
   <!-- Spacer para empurrar o botão para a direita -->
@@ -43,26 +64,7 @@
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav mode="side" opened>
-    <div class="custom-nav-list">
-      <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <mat-icon fontIcon="leaderboard"></mat-icon>
-        <span>Dashboard</span>
-      </a>
-      <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
-        <mat-icon fontIcon="dns"></mat-icon>
-        <span>Jobs</span>
-      </a>
-      <a class="nav-item" routerLink="/history" routerLinkActive="active">
-        <mat-icon fontIcon="list_alt"></mat-icon>
-        <span>Histórico</span>
-      </a>
-      <a class="nav-item" routerLink="/variables" routerLinkActive="active">
-        <mat-icon fontIcon="settings"></mat-icon>
-        <span>Variáveis</span>
-      </a>
-    </div>
-  </mat-sidenav>
+
 
   <mat-sidenav-content style="padding: 16px;">
     <div class="content">
@@ -71,9 +73,7 @@
   </mat-sidenav-content>
 </mat-sidenav-container>
 
-<mat-toolbar color="primary" class="footer" style="height: 40px;">
-  <span class="footer-text">© 2025 Open Storm</span>
-</mat-toolbar>
+
 
 
 

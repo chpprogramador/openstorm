@@ -27,15 +27,16 @@
 .diagram-container {
   position: relative;
   width: 100%;
-  min-height: 500px;
+  height: calc(100vh - 230px); /* Ajuste conforme a altura dos seus toolbars */
   background: var(--bg-diagram);
   border-radius: 16px;
   border: 2px solid var(--border-color);
   padding: 2rem;
   box-sizing: border-box;
   backdrop-filter: blur(15px);
-  //box-shadow: 0 4px 16px var(--shadow-secondary);
   transition: all 0.3s ease;
+  overflow-y: hidden;
+  overflow-x: hidden;
 }
 
 .box {
@@ -162,6 +163,9 @@
 
 // Toolbar Styles
 .toolbar {
+  position: absolute;
+  top: 20px;
+  right: 40px;
   margin-bottom: 2rem;
   display: flex;
   justify-content: space-between;
@@ -176,6 +180,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    padding-left: 1rem;
     
     &.status-section {
       .status-indicator {
@@ -359,3 +364,4 @@ button {
   float: left;
   margin-left: 10px;
 }
+

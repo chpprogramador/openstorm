@@ -47,7 +47,10 @@
   </div>
 </div>
 
-<div id="diagramContainer" class="diagram-container">
+<div id="diagramContainer" class="diagram-container" #scrollContainer (mousedown)="onMouseDown($event)"
+  (mousemove)="onMouseMove($event)"
+  (mouseup)="onMouseUp()"
+  (mouseleave)="onMouseUp()">
   @for (job of jobs; track job) {
     <div
       [id]="job.id"

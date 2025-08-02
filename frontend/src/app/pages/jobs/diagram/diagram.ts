@@ -48,6 +48,13 @@ export class Diagram implements AfterViewInit {
   @Input() isRunning = false;
   @ViewChildren('jobEl') jobElements!: QueryList<ElementRef>;
   @ViewChild('diagramContainer') containerRef!: ElementRef;
+  @ViewChild('scrollContainer', { static: true }) scrollContainer!: ElementRef;
+
+  isDragging = false;
+  startX = 0;
+  startY = 0;
+  scrollLeft = 0;
+  scrollTop = 0;
 
   selectedJob: JobExtended | null = null;
   isLoading = false;
@@ -238,8 +245,8 @@ export class Diagram implements AfterViewInit {
       recordsPerPage: 1000,
       type: 'insert',
       stopOnError: true,
-      top: -100,
-      left: 350,
+      top: 10,
+      left: 10,
     };
 
     this.jobs.push(newJob);
@@ -381,6 +388,37 @@ export class Diagram implements AfterViewInit {
 
   showHideLogs() {
     this.showLogs = !this.showLogs;
+  }
+
+  
+
+  onMouseDown(e: MouseEvent): void {
+    this.isDragging = true;
+    const container = this.scrollContainer.nativeElement;
+    this.startX = e.pageX - container.offsetLeft;
+    this.startY = e.pageY - container.offsetTop;
+    this.scrollLeft = container.scrollLeft;
+    this.scrollTop = container.scrollTop;
+    container.style.cursor = 'grabbing';
+  }
+
+  onMouseMove(e: MouseEvent): void {
+    if (!this.isDragging) return;
+
+    e.preventDefault();
+    const container = this.scrollContainer.nativeElement;
+    const x = e.pageX - container.offsetLeft;
+    const y = e.pageY - container.offsetTop;
+    const walkX = x - this.startX;
+    const walkY = y - this.startY;
+
+    container.scrollLeft = this.scrollLeft - walkX;
+    container.scrollTop = this.scrollTop - walkY;
+  }
+
+  onMouseUp(): void {
+    this.isDragging = false;
+    this.scrollContainer.nativeElement.style.cursor = 'grab';
   }
 
 }

@@ -21,15 +21,19 @@ body:not(.light-theme) {
   --error-color: #ef4444;
   
   --bg-primary: #0f172a;
-  --bg-secondary: rgba(59, 130, 246, 0.08);
+  --bg-secondary: rgba(36, 102, 208, 0.08);
   --bg-tertiary: rgba(59, 130, 246, 0.12);
+  --bg-select-topo: rgba(255, 255, 255, 0.08);
   --bg-card: rgba(255, 255, 255, 0.08);
   
+  --title-primary: #f1f5f9;
   --text-primary: #f1f5f9;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
+  --text-menu: #FFF;
   
   --border-color: rgba(59, 130, 246, 0.2);
+  --border-select-topo: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(59, 130, 246, 0.3);
   
   --shadow-primary: rgba(0, 0, 0, 0.4);
@@ -45,24 +49,28 @@ body:not(.light-theme) {
   --warning-color: #f6c23e;
   --error-color: #e74a3b;
   
-  --bg-primary: 241, 245, 249;
+  --bg-primary: #f1f5f9;
   --bg-secondary: #ffffff;
   --bg-tertiary: #fff;
-  --bg-card: #ffffff;
+  --bg-select-topo: #15213d;
+  --bg-card: #fff;
   --bg-sidebar: #ffffff;
   --bg-diagram: #FFF;
-  --bg-toolbar: #203d65;
-  
-  --text-primary: #5a5c69;
-  --text-secondary: #858796;
+  --bg-toolbar: #0f172a;
+
+  --title-primary: #00b7ff;
+  --text-primary: #353535;
+  --text-secondary: #353535;
   --text-tertiary: #FFF;
-  --text-muted: #b7b9cc;
+  --text-muted: #313131;
+  --text-menu: #FFF;
   
   --border-color: rgba(65, 197, 250, 0.5);
   --border-hover: rgba(130, 220, 255, 0.5);
   
   --shadow-primary: rgba(0, 0, 0, 0.15);
   --shadow-secondary: rgba(0, 0, 0, 0.1);
+  --mat-select-placeholder-text-color: #FFF;
 }
 
 
@@ -116,12 +124,7 @@ body:not(.light-theme) {
     color: var(--text-primary);
   }
   
-  // Override para elementos específicos no tema light
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    border-color: var(--border-color) !important;
-  }
+
   
   .mat-mdc-input-element {
     color: var(--text-primary) !important;
@@ -135,16 +138,10 @@ body:not(.light-theme) {
     color: var(--primary-color) !important;
   }
   
-  div.mat-mdc-select-panel {
-    background-color: var(--bg-card) !important;
-    color: var(--text-primary) !important;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 10px 25px var(--shadow-primary);
-  }
+
   
   .mdc-list-item__primary-text {
-    color: var(--text-primary) !important;
+    color: #FFF !important;
   }
 }
 
@@ -170,7 +167,7 @@ mat-toolbar, mat-sidenav-container, mat-sidenav, mat-nav-list, mat-list-item, ma
 .mat-mdc-dialog-surface.mdc-dialog__surface {
   box-shadow: 0 8px 16px var(--shadow-primary) !important;
   border-radius: 8px !important;
-  color: var(--text-primary) !important;
+  color:  var(--text-primary) !important;
 }
 
 // Dark theme dialogs
@@ -260,109 +257,13 @@ ngx-monaco-editor {
   height: 100% !important;
 }
 
-/* Dark theme select panel */
-.dark-theme div.mat-mdc-select-panel,
-body:not(.light-theme) div.mat-mdc-select-panel {
-  background-color: #1d3248 !important;
-  color: #fff !important;
-}
+  div.mat-mdc-select-panel {
+    background-color: var(--bg-select-topo) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 25px var(--shadow-primary);
+  }
 
-/* Dark theme list items */
-.dark-theme .mdc-list-item__primary-text,
-body:not(.light-theme) .mdc-list-item__primary-text {
-  color: #fff !important;
+  span.mat-mdc-select-min-line {
+    color: #ffffff !important;
 }
-
-/* Dark theme borders */
-.dark-theme .mdc-notched-outline__leading,
-.dark-theme .mdc-notched-outline__notch,
-.dark-theme .mdc-notched-outline__trailing,
-body:not(.light-theme) .mdc-notched-outline__leading,
-body:not(.light-theme) .mdc-notched-outline__notch,
-body:not(.light-theme) .mdc-notched-outline__trailing {
-  border-color: white !important;
-}
-
-.mdc-text-field--invalid .mdc-notched-outline__leading,
-.mdc-text-field--invalid .mdc-notched-outline__notch,
-.mdc-text-field--invalid .mdc-notched-outline__trailing {
-  border-color: rgb(255, 0, 0) !important;
-}
-
-
-/* Para o estado focado - Dark theme only */
-.dark-theme .mdc-text-field--focused .mdc-notched-outline__leading,
-.dark-theme .mdc-text-field--focused .mdc-notched-outline__notch,
-.dark-theme .mdc-text-field--focused .mdc-notched-outline__trailing,
-body:not(.light-theme) .mdc-text-field--focused .mdc-notched-outline__leading,
-body:not(.light-theme) .mdc-text-field--focused .mdc-notched-outline__notch,
-body:not(.light-theme) .mdc-text-field--focused .mdc-notched-outline__trailing {
-  border-color: white !important;
-}
-
-/* Para o estado hover */
-.mdc-text-field:not(.mdc-text-field--disabled):hover .mdc-notched-outline__leading,
-.mdc-text-field:not(.mdc-text-field--disabled):hover .mdc-notched-outline__notch,
-.mdc-text-field:not(.mdc-text-field--disabled):hover .mdc-notched-outline__trailing {
-  //border-color: white !important;
-}
-
-/* Texto do input - Dark theme only */
-.dark-theme .mat-mdc-input-element,
-body:not(.light-theme) .mat-mdc-input-element {
-  color: white !important;
-}
-
-/* Label/placeholder - Dark theme only */
-.dark-theme .mdc-floating-label,
-body:not(.light-theme) .mdc-floating-label {
-  color: white !important;
-}
-
-/* Label quando focado - Dark theme only */
-.dark-theme .mdc-text-field--focused .mdc-floating-label,
-body:not(.light-theme) .mdc-text-field--focused .mdc-floating-label {
-  color: white !important;
-}
-
-/* Placeholder quando não há label flutuante */
-.mat-mdc-input-element::placeholder {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-notched-outline__notch {
-  border-left: none !important;
-}
-
-mat-card-content .destaque {
-    padding-bottom: 27px;
-}
-.mat-mdc-card-content:last-child {
-    padding-bottom: 8px !important;
-}
-.mat-mdc-card-content:first-child {
-    padding-top: 8px !important;
-}
-
-/* Cor da barra de progresso */
-.mat-mdc-progress-bar .mdc-linear-progress__bar-inner {
-  border-color: #00b7ff !important;
-  
-}
-
-/* Cor de fundo da barra */
-.mat-mdc-progress-bar .mdc-linear-progress__buffer {
-  background-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-/* Para versões mais antigas do Angular Material */
-.mat-progress-bar-fill::after {
-  background-color: #00b7ff !important;
-  
-}
-
-.mat-progress-bar-buffer {
-  background-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-//}
