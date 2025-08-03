@@ -6,18 +6,19 @@
         <mat-icon fontIcon="leaderboard"></mat-icon>
         <span>Dashboard</span>
       </a>
-      <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
-        <mat-icon fontIcon="dns"></mat-icon>
-        <span>Jobs</span>
-      </a>
-      <a class="nav-item" routerLink="/history" routerLinkActive="active">
-        <mat-icon fontIcon="list_alt"></mat-icon>
-        <span>Histórico</span>
-      </a>
       <a class="nav-item" routerLink="/variables" routerLinkActive="active">
         <mat-icon fontIcon="settings"></mat-icon>
         <span>Variáveis</span>
       </a>
+      <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
+        <mat-icon fontIcon="dns"></mat-icon>
+        <span>Jobs</span>
+      </a>      
+      <a class="nav-item" routerLink="/history" routerLinkActive="active">
+        <mat-icon fontIcon="list_alt"></mat-icon>
+        <span>Histórico</span>
+      </a>
+      
     </div>
 
   <div class="projects">    
@@ -40,7 +41,7 @@
       <mat-icon>settings_outline</mat-icon>
     </button>
 
-    <button matIconButton class="button" (click)="removeProject(selectedProject)" style="color: red;" [matTooltip]="'Remover projeto'">
+    <button matIconButton class="button delete" (click)="removeProject(selectedProject)" [matTooltip]="'Remover projeto'">
       <mat-icon>delete_outline</mat-icon>
     </button>
     }

@@ -44,69 +44,82 @@
       <mat-icon>terminal</mat-icon>
       <span>Logs</span>
     </button>
+
+    <button mat-stroked-button class="action-btn zoom" (click)="removeZoom()">
+      <mat-icon>searchs</mat-icon>
+      <span>{{(zoom * 100 | number:'1.0-0')}}%</span>
+    </button>
+
+
   </div>
 </div>
 
-<div id="diagramContainer" class="diagram-container" #scrollContainer (mousedown)="onMouseDown($event)"
+<div  class="diagram-container" #scrollContainer (mousedown)="onMouseDown($event)"
   (mousemove)="onMouseMove($event)"
   (mouseup)="onMouseUp()"
-  (mouseleave)="onMouseUp()">
-  @for (job of jobs; track job) {
-    <div
-      [id]="job.id"
-      [class]="'box ' + job.status"
-      [style.left.px]="job.left"
-      [style.top.px]="job.top"
-      #jobEl
-      (contextmenu)="onRightClick($event, job)"
-      [cdkContextMenuTriggerFor]="contextMenu"
-    >
-      <div class="status">
-        @if (job.status === 'running') {
-          <mat-icon class="running">play_circle_filled</mat-icon>
+  (mouseleave)="onMouseUp()"
+  >
+
+  <div id="diagramContainer" class="diagram-content" [style.transform]="'scale(' + zoom + ')'">
+
+    @for (job of jobs; track job) {
+      <div
+        [id]="job.id"
+        [class]="'box ' + job.status"
+        [style.left.px]="job.left"
+        [style.top.px]="job.top"
+        #jobEl
+        (contextmenu)="onRightClick($event, job)"
+        [cdkContextMenuTriggerFor]="contextMenu"
+      >
+        <div class="status">
+          @if (job.status === 'running') {
+            <mat-icon class="running">play_circle_filled</mat-icon>
+          }
+          @if (job.status === 'done') {
+            <mat-icon class="done">check_circle</mat-icon>
+          }
+          @if (job.status === 'error') {
+            <mat-icon class="error">error_outline</mat-icon>
+          }
+          <!-- @if (job.status === 'pending') {
+            <mat-icon class="pending">hourglass_empty</mat-icon>
+          } -->
+        </div>
+        @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
+        <div class="progress">
+          <mat-progress-bar
+              [mode]="'determinate'"
+              [value]="job.progress"
+              color="warn"
+              >
+          </mat-progress-bar>
+          {{ job.processed }} / {{ job.total }}
+        </div>
         }
-        @if (job.status === 'done') {
-          <mat-icon class="done">check_circle</mat-icon>
-        }
-        @if (job.status === 'error') {
-          <mat-icon class="error">error_outline</mat-icon>
-        }
-        <!-- @if (job.status === 'pending') {
-          <mat-icon class="pending">hourglass_empty</mat-icon>
-        } -->
+        <div class="icons">
+          <mat-icon>bookmark_border_outline</mat-icon> SQL {{ job.type.toUpperCase() }}
+        </div>
+        <div class="handle">{{ job.jobName }}</div>
+        <div class="icons">
+          <mat-icon>notes_outline</mat-icon> {{ job.recordsPerPage }}
+          <span>|</span>
+          <mat-icon>layers_outline</mat-icon> {{ project?.concurrency }}
+        </div>
       </div>
-      @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
-      <div class="progress">
-        <mat-progress-bar
-            [mode]="'determinate'"
-            [value]="job.progress"
-            color="warn"
-            >
-        </mat-progress-bar>
-        {{ job.processed }} / {{ job.total }}
+    }
+
+    <ng-template #contextMenu>
+      <div class="context-menu" cdkMenu cdkMenuPanel>
+
+        <button class="context-menu-item" cdkMenuItem (click)="openEditDialog(selectedJob)"><mat-icon>edit_outline</mat-icon> Editar</button>
+
+        <button class="context-menu-item" cdkMenuItem (click)="removeJob(selectedJob)"><mat-icon>delete_outline</mat-icon> Excluir</button>
+
       </div>
-      }
-      <div class="icons">
-        <mat-icon>bookmark_border_outline</mat-icon> SQL {{ job.type.toUpperCase() }}
-      </div>
-      <div class="handle">{{ job.jobName }}</div>
-      <div class="icons">
-        <mat-icon>notes_outline</mat-icon> {{ job.recordsPerPage }}
-        <span>|</span>
-        <mat-icon>layers_outline</mat-icon> {{ project?.concurrency }}
-      </div>
-    </div>
-  }
+    </ng-template>
 
-  <ng-template #contextMenu>
-    <div class="context-menu" cdkMenu cdkMenuPanel>
-
-      <button class="context-menu-item" cdkMenuItem (click)="openEditDialog(selectedJob)"><mat-icon>edit_outline</mat-icon> Editar</button>
-
-      <button class="context-menu-item" cdkMenuItem (click)="removeJob(selectedJob)"><mat-icon>delete_outline</mat-icon> Excluir</button>
-
-    </div>
-  </ng-template>
+  </div>
 </div>
 
 

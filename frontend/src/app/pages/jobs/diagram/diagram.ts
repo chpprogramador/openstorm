@@ -56,6 +56,11 @@ export class Diagram implements AfterViewInit {
   scrollLeft = 0;
   scrollTop = 0;
 
+  zoom = 1;
+  minZoom = 0.3;
+  maxZoom = 1.6;
+  zoomStep = 0.1;
+
   selectedJob: JobExtended | null = null;
   isLoading = false;
   isSaving = false;
@@ -75,24 +80,45 @@ export class Diagram implements AfterViewInit {
   }
 
   async ngAfterViewInit() {
-    if (!this.isBrowser) return;
+  if (!this.isBrowser) return;
 
-    this.isLoading = true;
+  this.isLoading = true;
+  await this.initJsPlumbOnce();
 
-    await this.initJsPlumbOnce();
+  setTimeout(() => {
+    this.jobs.forEach((job) => this.addJobToJsPlumb(job));
+    this.addExistingConnections();
+  }, 50);
 
-    // Espera 50ms para garantir que o DOM esteja atualizado
-    setTimeout(() => {
-      this.jobs.forEach((job) => this.addJobToJsPlumb(job));
-      this.addExistingConnections();
-    }, 50);
+  const container = this.scrollContainer.nativeElement;
+  const content = container.querySelector('.diagram-content') as HTMLElement;
 
-    this.jobElements.changes.subscribe(() => {
-      // Adiciona apenas o último job novo
-      const newJob = this.jobs[this.jobs.length - 1];
-      if (newJob) this.addJobToJsPlumb(newJob);
-    });
+  const storedZoom = localStorage.getItem('diagramZoom');
+  if (storedZoom) {
+    this.zoom = +storedZoom;
+    this.instance.setZoom(this.zoom);
   }
+
+  container.addEventListener(
+  'wheel',
+  (event: WheelEvent) => {
+    if (event.ctrlKey) {
+      event.preventDefault();
+
+      this.zoom += event.deltaY < 0 ? this.zoomStep : -this.zoomStep;
+      this.zoom = Math.min(Math.max(this.zoom, this.minZoom), this.maxZoom);
+
+      if (this.instance) {
+        this.instance.setZoom(this.zoom);
+        this.instance.repaintEverything();  
+        localStorage.setItem('diagramZoom', this.zoom.toString());
+      }
+    }
+  },
+  { passive: false }
+);
+}
+
 
   private jsPlumbInitialized = false;
 
@@ -419,6 +445,15 @@ export class Diagram implements AfterViewInit {
   onMouseUp(): void {
     this.isDragging = false;
     this.scrollContainer.nativeElement.style.cursor = 'grab';
+  }
+
+  removeZoom(){
+    this.zoom = 1;
+    if (this.instance) {
+      this.instance.setZoom(this.zoom);
+      this.instance.repaintEverything(); 
+      localStorage.setItem('diagramZoom', this.zoom.toString());
+    }
   }
 
 }

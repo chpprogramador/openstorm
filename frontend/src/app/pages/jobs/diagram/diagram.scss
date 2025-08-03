@@ -1,26 +1,20 @@
 // Jobs Header
 .jobs-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   
-  .jobs-title-section {
-    text-align: left;
-    
-    .jobs-title {
-      font-size: 2.2rem;
-      font-weight: 300;
-      margin: 0;
-      background: linear-gradient(135deg, #00b7ff, #7e57c2);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .jobs-subtitle {
-      font-size: 1rem;
-      opacity: 0.7;
-      margin: 0.5rem 0 0 0;
-      font-weight: 300;
-    }
+  .jobs-title {
+    font-size: 1.75rem;
+    font-weight: 400;
+    margin: 0;
+    color: var(--title-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .jobs-subtitle {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
+    font-weight: 400;
   }
 }
 
@@ -39,11 +33,16 @@
   overflow-x: hidden;
 }
 
+.diagram-content {
+  transform-origin: top left;
+  transition: transform 0.1s ease;
+}
+
 .box {
   position: absolute;
   width: 300px;
   height: 100px;
-  background-color: var(--bg-primary) !important;
+  background-color: var(--bg-box) !important;
   border: none !important;
   border-radius: 5px;
   cursor: move;
@@ -55,6 +54,7 @@
   padding-left: 20px;
   box-sizing: border-box;
   box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
+  
 
 
   .handle {
@@ -103,22 +103,23 @@
   left: 0;
   width: 5px;
   height: 100%;
-  background-color: #00b7ff;
+  background-color: var(--status-running);
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
   z-index: 9999;
+
 }
 
 .box.done::before {
-  background-color: #00ff00;
+  background-color: var(--status-done);
 }
 
 .box.running::before, .box.pending::before {
-  background-color: #00b7ff;
+  background-color: var(--status-running);
 }
 
 .box.error::before {
-  background-color: #ff0000;
+  background-color: var(--status-error);
 }
 
 .context-menu {
@@ -126,7 +127,7 @@
   flex-direction: column;
   min-width: 180px;
   max-width: 280px;
-  background-color: #031b33;
+  background-color: var(--bg-primary);
   padding: 6px 0;
   border: 1px solid #010912;
 }
@@ -150,7 +151,7 @@
 }
 
 .context-menu-item mat-icon:hover {
-  background-color: #08386e;
+  background-color: var(--bg-secundary);
 }
 
 .context-menu-item:active {
@@ -171,7 +172,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  background: #fff;
+  background: var(--bg-diagram);
   border-radius: 12px;
   border: 1px solid var(--border-color);
   backdrop-filter: blur(10px);
@@ -207,7 +208,7 @@
         }
         
         &.saved {
-          background: rgba(74, 222, 128, 0.1);
+          background: rgba(74, 222, 128, 0.2);
           color: #4ade80;
           
           .status-icon {
@@ -309,20 +310,21 @@ button {
 }
 
 .status .running {
-  color: #00b7ff;
+  color: var(--status-running);
 }
 
 .status .done {
-  color: #00ff00;
+  color: var(--status-done);
 }
 
 .status .error {
-  color: #ff0000;
+  color: var(--status-error);
 }
 
 .status .pending {
-  color: #c0c0c0;
+  color: var(--status-pending);
 }
+
 
 .progress {
     position: absolute;
@@ -365,3 +367,7 @@ button {
   margin-left: 10px;
 }
 
+.zoom{
+  width: 120px;
+  border: solid 2px #c0c0c0;
+}

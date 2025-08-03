@@ -9,6 +9,7 @@ import {
   PLATFORM_ID,
   SimpleChanges, ViewChild
 } from '@angular/core';
+import { ThemeService } from '../../../../services/theme.service';
 
 @Component({
   selector: 'app-sql-editor',
@@ -28,7 +29,10 @@ export class SqlEditor implements AfterViewInit, OnChanges {
 
   private monaco: typeof import('monaco-editor') | null = null;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@
+    Inject(PLATFORM_ID) private platformId: Object,
+    private themeService: ThemeService
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
@@ -53,7 +57,7 @@ export class SqlEditor implements AfterViewInit, OnChanges {
     this.editorInstance = this.monaco.editor.create(this.editorContainer.nativeElement, {
       value: this.initialSql || '',
       language: 'sql',
-      theme: 'vs-dark',
+      theme: this.themeService.isDark() ? 'vs-dark' : 'vs-light',
       fontSize: 14,
       fontFamily: 'Fira Code, monospace',
       minimap: { enabled: false },

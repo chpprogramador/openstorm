@@ -23,21 +23,39 @@ body:not(.light-theme) {
   --bg-primary: #0f172a;
   --bg-secondary: rgba(36, 102, 208, 0.08);
   --bg-tertiary: rgba(59, 130, 246, 0.12);
-  --bg-select-topo: rgba(255, 255, 255, 0.08);
+  --bg-select-topo: #22293b;
   --bg-card: rgba(255, 255, 255, 0.08);
+  --bg-tip: rgba(255, 255, 255, 0.08);
+  --bg-box: rgba(51, 51, 51, 0.5);;
+  --bg-geral: transparent;
   
-  --title-primary: #f1f5f9;
+  --title-primary: #00b7ff;
   --text-primary: #f1f5f9;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
   --text-menu: #FFF;
   
-  --border-color: rgba(59, 130, 246, 0.2);
+  --border-color: rgba(255, 255, 255, 0.8);
   --border-select-topo: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(59, 130, 246, 0.3);
+  --border-hover: rgba(255, 255, 255, 0.8);
   
   --shadow-primary: rgba(0, 0, 0, 0.4);
   --shadow-secondary: rgba(0, 0, 0, 0.25);
+
+  --mat-option-selected-state-label-text-color: #FFF;
+  --mat-table-background-color: #22293b;
+  --mat-dialog-subhead-color: #f1f5f9;
+
+  --status-running: #00b7ff;
+  --status-done: #00ff00;
+  --status-error: #ff0000;
+  --status-pending: #c0c0c0;
+  
+}
+
+.mat-mdc-dialog-content{
+  --mat-form-field-outlined-outline-color: var(--border-color) !important;
+  --mat-form-field-outlined-hover-outline-color: var(--border-hover) !important;
 }
 
 // Tema Light
@@ -54,9 +72,12 @@ body:not(.light-theme) {
   --bg-tertiary: #fff;
   --bg-select-topo: #15213d;
   --bg-card: #fff;
+  --bg-tip: #c5d3ff;
   --bg-sidebar: #ffffff;
   --bg-diagram: #FFF;
   --bg-toolbar: #0f172a;
+  --bg-box: #f1f5f9;
+  --bg-geral: #fff;
 
   --title-primary: #00b7ff;
   --text-primary: #353535;
@@ -71,6 +92,13 @@ body:not(.light-theme) {
   --shadow-primary: rgba(0, 0, 0, 0.15);
   --shadow-secondary: rgba(0, 0, 0, 0.1);
   --mat-select-placeholder-text-color: #FFF;
+
+  --mat-option-selected-state-label-text-color: #FFF;
+
+  --status-running: #00709c;
+  --status-done: #00a900;
+  --status-error: #a50000;
+  --status-pending: #c0c0c0;
 }
 
 
@@ -150,7 +178,7 @@ h2{
 }
 
 mat-toolbar, mat-sidenav-container, mat-sidenav, mat-nav-list, mat-list-item, mat-card, mat-card-header, mat-card-title, mat-card-content, mat-card-actions, mat-form-field {
-    background-color: transparent !important;
+    background-color: var(--bg-geral) !important;
 }
 
 .mat-form-field-underline {
@@ -167,7 +195,7 @@ mat-toolbar, mat-sidenav-container, mat-sidenav, mat-nav-list, mat-list-item, ma
 .mat-mdc-dialog-surface.mdc-dialog__surface {
   box-shadow: 0 8px 16px var(--shadow-primary) !important;
   border-radius: 8px !important;
-  color:  var(--text-primary) !important;
+  color:  #00b7ff !important;
 }
 
 // Dark theme dialogs
@@ -265,5 +293,38 @@ ngx-monaco-editor {
   }
 
   span.mat-mdc-select-min-line {
-    color: #ffffff !important;
+    color: #FFF !important;
+}
+
+.mat-mdc-select-arrow svg {
+  fill: var(--border-color) !important;
+}
+
+/* styles.scss */
+.add-variable-button {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  font-weight: bold !important;
+
+  .mdc-button__label {
+    color: white !important;
+  }
+
+  mat-icon {
+    color: white !important;
+    fill: white !important;
+  }
+}
+
+.save-btn, .mat-mdc-raised-button {
+  color: white !important;
+
+  .mdc-button__label {
+    color: white !important;
+  }
+
+  mat-icon {
+    color: white !important;
+    fill: white !important;
+  }
 }
