@@ -1,0 +1,4246 @@
+{
+  "pipeline_id": "Migração São Gabriel_2025-08-08_22-40-00",
+  "project": "Migração São Gabriel",
+  "status": "running",
+  "started_at": "2025-08-08T22:40:00.8869358-03:00",
+  "ended_at": "0001-01-01T00:00:00Z",
+  "jobs": [
+    {
+      "job_id": "e63c4df7-e96f-4020-ae8b-e4e27ef27b39",
+      "job_name": "Cria tabela teste",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-08-08T22:40:00.8885366-03:00",
+      "ended_at": "2025-08-08T22:40:01.6672546-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "bc06bf61-a220-452b-ab78-02c9990f70cd",
+      "job_name": "Insert teste",
+      "status": "running",
+      "stop_on_error": false,
+      "started_at": "2025-08-08T22:40:01.6695341-03:00",
+      "ended_at": "0001-01-01T00:00:00Z",
+      "processed": 0,
+      "total": 15582959,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:08.5881688-03:00",
+          "ended_at": "2025-08-08T22:40:08.8944715-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:07.9562569-03:00",
+          "ended_at": "2025-08-08T22:40:08.9208146-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:09.1486912-03:00",
+          "ended_at": "2025-08-08T22:40:09.5170957-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:09.2354638-03:00",
+          "ended_at": "2025-08-08T22:40:09.5881928-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:08.9936232-03:00",
+          "ended_at": "2025-08-08T22:40:09.6232018-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:09.2642458-03:00",
+          "ended_at": "2025-08-08T22:40:09.6232018-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:09.8722898-03:00",
+          "ended_at": "2025-08-08T22:40:10.2664729-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:09.7231869-03:00",
+          "ended_at": "2025-08-08T22:40:10.4303903-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:10.2123644-03:00",
+          "ended_at": "2025-08-08T22:40:10.6256151-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:10.5266491-03:00",
+          "ended_at": "2025-08-08T22:40:10.9528008-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:10.4303903-03:00",
+          "ended_at": "2025-08-08T22:40:11.1854014-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:10.8056789-03:00",
+          "ended_at": "2025-08-08T22:40:11.2730906-03:00"
+        },
+        {
+          "offset": 20000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:11.1897039-03:00",
+          "ended_at": "2025-08-08T22:40:11.9944219-03:00"
+        },
+        {
+          "offset": 25000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:12.4866757-03:00",
+          "ended_at": "2025-08-08T22:40:13.3794092-03:00"
+        },
+        {
+          "offset": 25000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:13.2403095-03:00",
+          "ended_at": "2025-08-08T22:40:13.5457015-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:13.5049148-03:00",
+          "ended_at": "2025-08-08T22:40:13.8779609-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:13.548816-03:00",
+          "ended_at": "2025-08-08T22:40:13.934894-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:13.548816-03:00",
+          "ended_at": "2025-08-08T22:40:13.9386142-03:00"
+        },
+        {
+          "offset": 25000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:12.5676801-03:00",
+          "ended_at": "2025-08-08T22:40:13.9668807-03:00"
+        },
+        {
+          "offset": 25000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:12.5580393-03:00",
+          "ended_at": "2025-08-08T22:40:13.9673868-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:13.6504387-03:00",
+          "ended_at": "2025-08-08T22:40:14.0366651-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:13.6790812-03:00",
+          "ended_at": "2025-08-08T22:40:14.066606-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:13.4284987-03:00",
+          "ended_at": "2025-08-08T22:40:14.2660124-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:13.934894-03:00",
+          "ended_at": "2025-08-08T22:40:14.3745817-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:14.1609731-03:00",
+          "ended_at": "2025-08-08T22:40:14.6196382-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:14.1844724-03:00",
+          "ended_at": "2025-08-08T22:40:14.6471147-03:00"
+        },
+        {
+          "offset": 35000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:14.2660124-03:00",
+          "ended_at": "2025-08-08T22:40:14.9163424-03:00"
+        },
+        {
+          "offset": 35000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:14.8655134-03:00",
+          "ended_at": "2025-08-08T22:40:14.9915914-03:00"
+        },
+        {
+          "offset": 35000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:14.8981977-03:00",
+          "ended_at": "2025-08-08T22:40:15.0387919-03:00"
+        },
+        {
+          "offset": 40000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:14.9683771-03:00",
+          "ended_at": "2025-08-08T22:40:15.3681447-03:00"
+        },
+        {
+          "offset": 40000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.227722-03:00",
+          "ended_at": "2025-08-08T22:40:15.4574962-03:00"
+        },
+        {
+          "offset": 40000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.2936079-03:00",
+          "ended_at": "2025-08-08T22:40:15.5781971-03:00"
+        },
+        {
+          "offset": 35000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:14.348338-03:00",
+          "ended_at": "2025-08-08T22:40:15.7671836-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.5587533-03:00",
+          "ended_at": "2025-08-08T22:40:15.8018717-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.5900813-03:00",
+          "ended_at": "2025-08-08T22:40:15.8331923-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:15.3860293-03:00",
+          "ended_at": "2025-08-08T22:40:15.8739371-03:00"
+        },
+        {
+          "offset": 35000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:14.3833884-03:00",
+          "ended_at": "2025-08-08T22:40:15.8832016-03:00"
+        },
+        {
+          "offset": 35000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:14.3786084-03:00",
+          "ended_at": "2025-08-08T22:40:15.8832016-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.7206853-03:00",
+          "ended_at": "2025-08-08T22:40:15.9685558-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.7811926-03:00",
+          "ended_at": "2025-08-08T22:40:16.024186-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.7957927-03:00",
+          "ended_at": "2025-08-08T22:40:16.0684993-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.8058335-03:00",
+          "ended_at": "2025-08-08T22:40:16.0768018-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.8534418-03:00",
+          "ended_at": "2025-08-08T22:40:16.1019061-03:00"
+        },
+        {
+          "offset": 50000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.8893831-03:00",
+          "ended_at": "2025-08-08T22:40:16.1569393-03:00"
+        },
+        {
+          "offset": 50000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:15.9130595-03:00",
+          "ended_at": "2025-08-08T22:40:16.1796604-03:00"
+        },
+        {
+          "offset": 50000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:15.8862855-03:00",
+          "ended_at": "2025-08-08T22:40:16.3461866-03:00"
+        },
+        {
+          "offset": 50000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:16.2884981-03:00",
+          "ended_at": "2025-08-08T22:40:16.5331376-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:16.8338151-03:00",
+          "ended_at": "2025-08-08T22:40:17.1519006-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:16.8448592-03:00",
+          "ended_at": "2025-08-08T22:40:17.1594251-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:16.7442215-03:00",
+          "ended_at": "2025-08-08T22:40:17.7464912-03:00"
+        },
+        {
+          "offset": 60000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:17.8405397-03:00",
+          "ended_at": "2025-08-08T22:40:18.0294885-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:17.0059269-03:00",
+          "ended_at": "2025-08-08T22:40:18.0446088-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:17.0851748-03:00",
+          "ended_at": "2025-08-08T22:40:18.0874072-03:00"
+        },
+        {
+          "offset": 60000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:17.8116078-03:00",
+          "ended_at": "2025-08-08T22:40:18.0874072-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:17.0959165-03:00",
+          "ended_at": "2025-08-08T22:40:18.0874072-03:00"
+        },
+        {
+          "offset": 60000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:17.957453-03:00",
+          "ended_at": "2025-08-08T22:40:18.107991-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:17.1231026-03:00",
+          "ended_at": "2025-08-08T22:40:18.1571094-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:17.4349461-03:00",
+          "ended_at": "2025-08-08T22:40:18.247456-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:17.206429-03:00",
+          "ended_at": "2025-08-08T22:40:18.3131628-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:17.6337844-03:00",
+          "ended_at": "2025-08-08T22:40:18.3395014-03:00"
+        },
+        {
+          "offset": 65000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:18.3951327-03:00",
+          "ended_at": "2025-08-08T22:40:18.7068483-03:00"
+        },
+        {
+          "offset": 70000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:18.7632018-03:00",
+          "ended_at": "2025-08-08T22:40:18.9317148-03:00"
+        },
+        {
+          "offset": 70000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:18.7421004-03:00",
+          "ended_at": "2025-08-08T22:40:19.021127-03:00"
+        },
+        {
+          "offset": 70000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:18.8963518-03:00",
+          "ended_at": "2025-08-08T22:40:19.0404879-03:00"
+        },
+        {
+          "offset": 70000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:18.8963518-03:00",
+          "ended_at": "2025-08-08T22:40:19.0404879-03:00"
+        },
+        {
+          "offset": 75000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:19.0404879-03:00",
+          "ended_at": "2025-08-08T22:40:19.3178425-03:00"
+        },
+        {
+          "offset": 80000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:19.5714076-03:00",
+          "ended_at": "2025-08-08T22:40:19.7092685-03:00"
+        },
+        {
+          "offset": 80000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:19.3895826-03:00",
+          "ended_at": "2025-08-08T22:40:19.7859883-03:00"
+        },
+        {
+          "offset": 85000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:19.9834979-03:00",
+          "ended_at": "2025-08-08T22:40:20.1666092-03:00"
+        },
+        {
+          "offset": 85000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:19.9070125-03:00",
+          "ended_at": "2025-08-08T22:40:20.2325421-03:00"
+        },
+        {
+          "offset": 90000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:20.2874377-03:00",
+          "ended_at": "2025-08-08T22:40:20.4379835-03:00"
+        },
+        {
+          "offset": 90000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:20.2519343-03:00",
+          "ended_at": "2025-08-08T22:40:20.5217541-03:00"
+        },
+        {
+          "offset": 90000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:20.4930663-03:00",
+          "ended_at": "2025-08-08T22:40:20.5804214-03:00"
+        },
+        {
+          "offset": 85000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:20.0979937-03:00",
+          "ended_at": "2025-08-08T22:40:20.5983676-03:00"
+        },
+        {
+          "offset": 95000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:20.8620986-03:00",
+          "ended_at": "2025-08-08T22:40:20.9552102-03:00"
+        },
+        {
+          "offset": 95000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:20.6914976-03:00",
+          "ended_at": "2025-08-08T22:40:21.0242626-03:00"
+        },
+        {
+          "offset": 95000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:20.9152065-03:00",
+          "ended_at": "2025-08-08T22:40:21.0431542-03:00"
+        },
+        {
+          "offset": 95000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:21.0242626-03:00",
+          "ended_at": "2025-08-08T22:40:21.3214465-03:00"
+        },
+        {
+          "offset": 100000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:21.1973131-03:00",
+          "ended_at": "2025-08-08T22:40:21.3357906-03:00"
+        },
+        {
+          "offset": 100000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:21.3049833-03:00",
+          "ended_at": "2025-08-08T22:40:21.3930712-03:00"
+        },
+        {
+          "offset": 105000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:21.5077237-03:00",
+          "ended_at": "2025-08-08T22:40:21.702703-03:00"
+        },
+        {
+          "offset": 105000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:21.6642102-03:00",
+          "ended_at": "2025-08-08T22:40:21.7952589-03:00"
+        },
+        {
+          "offset": 105000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:21.4079739-03:00",
+          "ended_at": "2025-08-08T22:40:21.8064968-03:00"
+        },
+        {
+          "offset": 105000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:21.7650502-03:00",
+          "ended_at": "2025-08-08T22:40:21.9611571-03:00"
+        },
+        {
+          "offset": 105000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:21.7700046-03:00",
+          "ended_at": "2025-08-08T22:40:21.9856861-03:00"
+        },
+        {
+          "offset": 110000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:21.9992705-03:00",
+          "ended_at": "2025-08-08T22:40:22.1639828-03:00"
+        },
+        {
+          "offset": 110000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:21.9992705-03:00",
+          "ended_at": "2025-08-08T22:40:22.1884686-03:00"
+        },
+        {
+          "offset": 110000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:21.9567007-03:00",
+          "ended_at": "2025-08-08T22:40:22.2731901-03:00"
+        },
+        {
+          "offset": 110000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:22.181724-03:00",
+          "ended_at": "2025-08-08T22:40:22.2918235-03:00"
+        },
+        {
+          "offset": 115000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:22.332053-03:00",
+          "ended_at": "2025-08-08T22:40:22.6347999-03:00"
+        },
+        {
+          "offset": 115000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:22.5779399-03:00",
+          "ended_at": "2025-08-08T22:40:22.7050378-03:00"
+        },
+        {
+          "offset": 115000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:22.3688306-03:00",
+          "ended_at": "2025-08-08T22:40:22.8792005-03:00"
+        },
+        {
+          "offset": 120000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:22.9220794-03:00",
+          "ended_at": "2025-08-08T22:40:22.9850131-03:00"
+        },
+        {
+          "offset": 120000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:22.9380858-03:00",
+          "ended_at": "2025-08-08T22:40:23.0317132-03:00"
+        },
+        {
+          "offset": 120000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:22.7731651-03:00",
+          "ended_at": "2025-08-08T22:40:23.0389425-03:00"
+        },
+        {
+          "offset": 125000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:23.0644492-03:00",
+          "ended_at": "2025-08-08T22:40:23.7672969-03:00"
+        },
+        {
+          "offset": 130000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:23.9641067-03:00",
+          "ended_at": "2025-08-08T22:40:24.0958352-03:00"
+        },
+        {
+          "offset": 130000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:23.7863144-03:00",
+          "ended_at": "2025-08-08T22:40:24.1141448-03:00"
+        },
+        {
+          "offset": 130000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:24.0249592-03:00",
+          "ended_at": "2025-08-08T22:40:24.1605381-03:00"
+        },
+        {
+          "offset": 135000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:24.1355698-03:00",
+          "ended_at": "2025-08-08T22:40:24.3092005-03:00"
+        },
+        {
+          "offset": 135000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:24.184305-03:00",
+          "ended_at": "2025-08-08T22:40:24.3971371-03:00"
+        },
+        {
+          "offset": 135000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:24.1328751-03:00",
+          "ended_at": "2025-08-08T22:40:24.4453076-03:00"
+        },
+        {
+          "offset": 140000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:24.6378973-03:00",
+          "ended_at": "2025-08-08T22:40:24.8219039-03:00"
+        },
+        {
+          "offset": 135000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:24.309906-03:00",
+          "ended_at": "2025-08-08T22:40:24.9024163-03:00"
+        },
+        {
+          "offset": 135000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:24.309906-03:00",
+          "ended_at": "2025-08-08T22:40:24.9024163-03:00"
+        },
+        {
+          "offset": 140000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:24.588314-03:00",
+          "ended_at": "2025-08-08T22:40:24.9216465-03:00"
+        },
+        {
+          "offset": 140000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:24.8184755-03:00",
+          "ended_at": "2025-08-08T22:40:25.3832094-03:00"
+        },
+        {
+          "offset": 145000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:25.1534725-03:00",
+          "ended_at": "2025-08-08T22:40:25.5192659-03:00"
+        },
+        {
+          "offset": 150000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:25.765874-03:00",
+          "ended_at": "2025-08-08T22:40:26.0292895-03:00"
+        },
+        {
+          "offset": 155000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:26.3952108-03:00",
+          "ended_at": "2025-08-08T22:40:26.4891566-03:00"
+        },
+        {
+          "offset": 155000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:26.2143794-03:00",
+          "ended_at": "2025-08-08T22:40:26.5713408-03:00"
+        },
+        {
+          "offset": 155000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:26.5613329-03:00",
+          "ended_at": "2025-08-08T22:40:26.6857672-03:00"
+        },
+        {
+          "offset": 160000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:26.7743356-03:00",
+          "ended_at": "2025-08-08T22:40:27.0237549-03:00"
+        },
+        {
+          "offset": 160000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:26.6555161-03:00",
+          "ended_at": "2025-08-08T22:40:27.0454123-03:00"
+        },
+        {
+          "offset": 165000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:27.1027729-03:00",
+          "ended_at": "2025-08-08T22:40:27.4250837-03:00"
+        },
+        {
+          "offset": 170000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:27.5746847-03:00",
+          "ended_at": "2025-08-08T22:40:27.7936138-03:00"
+        },
+        {
+          "offset": 170000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:27.6969692-03:00",
+          "ended_at": "2025-08-08T22:40:27.8933774-03:00"
+        },
+        {
+          "offset": 160000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:26.7175149-03:00",
+          "ended_at": "2025-08-08T22:40:27.9357496-03:00"
+        },
+        {
+          "offset": 170000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:27.5677551-03:00",
+          "ended_at": "2025-08-08T22:40:27.9497406-03:00"
+        },
+        {
+          "offset": 170000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:27.8883725-03:00",
+          "ended_at": "2025-08-08T22:40:28.1033842-03:00"
+        },
+        {
+          "offset": 175000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:28.1494533-03:00",
+          "ended_at": "2025-08-08T22:40:28.6498073-03:00"
+        },
+        {
+          "offset": 175000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:28.3757789-03:00",
+          "ended_at": "2025-08-08T22:40:28.6546739-03:00"
+        },
+        {
+          "offset": 175000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:28.4669591-03:00",
+          "ended_at": "2025-08-08T22:40:28.7486047-03:00"
+        },
+        {
+          "offset": 180000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:28.8690974-03:00",
+          "ended_at": "2025-08-08T22:40:29.2117515-03:00"
+        },
+        {
+          "offset": 180000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:28.7654627-03:00",
+          "ended_at": "2025-08-08T22:40:29.3686407-03:00"
+        },
+        {
+          "offset": 180000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:29.0794982-03:00",
+          "ended_at": "2025-08-08T22:40:29.4300919-03:00"
+        },
+        {
+          "offset": 180000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:29.1974826-03:00",
+          "ended_at": "2025-08-08T22:40:29.5601976-03:00"
+        },
+        {
+          "offset": 180000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:29.2117515-03:00",
+          "ended_at": "2025-08-08T22:40:29.5904558-03:00"
+        },
+        {
+          "offset": 185000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:29.3798935-03:00",
+          "ended_at": "2025-08-08T22:40:30.10589-03:00"
+        },
+        {
+          "offset": 185000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:29.8360626-03:00",
+          "ended_at": "2025-08-08T22:40:30.2262939-03:00"
+        },
+        {
+          "offset": 185000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:30.0470143-03:00",
+          "ended_at": "2025-08-08T22:40:30.4377273-03:00"
+        },
+        {
+          "offset": 190000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:30.7987196-03:00",
+          "ended_at": "2025-08-08T22:40:31.2750048-03:00"
+        },
+        {
+          "offset": 190000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:30.9470439-03:00",
+          "ended_at": "2025-08-08T22:40:31.3783103-03:00"
+        },
+        {
+          "offset": 190000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:30.6218764-03:00",
+          "ended_at": "2025-08-08T22:40:31.4092918-03:00"
+        },
+        {
+          "offset": 190000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:31.0410826-03:00",
+          "ended_at": "2025-08-08T22:40:31.4357461-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:31.5471081-03:00",
+          "ended_at": "2025-08-08T22:40:31.961107-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:31.5627532-03:00",
+          "ended_at": "2025-08-08T22:40:31.9894911-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:31.6366047-03:00",
+          "ended_at": "2025-08-08T22:40:32.0574288-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:31.6668229-03:00",
+          "ended_at": "2025-08-08T22:40:32.0967984-03:00"
+        },
+        {
+          "offset": 190000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:31.4087349-03:00",
+          "ended_at": "2025-08-08T22:40:32.1368432-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:31.7513824-03:00",
+          "ended_at": "2025-08-08T22:40:32.1880052-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:31.8383444-03:00",
+          "ended_at": "2025-08-08T22:40:32.2881839-03:00"
+        },
+        {
+          "offset": 190000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:30.9779395-03:00",
+          "ended_at": "2025-08-08T22:40:32.4674347-03:00"
+        },
+        {
+          "offset": 190000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:31.0008666-03:00",
+          "ended_at": "2025-08-08T22:40:32.4850442-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.0439148-03:00",
+          "ended_at": "2025-08-08T22:40:32.5281925-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.0790893-03:00",
+          "ended_at": "2025-08-08T22:40:32.5603129-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.0967984-03:00",
+          "ended_at": "2025-08-08T22:40:32.5697012-03:00"
+        },
+        {
+          "offset": 195000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.1264122-03:00",
+          "ended_at": "2025-08-08T22:40:32.5984452-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.1825795-03:00",
+          "ended_at": "2025-08-08T22:40:32.679027-03:00"
+        },
+        {
+          "offset": 190000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:30.7021201-03:00",
+          "ended_at": "2025-08-08T22:40:32.7545377-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.2537708-03:00",
+          "ended_at": "2025-08-08T22:40:32.7550412-03:00"
+        },
+        {
+          "offset": 190000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:30.6951703-03:00",
+          "ended_at": "2025-08-08T22:40:32.8308672-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.4363893-03:00",
+          "ended_at": "2025-08-08T22:40:32.8963778-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.679027-03:00",
+          "ended_at": "2025-08-08T22:40:33.1106935-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:32.1638082-03:00",
+          "ended_at": "2025-08-08T22:40:33.1657566-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.7772274-03:00",
+          "ended_at": "2025-08-08T22:40:33.2114482-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.8756178-03:00",
+          "ended_at": "2025-08-08T22:40:33.3160216-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:32.9612034-03:00",
+          "ended_at": "2025-08-08T22:40:33.4105739-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.0027009-03:00",
+          "ended_at": "2025-08-08T22:40:33.4817751-03:00"
+        },
+        {
+          "offset": 200000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.1006965-03:00",
+          "ended_at": "2025-08-08T22:40:33.5678826-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.2178829-03:00",
+          "ended_at": "2025-08-08T22:40:33.7181519-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.2222864-03:00",
+          "ended_at": "2025-08-08T22:40:33.7214367-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.2758389-03:00",
+          "ended_at": "2025-08-08T22:40:33.7502435-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.2923774-03:00",
+          "ended_at": "2025-08-08T22:40:33.7750295-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.3966851-03:00",
+          "ended_at": "2025-08-08T22:40:33.8744644-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:33.1819821-03:00",
+          "ended_at": "2025-08-08T22:40:34.0032585-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.7420042-03:00",
+          "ended_at": "2025-08-08T22:40:34.1855246-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.7675763-03:00",
+          "ended_at": "2025-08-08T22:40:34.1982364-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.9049432-03:00",
+          "ended_at": "2025-08-08T22:40:34.3448198-03:00"
+        },
+        {
+          "offset": 205000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:33.9083126-03:00",
+          "ended_at": "2025-08-08T22:40:34.3663984-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.1479148-03:00",
+          "ended_at": "2025-08-08T22:40:34.5853596-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.2018149-03:00",
+          "ended_at": "2025-08-08T22:40:34.643422-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.2865491-03:00",
+          "ended_at": "2025-08-08T22:40:34.7397765-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.3355269-03:00",
+          "ended_at": "2025-08-08T22:40:34.7683307-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:34.0223052-03:00",
+          "ended_at": "2025-08-08T22:40:34.8123775-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.3929505-03:00",
+          "ended_at": "2025-08-08T22:40:34.8665956-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.4102825-03:00",
+          "ended_at": "2025-08-08T22:40:34.8949175-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.4518463-03:00",
+          "ended_at": "2025-08-08T22:40:34.9391152-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.5061335-03:00",
+          "ended_at": "2025-08-08T22:40:35.0027911-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.618906-03:00",
+          "ended_at": "2025-08-08T22:40:35.1316342-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.7890121-03:00",
+          "ended_at": "2025-08-08T22:40:35.306128-03:00"
+        },
+        {
+          "offset": 215000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:35.0312693-03:00",
+          "ended_at": "2025-08-08T22:40:35.4911946-03:00"
+        },
+        {
+          "offset": 215000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:35.1210022-03:00",
+          "ended_at": "2025-08-08T22:40:35.6005509-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.31667-03:00",
+          "ended_at": "2025-08-08T22:40:35.7798083-03:00"
+        },
+        {
+          "offset": 210000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:34.311853-03:00",
+          "ended_at": "2025-08-08T22:40:35.7833661-03:00"
+        },
+        {
+          "offset": 215000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:34.9686961-03:00",
+          "ended_at": "2025-08-08T22:40:35.7907732-03:00"
+        },
+        {
+          "offset": 215000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:35.3380905-03:00",
+          "ended_at": "2025-08-08T22:40:35.8041832-03:00"
+        },
+        {
+          "offset": 215000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:35.3498733-03:00",
+          "ended_at": "2025-08-08T22:40:35.8226862-03:00"
+        },
+        {
+          "offset": 215000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:35.4294234-03:00",
+          "ended_at": "2025-08-08T22:40:35.9033982-03:00"
+        },
+        {
+          "offset": 215000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:35.6300757-03:00",
+          "ended_at": "2025-08-08T22:40:36.090728-03:00"
+        },
+        {
+          "offset": 215000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:35.7548914-03:00",
+          "ended_at": "2025-08-08T22:40:36.2170125-03:00"
+        },
+        {
+          "offset": 215000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:35.7704499-03:00",
+          "ended_at": "2025-08-08T22:40:36.2303734-03:00"
+        },
+        {
+          "offset": 220000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:36.4110015-03:00",
+          "ended_at": "2025-08-08T22:40:36.8852311-03:00"
+        },
+        {
+          "offset": 220000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:36.2947553-03:00",
+          "ended_at": "2025-08-08T22:40:37.1235798-03:00"
+        },
+        {
+          "offset": 220000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:36.8857922-03:00",
+          "ended_at": "2025-08-08T22:40:37.3216867-03:00"
+        },
+        {
+          "offset": 220000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:36.9864878-03:00",
+          "ended_at": "2025-08-08T22:40:37.5048259-03:00"
+        },
+        {
+          "offset": 220000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:37.0295485-03:00",
+          "ended_at": "2025-08-08T22:40:37.5179506-03:00"
+        },
+        {
+          "offset": 225000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:37.5560822-03:00",
+          "ended_at": "2025-08-08T22:40:37.7507109-03:00"
+        },
+        {
+          "offset": 225000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:37.5560822-03:00",
+          "ended_at": "2025-08-08T22:40:37.911881-03:00"
+        },
+        {
+          "offset": 220000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:36.3999514-03:00",
+          "ended_at": "2025-08-08T22:40:37.9238513-03:00"
+        },
+        {
+          "offset": 225000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:37.8155186-03:00",
+          "ended_at": "2025-08-08T22:40:37.9976342-03:00"
+        },
+        {
+          "offset": 230000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:38.0837892-03:00",
+          "ended_at": "2025-08-08T22:40:38.445711-03:00"
+        },
+        {
+          "offset": 230000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:38.3156128-03:00",
+          "ended_at": "2025-08-08T22:40:38.4487219-03:00"
+        },
+        {
+          "offset": 220000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:37.0912973-03:00",
+          "ended_at": "2025-08-08T22:40:38.5002167-03:00"
+        },
+        {
+          "offset": 220000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:37.1058047-03:00",
+          "ended_at": "2025-08-08T22:40:38.5664322-03:00"
+        },
+        {
+          "offset": 235000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:39.0432299-03:00",
+          "ended_at": "2025-08-08T22:40:39.1245963-03:00"
+        },
+        {
+          "offset": 235000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:39.0841898-03:00",
+          "ended_at": "2025-08-08T22:40:39.1692915-03:00"
+        },
+        {
+          "offset": 235000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:39.0938938-03:00",
+          "ended_at": "2025-08-08T22:40:39.1839226-03:00"
+        },
+        {
+          "offset": 235000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:39.389916-03:00",
+          "ended_at": "2025-08-08T22:40:39.5814855-03:00"
+        },
+        {
+          "offset": 235000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:38.6047597-03:00",
+          "ended_at": "2025-08-08T22:40:39.7124499-03:00"
+        },
+        {
+          "offset": 240000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:39.8067692-03:00",
+          "ended_at": "2025-08-08T22:40:39.9500927-03:00"
+        },
+        {
+          "offset": 240000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:39.8067692-03:00",
+          "ended_at": "2025-08-08T22:40:39.9500927-03:00"
+        },
+        {
+          "offset": 240000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:39.9262692-03:00",
+          "ended_at": "2025-08-08T22:40:40.0830137-03:00"
+        },
+        {
+          "offset": 240000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:40.0172362-03:00",
+          "ended_at": "2025-08-08T22:40:40.1960886-03:00"
+        },
+        {
+          "offset": 240000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:40.191198-03:00",
+          "ended_at": "2025-08-08T22:40:40.3165953-03:00"
+        },
+        {
+          "offset": 240000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:40.2023966-03:00",
+          "ended_at": "2025-08-08T22:40:40.3338448-03:00"
+        },
+        {
+          "offset": 240000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:40.481176-03:00",
+          "ended_at": "2025-08-08T22:40:40.6145263-03:00"
+        },
+        {
+          "offset": 240000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:39.7644647-03:00",
+          "ended_at": "2025-08-08T22:40:40.6402065-03:00"
+        },
+        {
+          "offset": 240000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:40.5740297-03:00",
+          "ended_at": "2025-08-08T22:40:41.0833182-03:00"
+        },
+        {
+          "offset": 245000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:41.1285236-03:00",
+          "ended_at": "2025-08-08T22:40:41.236548-03:00"
+        },
+        {
+          "offset": 245000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:41.3080779-03:00",
+          "ended_at": "2025-08-08T22:40:41.4249028-03:00"
+        },
+        {
+          "offset": 245000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:41.6481124-03:00",
+          "ended_at": "2025-08-08T22:40:41.8036016-03:00"
+        },
+        {
+          "offset": 245000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:40.9915712-03:00",
+          "ended_at": "2025-08-08T22:40:41.8164573-03:00"
+        },
+        {
+          "offset": 245000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:41.7081648-03:00",
+          "ended_at": "2025-08-08T22:40:41.827515-03:00"
+        },
+        {
+          "offset": 245000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:41.7595631-03:00",
+          "ended_at": "2025-08-08T22:40:41.8779823-03:00"
+        },
+        {
+          "offset": 250000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:41.8766612-03:00",
+          "ended_at": "2025-08-08T22:40:42.0984324-03:00"
+        },
+        {
+          "offset": 250000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:41.9127701-03:00",
+          "ended_at": "2025-08-08T22:40:42.1774581-03:00"
+        },
+        {
+          "offset": 250000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:41.8569125-03:00",
+          "ended_at": "2025-08-08T22:40:42.3218434-03:00"
+        },
+        {
+          "offset": 250000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:42.0809321-03:00",
+          "ended_at": "2025-08-08T22:40:42.6496308-03:00"
+        },
+        {
+          "offset": 255000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:42.8349805-03:00",
+          "ended_at": "2025-08-08T22:40:43.0972325-03:00"
+        },
+        {
+          "offset": 255000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:42.7924363-03:00",
+          "ended_at": "2025-08-08T22:40:43.31416-03:00"
+        },
+        {
+          "offset": 250000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:42.1889627-03:00",
+          "ended_at": "2025-08-08T22:40:43.4499222-03:00"
+        },
+        {
+          "offset": 250000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:42.2063977-03:00",
+          "ended_at": "2025-08-08T22:40:43.4560997-03:00"
+        },
+        {
+          "offset": 260000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:43.31416-03:00",
+          "ended_at": "2025-08-08T22:40:43.6159314-03:00"
+        },
+        {
+          "offset": 260000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:43.3174645-03:00",
+          "ended_at": "2025-08-08T22:40:43.6227879-03:00"
+        },
+        {
+          "offset": 260000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:43.31416-03:00",
+          "ended_at": "2025-08-08T22:40:43.7604956-03:00"
+        },
+        {
+          "offset": 265000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:43.768237-03:00",
+          "ended_at": "2025-08-08T22:40:44.1776724-03:00"
+        },
+        {
+          "offset": 270000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:44.3541975-03:00",
+          "ended_at": "2025-08-08T22:40:44.4920228-03:00"
+        },
+        {
+          "offset": 270000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:44.3657776-03:00",
+          "ended_at": "2025-08-08T22:40:44.5026361-03:00"
+        },
+        {
+          "offset": 270000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:44.3721175-03:00",
+          "ended_at": "2025-08-08T22:40:44.5093777-03:00"
+        },
+        {
+          "offset": 270000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:44.2172072-03:00",
+          "ended_at": "2025-08-08T22:40:44.6010324-03:00"
+        },
+        {
+          "offset": 270000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:44.5066646-03:00",
+          "ended_at": "2025-08-08T22:40:44.647888-03:00"
+        },
+        {
+          "offset": 275000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:44.7961569-03:00",
+          "ended_at": "2025-08-08T22:40:44.9171848-03:00"
+        },
+        {
+          "offset": 275000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:44.6589299-03:00",
+          "ended_at": "2025-08-08T22:40:44.9755588-03:00"
+        },
+        {
+          "offset": 275000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:44.9383912-03:00",
+          "ended_at": "2025-08-08T22:40:45.4172287-03:00"
+        },
+        {
+          "offset": 280000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:45.300652-03:00",
+          "ended_at": "2025-08-08T22:40:45.436674-03:00"
+        },
+        {
+          "offset": 260000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:43.3244069-03:00",
+          "ended_at": "2025-08-08T22:40:45.4899592-03:00"
+        },
+        {
+          "offset": 260000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:43.3283357-03:00",
+          "ended_at": "2025-08-08T22:40:45.4899592-03:00"
+        },
+        {
+          "offset": 280000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:45.0686824-03:00",
+          "ended_at": "2025-08-08T22:40:45.8298357-03:00"
+        },
+        {
+          "offset": 285000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:46.2909225-03:00",
+          "ended_at": "2025-08-08T22:40:46.6438934-03:00"
+        },
+        {
+          "offset": 280000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:45.1184152-03:00",
+          "ended_at": "2025-08-08T22:40:46.7790667-03:00"
+        },
+        {
+          "offset": 290000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:46.9969986-03:00",
+          "ended_at": "2025-08-08T22:40:47.1187208-03:00"
+        },
+        {
+          "offset": 290000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:47.2702921-03:00",
+          "ended_at": "2025-08-08T22:40:47.3594881-03:00"
+        },
+        {
+          "offset": 290000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:46.7228067-03:00",
+          "ended_at": "2025-08-08T22:40:47.4298491-03:00"
+        },
+        {
+          "offset": 290000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:47.3255814-03:00",
+          "ended_at": "2025-08-08T22:40:47.433645-03:00"
+        },
+        {
+          "offset": 290000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:47.3489863-03:00",
+          "ended_at": "2025-08-08T22:40:47.4557884-03:00"
+        },
+        {
+          "offset": 290000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:47.3877906-03:00",
+          "ended_at": "2025-08-08T22:40:47.5168841-03:00"
+        },
+        {
+          "offset": 290000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:47.1012129-03:00",
+          "ended_at": "2025-08-08T22:40:47.5793162-03:00"
+        },
+        {
+          "offset": 285000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:46.5268743-03:00",
+          "ended_at": "2025-08-08T22:40:47.719957-03:00"
+        },
+        {
+          "offset": 295000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:47.6466862-03:00",
+          "ended_at": "2025-08-08T22:40:47.842244-03:00"
+        },
+        {
+          "offset": 295000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:47.7934344-03:00",
+          "ended_at": "2025-08-08T22:40:47.9892061-03:00"
+        },
+        {
+          "offset": 295000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:47.832243-03:00",
+          "ended_at": "2025-08-08T22:40:48.0304517-03:00"
+        },
+        {
+          "offset": 295000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:47.572882-03:00",
+          "ended_at": "2025-08-08T22:40:48.040708-03:00"
+        },
+        {
+          "offset": 300000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:48.2528016-03:00",
+          "ended_at": "2025-08-08T22:40:48.5370969-03:00"
+        },
+        {
+          "offset": 300000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:48.2779237-03:00",
+          "ended_at": "2025-08-08T22:40:48.5663588-03:00"
+        },
+        {
+          "offset": 300000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:48.2735201-03:00",
+          "ended_at": "2025-08-08T22:40:48.5663588-03:00"
+        },
+        {
+          "offset": 300000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:48.2877222-03:00",
+          "ended_at": "2025-08-08T22:40:48.584755-03:00"
+        },
+        {
+          "offset": 300000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:48.1841379-03:00",
+          "ended_at": "2025-08-08T22:40:48.821759-03:00"
+        },
+        {
+          "offset": 300000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:48.7635936-03:00",
+          "ended_at": "2025-08-08T22:40:49.0875249-03:00"
+        },
+        {
+          "offset": 305000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:48.9256956-03:00",
+          "ended_at": "2025-08-08T22:40:49.2718792-03:00"
+        },
+        {
+          "offset": 305000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:48.9533089-03:00",
+          "ended_at": "2025-08-08T22:40:49.3128771-03:00"
+        },
+        {
+          "offset": 305000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:48.9711045-03:00",
+          "ended_at": "2025-08-08T22:40:49.3209979-03:00"
+        },
+        {
+          "offset": 305000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:48.985151-03:00",
+          "ended_at": "2025-08-08T22:40:49.3348064-03:00"
+        },
+        {
+          "offset": 305000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:49.0417819-03:00",
+          "ended_at": "2025-08-08T22:40:49.3863168-03:00"
+        },
+        {
+          "offset": 305000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:48.8371703-03:00",
+          "ended_at": "2025-08-08T22:40:49.4551786-03:00"
+        },
+        {
+          "offset": 305000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:49.2158356-03:00",
+          "ended_at": "2025-08-08T22:40:49.5617498-03:00"
+        },
+        {
+          "offset": 310000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:49.8543715-03:00",
+          "ended_at": "2025-08-08T22:40:50.2566755-03:00"
+        },
+        {
+          "offset": 310000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:49.6466362-03:00",
+          "ended_at": "2025-08-08T22:40:50.3802162-03:00"
+        },
+        {
+          "offset": 310000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:50.1592439-03:00",
+          "ended_at": "2025-08-08T22:40:50.483766-03:00"
+        },
+        {
+          "offset": 310000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:50.1693641-03:00",
+          "ended_at": "2025-08-08T22:40:50.5154347-03:00"
+        },
+        {
+          "offset": 310000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:50.3703739-03:00",
+          "ended_at": "2025-08-08T22:40:50.6993995-03:00"
+        },
+        {
+          "offset": 310000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:50.3738164-03:00",
+          "ended_at": "2025-08-08T22:40:50.7094319-03:00"
+        },
+        {
+          "offset": 315000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:50.7445097-03:00",
+          "ended_at": "2025-08-08T22:40:51.1458739-03:00"
+        },
+        {
+          "offset": 315000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:50.8552219-03:00",
+          "ended_at": "2025-08-08T22:40:51.2651021-03:00"
+        },
+        {
+          "offset": 315000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:50.6457168-03:00",
+          "ended_at": "2025-08-08T22:40:51.3326911-03:00"
+        },
+        {
+          "offset": 315000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:51.2379557-03:00",
+          "ended_at": "2025-08-08T22:40:51.7251785-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:51.3748664-03:00",
+          "ended_at": "2025-08-08T22:40:51.8781071-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:51.5901521-03:00",
+          "ended_at": "2025-08-08T22:40:52.054369-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:51.6219-03:00",
+          "ended_at": "2025-08-08T22:40:52.0767271-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:51.6753878-03:00",
+          "ended_at": "2025-08-08T22:40:52.119808-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:51.3715731-03:00",
+          "ended_at": "2025-08-08T22:40:52.140297-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:51.7350129-03:00",
+          "ended_at": "2025-08-08T22:40:52.181218-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:51.9368816-03:00",
+          "ended_at": "2025-08-08T22:40:52.3758168-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:51.9520461-03:00",
+          "ended_at": "2025-08-08T22:40:52.4155928-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:52.1104296-03:00",
+          "ended_at": "2025-08-08T22:40:52.5300569-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:52.1261819-03:00",
+          "ended_at": "2025-08-08T22:40:52.549396-03:00"
+        },
+        {
+          "offset": 325000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:52.1631071-03:00",
+          "ended_at": "2025-08-08T22:40:52.6904552-03:00"
+        },
+        {
+          "offset": 325000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:52.458506-03:00",
+          "ended_at": "2025-08-08T22:40:52.8138969-03:00"
+        },
+        {
+          "offset": 320000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:51.4622318-03:00",
+          "ended_at": "2025-08-08T22:40:52.8244938-03:00"
+        },
+        {
+          "offset": 330000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:52.9724379-03:00",
+          "ended_at": "2025-08-08T22:40:53.3870421-03:00"
+        },
+        {
+          "offset": 330000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:52.9339288-03:00",
+          "ended_at": "2025-08-08T22:40:53.4452421-03:00"
+        },
+        {
+          "offset": 330000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:53.1245094-03:00",
+          "ended_at": "2025-08-08T22:40:53.5465941-03:00"
+        },
+        {
+          "offset": 330000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:53.1354299-03:00",
+          "ended_at": "2025-08-08T22:40:53.562125-03:00"
+        },
+        {
+          "offset": 330000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:53.2426778-03:00",
+          "ended_at": "2025-08-08T22:40:53.6682751-03:00"
+        },
+        {
+          "offset": 330000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:53.3960872-03:00",
+          "ended_at": "2025-08-08T22:40:53.9117157-03:00"
+        },
+        {
+          "offset": 330000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:53.4386839-03:00",
+          "ended_at": "2025-08-08T22:40:53.9685245-03:00"
+        },
+        {
+          "offset": 335000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:53.6538144-03:00",
+          "ended_at": "2025-08-08T22:40:54.2576253-03:00"
+        },
+        {
+          "offset": 335000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:53.9498597-03:00",
+          "ended_at": "2025-08-08T22:40:54.3871587-03:00"
+        },
+        {
+          "offset": 340000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:54.3147818-03:00",
+          "ended_at": "2025-08-08T22:40:54.7281978-03:00"
+        },
+        {
+          "offset": 340000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:54.3656576-03:00",
+          "ended_at": "2025-08-08T22:40:54.7643481-03:00"
+        },
+        {
+          "offset": 340000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:54.2827007-03:00",
+          "ended_at": "2025-08-08T22:40:54.7979973-03:00"
+        },
+        {
+          "offset": 340000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:54.5683229-03:00",
+          "ended_at": "2025-08-08T22:40:54.9926965-03:00"
+        },
+        {
+          "offset": 340000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:54.6382554-03:00",
+          "ended_at": "2025-08-08T22:40:55.0741172-03:00"
+        },
+        {
+          "offset": 340000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:54.6547927-03:00",
+          "ended_at": "2025-08-08T22:40:55.0989087-03:00"
+        },
+        {
+          "offset": 340000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:54.6807907-03:00",
+          "ended_at": "2025-08-08T22:40:55.164845-03:00"
+        },
+        {
+          "offset": 345000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:54.9271153-03:00",
+          "ended_at": "2025-08-08T22:40:55.3969889-03:00"
+        },
+        {
+          "offset": 345000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:55.0234221-03:00",
+          "ended_at": "2025-08-08T22:40:55.4919381-03:00"
+        },
+        {
+          "offset": 345000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:55.1018916-03:00",
+          "ended_at": "2025-08-08T22:40:55.5648364-03:00"
+        },
+        {
+          "offset": 345000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:54.8682631-03:00",
+          "ended_at": "2025-08-08T22:40:55.6349097-03:00"
+        },
+        {
+          "offset": 345000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:55.2077431-03:00",
+          "ended_at": "2025-08-08T22:40:55.6379327-03:00"
+        },
+        {
+          "offset": 345000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:55.227279-03:00",
+          "ended_at": "2025-08-08T22:40:55.6758013-03:00"
+        },
+        {
+          "offset": 345000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:55.227279-03:00",
+          "ended_at": "2025-08-08T22:40:55.6763316-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:55.725528-03:00",
+          "ended_at": "2025-08-08T22:40:56.1836356-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:55.8257275-03:00",
+          "ended_at": "2025-08-08T22:40:56.2809334-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:55.9658045-03:00",
+          "ended_at": "2025-08-08T22:40:56.3606733-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:55.6555806-03:00",
+          "ended_at": "2025-08-08T22:40:56.379624-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:56.02284-03:00",
+          "ended_at": "2025-08-08T22:40:56.4152182-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:56.0355934-03:00",
+          "ended_at": "2025-08-08T22:40:56.428769-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:56.0599981-03:00",
+          "ended_at": "2025-08-08T22:40:56.4617406-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:56.2776686-03:00",
+          "ended_at": "2025-08-08T22:40:56.7208076-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:56.2852474-03:00",
+          "ended_at": "2025-08-08T22:40:56.7271154-03:00"
+        },
+        {
+          "offset": 350000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:56.36425-03:00",
+          "ended_at": "2025-08-08T22:40:56.804802-03:00"
+        },
+        {
+          "offset": 355000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:56.4396031-03:00",
+          "ended_at": "2025-08-08T22:40:56.9943648-03:00"
+        },
+        {
+          "offset": 355000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:56.6112117-03:00",
+          "ended_at": "2025-08-08T22:40:57.0647195-03:00"
+        },
+        {
+          "offset": 360000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:57.1161999-03:00",
+          "ended_at": "2025-08-08T22:40:57.5224041-03:00"
+        },
+        {
+          "offset": 360000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:57.3694575-03:00",
+          "ended_at": "2025-08-08T22:40:57.6240134-03:00"
+        },
+        {
+          "offset": 365000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:57.5771959-03:00",
+          "ended_at": "2025-08-08T22:40:57.8748587-03:00"
+        },
+        {
+          "offset": 360000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:57.5094226-03:00",
+          "ended_at": "2025-08-08T22:40:57.9452411-03:00"
+        },
+        {
+          "offset": 370000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:57.9452411-03:00",
+          "ended_at": "2025-08-08T22:40:58.3224456-03:00"
+        },
+        {
+          "offset": 360000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:57.1797178-03:00",
+          "ended_at": "2025-08-08T22:40:58.386347-03:00"
+        },
+        {
+          "offset": 375000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:58.5234938-03:00",
+          "ended_at": "2025-08-08T22:40:58.7243337-03:00"
+        },
+        {
+          "offset": 375000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:58.4851034-03:00",
+          "ended_at": "2025-08-08T22:40:58.7871311-03:00"
+        },
+        {
+          "offset": 365000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:57.523175-03:00",
+          "ended_at": "2025-08-08T22:40:58.8009669-03:00"
+        },
+        {
+          "offset": 375000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:58.6186179-03:00",
+          "ended_at": "2025-08-08T22:40:58.8390974-03:00"
+        },
+        {
+          "offset": 375000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:58.6417218-03:00",
+          "ended_at": "2025-08-08T22:40:58.849309-03:00"
+        },
+        {
+          "offset": 375000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:58.6417218-03:00",
+          "ended_at": "2025-08-08T22:40:58.849309-03:00"
+        },
+        {
+          "offset": 375000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:58.6536189-03:00",
+          "ended_at": "2025-08-08T22:40:58.8705699-03:00"
+        },
+        {
+          "offset": 365000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:57.7438669-03:00",
+          "ended_at": "2025-08-08T22:40:58.9962081-03:00"
+        },
+        {
+          "offset": 365000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:57.7671269-03:00",
+          "ended_at": "2025-08-08T22:40:59.0164726-03:00"
+        },
+        {
+          "offset": 380000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:58.8985815-03:00",
+          "ended_at": "2025-08-08T22:40:59.1518399-03:00"
+        },
+        {
+          "offset": 375000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:58.7835165-03:00",
+          "ended_at": "2025-08-08T22:40:59.1653526-03:00"
+        },
+        {
+          "offset": 380000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:59.0233769-03:00",
+          "ended_at": "2025-08-08T22:40:59.235583-03:00"
+        },
+        {
+          "offset": 370000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:58.0216968-03:00",
+          "ended_at": "2025-08-08T22:40:59.242686-03:00"
+        },
+        {
+          "offset": 380000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:59.0523093-03:00",
+          "ended_at": "2025-08-08T22:40:59.2668307-03:00"
+        },
+        {
+          "offset": 370000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:58.2991896-03:00",
+          "ended_at": "2025-08-08T22:40:59.2694555-03:00"
+        },
+        {
+          "offset": 370000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:58.2991896-03:00",
+          "ended_at": "2025-08-08T22:40:59.2694555-03:00"
+        },
+        {
+          "offset": 380000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:59.1384855-03:00",
+          "ended_at": "2025-08-08T22:40:59.3699427-03:00"
+        },
+        {
+          "offset": 385000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:59.2857242-03:00",
+          "ended_at": "2025-08-08T22:40:59.5826054-03:00"
+        },
+        {
+          "offset": 385000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:59.4885448-03:00",
+          "ended_at": "2025-08-08T22:40:59.666068-03:00"
+        },
+        {
+          "offset": 390000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:40:59.6017509-03:00",
+          "ended_at": "2025-08-08T22:40:59.889041-03:00"
+        },
+        {
+          "offset": 390000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:40:59.8581707-03:00",
+          "ended_at": "2025-08-08T22:41:00.0213643-03:00"
+        },
+        {
+          "offset": 395000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:00.0908295-03:00",
+          "ended_at": "2025-08-08T22:41:00.3309684-03:00"
+        },
+        {
+          "offset": 395000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:00.085014-03:00",
+          "ended_at": "2025-08-08T22:41:00.4115632-03:00"
+        },
+        {
+          "offset": 395000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:00.2782988-03:00",
+          "ended_at": "2025-08-08T22:41:00.4565642-03:00"
+        },
+        {
+          "offset": 395000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:00.3772961-03:00",
+          "ended_at": "2025-08-08T22:41:00.5417215-03:00"
+        },
+        {
+          "offset": 400000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:00.6395466-03:00",
+          "ended_at": "2025-08-08T22:41:00.9877635-03:00"
+        },
+        {
+          "offset": 400000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:00.8967454-03:00",
+          "ended_at": "2025-08-08T22:41:01.1294336-03:00"
+        },
+        {
+          "offset": 405000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:01.4277255-03:00",
+          "ended_at": "2025-08-08T22:41:01.6942191-03:00"
+        },
+        {
+          "offset": 405000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:01.3588538-03:00",
+          "ended_at": "2025-08-08T22:41:01.7011504-03:00"
+        },
+        {
+          "offset": 410000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:01.8045634-03:00",
+          "ended_at": "2025-08-08T22:41:01.9965061-03:00"
+        },
+        {
+          "offset": 410000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:01.7701583-03:00",
+          "ended_at": "2025-08-08T22:41:02.0467201-03:00"
+        },
+        {
+          "offset": 410000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:01.9965061-03:00",
+          "ended_at": "2025-08-08T22:41:02.1849299-03:00"
+        },
+        {
+          "offset": 415000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:02.2745998-03:00",
+          "ended_at": "2025-08-08T22:41:02.5096431-03:00"
+        },
+        {
+          "offset": 415000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:02.2437647-03:00",
+          "ended_at": "2025-08-08T22:41:02.5428205-03:00"
+        },
+        {
+          "offset": 415000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:02.4764997-03:00",
+          "ended_at": "2025-08-08T22:41:02.698269-03:00"
+        },
+        {
+          "offset": 420000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:02.5896971-03:00",
+          "ended_at": "2025-08-08T22:41:02.7922587-03:00"
+        },
+        {
+          "offset": 420000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:02.5428205-03:00",
+          "ended_at": "2025-08-08T22:41:02.8165-03:00"
+        },
+        {
+          "offset": 420000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:02.6977636-03:00",
+          "ended_at": "2025-08-08T22:41:02.8477077-03:00"
+        },
+        {
+          "offset": 420000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:02.7407121-03:00",
+          "ended_at": "2025-08-08T22:41:02.8964594-03:00"
+        },
+        {
+          "offset": 425000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:02.983699-03:00",
+          "ended_at": "2025-08-08T22:41:03.1795497-03:00"
+        },
+        {
+          "offset": 425000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:02.8932055-03:00",
+          "ended_at": "2025-08-08T22:41:03.1863176-03:00"
+        },
+        {
+          "offset": 425000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:03.1331287-03:00",
+          "ended_at": "2025-08-08T22:41:03.306505-03:00"
+        },
+        {
+          "offset": 415000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:02.314668-03:00",
+          "ended_at": "2025-08-08T22:41:03.5853255-03:00"
+        },
+        {
+          "offset": 430000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:03.3814612-03:00",
+          "ended_at": "2025-08-08T22:41:03.6773702-03:00"
+        },
+        {
+          "offset": 430000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:03.6110924-03:00",
+          "ended_at": "2025-08-08T22:41:03.7757915-03:00"
+        },
+        {
+          "offset": 435000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:03.8213641-03:00",
+          "ended_at": "2025-08-08T22:41:04.0281-03:00"
+        },
+        {
+          "offset": 435000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:03.784913-03:00",
+          "ended_at": "2025-08-08T22:41:04.0700252-03:00"
+        },
+        {
+          "offset": 440000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:04.1167164-03:00",
+          "ended_at": "2025-08-08T22:41:04.3630728-03:00"
+        },
+        {
+          "offset": 440000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:04.141964-03:00",
+          "ended_at": "2025-08-08T22:41:04.3814258-03:00"
+        },
+        {
+          "offset": 440000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:04.0700252-03:00",
+          "ended_at": "2025-08-08T22:41:04.4149977-03:00"
+        },
+        {
+          "offset": 440000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:04.3882074-03:00",
+          "ended_at": "2025-08-08T22:41:04.64213-03:00"
+        },
+        {
+          "offset": 445000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:04.4582628-03:00",
+          "ended_at": "2025-08-08T22:41:04.7116812-03:00"
+        },
+        {
+          "offset": 445000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:04.4356596-03:00",
+          "ended_at": "2025-08-08T22:41:04.7285302-03:00"
+        },
+        {
+          "offset": 445000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:04.4739859-03:00",
+          "ended_at": "2025-08-08T22:41:04.7324108-03:00"
+        },
+        {
+          "offset": 430000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:03.4972346-03:00",
+          "ended_at": "2025-08-08T22:41:04.7630821-03:00"
+        },
+        {
+          "offset": 445000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:04.7257869-03:00",
+          "ended_at": "2025-08-08T22:41:05.076693-03:00"
+        },
+        {
+          "offset": 455000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:05.1419876-03:00",
+          "ended_at": "2025-08-08T22:41:05.3781429-03:00"
+        },
+        {
+          "offset": 455000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:05.2676998-03:00",
+          "ended_at": "2025-08-08T22:41:05.4377848-03:00"
+        },
+        {
+          "offset": 455000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:05.2822781-03:00",
+          "ended_at": "2025-08-08T22:41:05.4619051-03:00"
+        },
+        {
+          "offset": 455000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:05.118526-03:00",
+          "ended_at": "2025-08-08T22:41:05.4652356-03:00"
+        },
+        {
+          "offset": 455000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:05.3376168-03:00",
+          "ended_at": "2025-08-08T22:41:05.5165348-03:00"
+        },
+        {
+          "offset": 455000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:05.3411153-03:00",
+          "ended_at": "2025-08-08T22:41:05.5172996-03:00"
+        },
+        {
+          "offset": 455000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:05.4115959-03:00",
+          "ended_at": "2025-08-08T22:41:05.5968806-03:00"
+        },
+        {
+          "offset": 455000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:05.4362811-03:00",
+          "ended_at": "2025-08-08T22:41:05.6209955-03:00"
+        },
+        {
+          "offset": 445000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:04.7142812-03:00",
+          "ended_at": "2025-08-08T22:41:05.8413901-03:00"
+        },
+        {
+          "offset": 450000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:04.8314597-03:00",
+          "ended_at": "2025-08-08T22:41:06.1087271-03:00"
+        },
+        {
+          "offset": 460000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:06.0126591-03:00",
+          "ended_at": "2025-08-08T22:41:06.3086847-03:00"
+        },
+        {
+          "offset": 460000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:05.9780296-03:00",
+          "ended_at": "2025-08-08T22:41:06.3329949-03:00"
+        },
+        {
+          "offset": 460000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:06.2048985-03:00",
+          "ended_at": "2025-08-08T22:41:06.497746-03:00"
+        },
+        {
+          "offset": 455000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:05.2398085-03:00",
+          "ended_at": "2025-08-08T22:41:06.5612714-03:00"
+        },
+        {
+          "offset": 465000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:06.4324125-03:00",
+          "ended_at": "2025-08-08T22:41:06.7458575-03:00"
+        },
+        {
+          "offset": 465000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:06.3329949-03:00",
+          "ended_at": "2025-08-08T22:41:06.7553965-03:00"
+        },
+        {
+          "offset": 465000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:06.5131712-03:00",
+          "ended_at": "2025-08-08T22:41:06.8125915-03:00"
+        },
+        {
+          "offset": 465000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:06.5612714-03:00",
+          "ended_at": "2025-08-08T22:41:06.8665477-03:00"
+        },
+        {
+          "offset": 470000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:07.1186977-03:00",
+          "ended_at": "2025-08-08T22:41:07.6537681-03:00"
+        },
+        {
+          "offset": 470000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:07.6532285-03:00",
+          "ended_at": "2025-08-08T22:41:07.9148947-03:00"
+        },
+        {
+          "offset": 475000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:07.8966174-03:00",
+          "ended_at": "2025-08-08T22:41:08.0620186-03:00"
+        },
+        {
+          "offset": 470000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:07.2141319-03:00",
+          "ended_at": "2025-08-08T22:41:08.4422169-03:00"
+        },
+        {
+          "offset": 470000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:07.3777317-03:00",
+          "ended_at": "2025-08-08T22:41:08.7403185-03:00"
+        },
+        {
+          "offset": 480000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:08.7309408-03:00",
+          "ended_at": "2025-08-08T22:41:09.0122876-03:00"
+        },
+        {
+          "offset": 485000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:09.0847322-03:00",
+          "ended_at": "2025-08-08T22:41:09.2624823-03:00"
+        },
+        {
+          "offset": 485000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:09.0781128-03:00",
+          "ended_at": "2025-08-08T22:41:09.363659-03:00"
+        },
+        {
+          "offset": 490000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:09.4512877-03:00",
+          "ended_at": "2025-08-08T22:41:09.6503319-03:00"
+        },
+        {
+          "offset": 490000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:09.5116213-03:00",
+          "ended_at": "2025-08-08T22:41:09.6728476-03:00"
+        },
+        {
+          "offset": 495000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:09.7449697-03:00",
+          "ended_at": "2025-08-08T22:41:09.988462-03:00"
+        },
+        {
+          "offset": 480000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:08.90968-03:00",
+          "ended_at": "2025-08-08T22:41:10.0039037-03:00"
+        },
+        {
+          "offset": 500000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:10.0960101-03:00",
+          "ended_at": "2025-08-08T22:41:10.2724118-03:00"
+        },
+        {
+          "offset": 500000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:10.0843066-03:00",
+          "ended_at": "2025-08-08T22:41:10.2821225-03:00"
+        },
+        {
+          "offset": 500000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:10.0843066-03:00",
+          "ended_at": "2025-08-08T22:41:10.6195272-03:00"
+        },
+        {
+          "offset": 505000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:10.4969828-03:00",
+          "ended_at": "2025-08-08T22:41:10.7701962-03:00"
+        },
+        {
+          "offset": 505000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:10.6647017-03:00",
+          "ended_at": "2025-08-08T22:41:10.8020965-03:00"
+        },
+        {
+          "offset": 510000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:10.8572669-03:00",
+          "ended_at": "2025-08-08T22:41:11.0646716-03:00"
+        },
+        {
+          "offset": 515000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:11.8131664-03:00",
+          "ended_at": "2025-08-08T22:41:11.8972727-03:00"
+        },
+        {
+          "offset": 515000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:11.8972727-03:00",
+          "ended_at": "2025-08-08T22:41:12.0033542-03:00"
+        },
+        {
+          "offset": 515000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:11.4049269-03:00",
+          "ended_at": "2025-08-08T22:41:12.0865864-03:00"
+        },
+        {
+          "offset": 515000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:11.7013628-03:00",
+          "ended_at": "2025-08-08T22:41:12.1227884-03:00"
+        },
+        {
+          "offset": 515000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:11.9784795-03:00",
+          "ended_at": "2025-08-08T22:41:12.1616877-03:00"
+        },
+        {
+          "offset": 520000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:12.0914985-03:00",
+          "ended_at": "2025-08-08T22:41:12.3597579-03:00"
+        },
+        {
+          "offset": 520000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:12.2928333-03:00",
+          "ended_at": "2025-08-08T22:41:12.4389899-03:00"
+        },
+        {
+          "offset": 520000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:12.3126947-03:00",
+          "ended_at": "2025-08-08T22:41:12.5129564-03:00"
+        },
+        {
+          "offset": 520000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:12.3372265-03:00",
+          "ended_at": "2025-08-08T22:41:12.516084-03:00"
+        },
+        {
+          "offset": 525000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:12.3597579-03:00",
+          "ended_at": "2025-08-08T22:41:12.6200259-03:00"
+        },
+        {
+          "offset": 515000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:12.040555-03:00",
+          "ended_at": "2025-08-08T22:41:12.7257142-03:00"
+        },
+        {
+          "offset": 530000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:12.6343976-03:00",
+          "ended_at": "2025-08-08T22:41:12.8810176-03:00"
+        },
+        {
+          "offset": 530000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:12.7178632-03:00",
+          "ended_at": "2025-08-08T22:41:12.8898261-03:00"
+        },
+        {
+          "offset": 525000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:12.591054-03:00",
+          "ended_at": "2025-08-08T22:41:13.1887325-03:00"
+        },
+        {
+          "offset": 535000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:13.4008942-03:00",
+          "ended_at": "2025-08-08T22:41:13.6458835-03:00"
+        },
+        {
+          "offset": 525000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:12.6123162-03:00",
+          "ended_at": "2025-08-08T22:41:13.7083465-03:00"
+        },
+        {
+          "offset": 535000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:13.583119-03:00",
+          "ended_at": "2025-08-08T22:41:13.7309131-03:00"
+        },
+        {
+          "offset": 540000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:13.8449876-03:00",
+          "ended_at": "2025-08-08T22:41:13.9846592-03:00"
+        },
+        {
+          "offset": 540000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:14.0322952-03:00",
+          "ended_at": "2025-08-08T22:41:14.1488687-03:00"
+        },
+        {
+          "offset": 540000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:14.186332-03:00",
+          "ended_at": "2025-08-08T22:41:14.3110525-03:00"
+        },
+        {
+          "offset": 540000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:13.7746863-03:00",
+          "ended_at": "2025-08-08T22:41:14.363767-03:00"
+        },
+        {
+          "offset": 540000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:14.2933007-03:00",
+          "ended_at": "2025-08-08T22:41:14.3806289-03:00"
+        },
+        {
+          "offset": 540000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:14.3396675-03:00",
+          "ended_at": "2025-08-08T22:41:14.4494659-03:00"
+        },
+        {
+          "offset": 545000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:14.4455362-03:00",
+          "ended_at": "2025-08-08T22:41:14.7459953-03:00"
+        },
+        {
+          "offset": 540000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:13.8619833-03:00",
+          "ended_at": "2025-08-08T22:41:14.9876306-03:00"
+        },
+        {
+          "offset": 540000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:13.8624891-03:00",
+          "ended_at": "2025-08-08T22:41:14.9881355-03:00"
+        },
+        {
+          "offset": 550000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:14.8132149-03:00",
+          "ended_at": "2025-08-08T22:41:15.048421-03:00"
+        },
+        {
+          "offset": 555000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:15.0642722-03:00",
+          "ended_at": "2025-08-08T22:41:15.3270904-03:00"
+        },
+        {
+          "offset": 560000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:15.4194893-03:00",
+          "ended_at": "2025-08-08T22:41:15.6661524-03:00"
+        },
+        {
+          "offset": 565000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:15.7162979-03:00",
+          "ended_at": "2025-08-08T22:41:16.1421584-03:00"
+        },
+        {
+          "offset": 565000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:16.0575071-03:00",
+          "ended_at": "2025-08-08T22:41:16.2776089-03:00"
+        },
+        {
+          "offset": 570000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:16.4608474-03:00",
+          "ended_at": "2025-08-08T22:41:16.6373305-03:00"
+        },
+        {
+          "offset": 570000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:16.1587452-03:00",
+          "ended_at": "2025-08-08T22:41:16.6639216-03:00"
+        },
+        {
+          "offset": 575000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:16.6696468-03:00",
+          "ended_at": "2025-08-08T22:41:16.9221292-03:00"
+        },
+        {
+          "offset": 575000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:16.8009509-03:00",
+          "ended_at": "2025-08-08T22:41:16.9524866-03:00"
+        },
+        {
+          "offset": 580000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:16.9221292-03:00",
+          "ended_at": "2025-08-08T22:41:17.1878818-03:00"
+        },
+        {
+          "offset": 580000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:17.1058804-03:00",
+          "ended_at": "2025-08-08T22:41:17.2680789-03:00"
+        },
+        {
+          "offset": 585000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:17.2645675-03:00",
+          "ended_at": "2025-08-08T22:41:17.5007626-03:00"
+        },
+        {
+          "offset": 585000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:17.263566-03:00",
+          "ended_at": "2025-08-08T22:41:17.5007626-03:00"
+        },
+        {
+          "offset": 585000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:17.2595653-03:00",
+          "ended_at": "2025-08-08T22:41:17.5318628-03:00"
+        },
+        {
+          "offset": 590000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:17.6353327-03:00",
+          "ended_at": "2025-08-08T22:41:17.8266647-03:00"
+        },
+        {
+          "offset": 590000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:17.6353327-03:00",
+          "ended_at": "2025-08-08T22:41:17.8266647-03:00"
+        },
+        {
+          "offset": 590000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:17.6746065-03:00",
+          "ended_at": "2025-08-08T22:41:17.8512176-03:00"
+        },
+        {
+          "offset": 590000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:17.6250278-03:00",
+          "ended_at": "2025-08-08T22:41:17.8614982-03:00"
+        },
+        {
+          "offset": 595000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:17.8963224-03:00",
+          "ended_at": "2025-08-08T22:41:18.1264414-03:00"
+        },
+        {
+          "offset": 600000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:18.2276394-03:00",
+          "ended_at": "2025-08-08T22:41:18.4815498-03:00"
+        },
+        {
+          "offset": 605000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:18.5883277-03:00",
+          "ended_at": "2025-08-08T22:41:18.8103242-03:00"
+        },
+        {
+          "offset": 605000,
+          "limit": 5000,
+          "status": "error",
+          "error": "pq: sorry, too many clients already",
+          "rows": 0,
+          "started_at": "2025-08-08T22:41:18.722048-03:00",
+          "ended_at": "2025-08-08T22:41:18.8431179-03:00"
+        },
+        {
+          "offset": 610000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:18.9983271-03:00",
+          "ended_at": "2025-08-08T22:41:19.2279186-03:00"
+        },
+        {
+          "offset": 615000,
+          "limit": 5000,
+          "status": "done",
+          "rows": 5000,
+          "started_at": "2025-08-08T22:41:19.3569753-03:00",
+          "ended_at": "2025-08-08T22:41:19.5770237-03:00"
+        }
+      ]
+    }
+  ]
+}

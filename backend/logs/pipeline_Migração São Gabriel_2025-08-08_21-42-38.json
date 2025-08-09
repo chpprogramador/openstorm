@@ -1,0 +1,32 @@
+{
+  "pipeline_id": "Migração São Gabriel_2025-08-08_21-42-38",
+  "project": "Migração São Gabriel",
+  "status": "done",
+  "started_at": "2025-08-08T21:42:38.3864513-03:00",
+  "ended_at": "2025-08-08T21:42:38.6070604-03:00",
+  "jobs": [
+    {
+      "job_id": "e63c4df7-e96f-4020-ae8b-e4e27ef27b39",
+      "job_name": "Cria tabela teste",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-08-08T21:42:38.3890501-03:00",
+      "ended_at": "2025-08-08T21:42:38.5128197-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "bc06bf61-a220-452b-ab78-02c9990f70cd",
+      "job_name": "Insert teste",
+      "status": "error",
+      "error": "sql: Scan error on column index 0, name \"nome\": converting driver.Value type string (\"CONVENCAO GERAL DAS IGREJAS ADVENTISTA DA PROMESSA\") to a int: invalid syntax",
+      "stop_on_error": false,
+      "started_at": "2025-08-08T21:42:38.513852-03:00",
+      "ended_at": "2025-08-08T21:42:38.6060243-03:00",
+      "processed": 0,
+      "total": 0,
+      "batches": []
+    }
+  ]
+}

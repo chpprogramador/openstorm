@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"etl/dialects"
 	"etl/models"
 	"fmt"
 	"io/ioutil"
@@ -196,9 +197,12 @@ func ValidateJobHandler(c *gin.Context) {
 	}
 	defer tx.Rollback()
 
+	_, modifiedSQL := dialects.AnalyzeAndModifySQL(req.SelectSQL)
+	modifiedSQL = modifiedSQL + " LIMIT 1" // Limita a 1 para otimizar a contagem
+
 	// Tenta extrair colunas com SELECT * LIMIT 0
-	testSQL := fmt.Sprintf("SELECT * FROM (%s) AS t LIMIT 0", req.SelectSQL)
-	rows, err := tx.Query(testSQL)
+	//testSQL := fmt.Sprintf("SELECT * FROM (%s) AS t LIMIT 0", req.SelectSQL)
+	rows, err := tx.Query(modifiedSQL)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
 			Valid: false, Message: fmt.Sprintf("Erro no SELECT: %v", err),
@@ -238,7 +242,8 @@ func ValidateJobHandler(c *gin.Context) {
 
 	// Obter um registro do SourceDB para o INSERT
 	var values []interface{}
-	selectTestSQL := req.SelectSQL
+	_, selectTestSQL := dialects.AnalyzeAndModifySQL(req.SelectSQL)
+	selectTestSQL = selectTestSQL + " LIMIT 0"
 	selectColumns := columns
 	rows2, err := sourceDB.Query(selectTestSQL)
 	if err == nil {
@@ -255,8 +260,11 @@ func ValidateJobHandler(c *gin.Context) {
 
 	if len(values) > 0 {
 
-		testSQL := fmt.Sprintf(" SELECT * FROM (%s) AS t LIMIT 0", req.SelectSQL)
-		insertStmt := fmt.Sprintf("%s %s", req.InsertSQL, testSQL)
+		_, modifiedSQL := dialects.AnalyzeAndModifySQL(req.SelectSQL)
+		modifiedSQL = modifiedSQL + " LIMIT 0" // Limita a 0 para otimizar a contagem
+
+		//testSQL := fmt.Sprintf(" SELECT * FROM (%s) AS t LIMIT 0", req.SelectSQL)
+		insertStmt := fmt.Sprintf("%s %s", req.InsertSQL, modifiedSQL)
 
 		_, err = txd.Exec(insertStmt)
 		if err != nil {

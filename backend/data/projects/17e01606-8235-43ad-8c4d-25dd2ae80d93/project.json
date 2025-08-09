@@ -1,0 +1,30 @@
+{
+  "id": "17e01606-8235-43ad-8c4d-25dd2ae80d93",
+  "projectName": "São Gabriel - Validação",
+  "jobs": [
+    "jobs/0a5310eb-52e1-43ab-bf27-be47461e493d.json",
+    "jobs/ee0ce6b0-e99b-4679-b9f2-9985c42771b0.json",
+    "jobs/a8a1aff3-6e9f-4941-a0e2-cf77536c016d.json",
+    "jobs/42305fdc-48d8-4f1a-8377-2cded94d85ec.json",
+    "jobs/f19f52b6-0b20-43ac-b224-be369a74b489.json"
+  ],
+  "connections": [],
+  "sourceDatabase": {
+    "type": "postgres",
+    "host": "10.1.3.239",
+    "port": 5432,
+    "user": "saogabriel",
+    "password": "saogabriel",
+    "database": "saogabriel"
+  },
+  "destinationDatabase": {
+    "type": "postgres",
+    "host": "10.1.3.239",
+    "port": 5432,
+    "user": "saogabriel",
+    "password": "saogabriel",
+    "database": "saogabriel"
+  },
+  "concurrency": 10,
+  "variables": null
+}

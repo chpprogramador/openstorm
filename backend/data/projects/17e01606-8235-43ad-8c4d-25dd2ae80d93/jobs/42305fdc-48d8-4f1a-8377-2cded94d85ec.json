@@ -1,0 +1,12 @@
+{
+  "id": "42305fdc-48d8-4f1a-8377-2cded94d85ec",
+  "jobName": "SegurancaParametros",
+  "selectSql": "select count(*) \u003e 0 as qtde from SegurancaParametros",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "condition",
+  "stopOnError": false,
+  "left": 0,
+  "top": 360
+}

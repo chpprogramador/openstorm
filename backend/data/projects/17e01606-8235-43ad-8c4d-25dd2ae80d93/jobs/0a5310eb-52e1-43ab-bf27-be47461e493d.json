@@ -1,0 +1,12 @@
+{
+  "id": "0a5310eb-52e1-43ab-bf27-be47461e493d",
+  "jobName": "ServicefyApk checa versão",
+  "selectSql": "select count(*) \u003e 0 as qtde from servicefyapk where versao = (select versaoservicefy from parametrosservicefy)",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "condition",
+  "stopOnError": false,
+  "left": 0,
+  "top": 0
+}

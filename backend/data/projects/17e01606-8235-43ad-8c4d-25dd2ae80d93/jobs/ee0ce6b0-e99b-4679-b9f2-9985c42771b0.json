@@ -1,0 +1,12 @@
+{
+  "id": "ee0ce6b0-e99b-4679-b9f2-9985c42771b0",
+  "jobName": "CloudKeys",
+  "selectSql": "SELECTcount(*) \u003e 0 FROM cloudkeys",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "condition",
+  "stopOnError": false,
+  "left": 0,
+  "top": 120
+}

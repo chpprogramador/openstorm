@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"etl/models"
 	"fmt"
+	"regexp"
 	"strings"
+	"time"
 )
 
 type SQLDialect interface {
@@ -17,39 +19,105 @@ type SQLDialect interface {
 type PostgresDialect struct{}
 
 func (d PostgresDialect) FetchTotalCount(db *sql.DB, job models.Job) (int, error) {
-	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM (%s) AS count_subquery", job.SelectSQL)
+	//countQuery := fmt.Sprintf("SELECT COUNT(*) FROM (%s) AS count_subquery", job.SelectSQL)
+	//_, modifiedSQL := AnalyzeAndModifySQL(job.SelectSQL)
+	//countQuery := modifiedSQL + " LIMIT 1" // Limita a 1 para otimizar a contagem
+
+	selectRegex := regexp.MustCompile(`(?i)^SELECT\s+(.*?)\s+FROM`)
+	countSQL := selectRegex.ReplaceAllString(job.SelectSQL, "SELECT COUNT(*) FROM")
+
 	var count int
-	err := db.QueryRow(countQuery).Scan(&count)
+	err := db.QueryRow(countSQL).Scan(&count)
 	return count, err
 }
 
 func (d PostgresDialect) BuildPaginatedInsertQuery(job models.Job, offset, limit int) string {
-	cols := strings.Join(job.Columns, ", ")
-	return fmt.Sprintf(`%s
-SELECT %s FROM (
-    SELECT ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS rn, t.*
-    FROM (
-        %s
-    ) t
-) sub
-WHERE rn > %d
-ORDER BY rn
-LIMIT %d;`,
-		job.InsertSQL,
-		cols,
-		job.SelectSQL,
-		offset,
-		limit,
-	)
+	//cols := strings.Join(job.Columns, ", ")
+	// 	return fmt.Sprintf(`%s
+	// SELECT %s FROM (
+	//     SELECT ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS rn, t.*
+	//     FROM (
+	//         %s
+	//     ) t
+	// ) sub
+	// WHERE rn > %d
+	// ORDER BY rn
+	// LIMIT %d;`,
+	// 		job.InsertSQL,
+	// 		cols,
+	// 		job.SelectSQL,
+	// 		offset,
+	// 		limit,
+	// 	)
+	hasWhere, modifiedSQL := AnalyzeAndModifySQL(job.SelectSQL)
+
+	//get timestamp
+	time := time.Now().UnixNano()
+
+	modifiedSQL = "CREATE sequence if not exists seq_" + fmt.Sprintf("%d", time) + "_id START 1;" + modifiedSQL
+
+	if !hasWhere {
+		modifiedSQL = fmt.Sprintf("%s where nextval('seq_"+fmt.Sprintf("%d", time)+"_id') > %d order by CTID;", modifiedSQL, offset)
+	} else {
+		modifiedSQL = fmt.Sprintf("%s and nextval('seq_"+fmt.Sprintf("%d", time)+"_id') > %d order by CTID;", modifiedSQL, offset)
+	}
+
+	return modifiedSQL + "DROP SEQUENCE seq_" + fmt.Sprintf("%d", time) + "_id;"
 }
 
 func (d PostgresDialect) BuildPaginatedSelectQuery(job models.Job, offset, limit int) string {
-	return fmt.Sprintf("SELECT %s FROM (%s) LIMIT %d OFFSET %d",
-		strings.Join(job.Columns, ", "),
-		job.SelectSQL,
-		limit,
-		offset,
-	)
+
+	time := time.Now().UnixNano()
+
+	hasWhere, modifiedSQL := AnalyzeAndModifySQL(job.SelectSQL)
+
+	modifiedSQL = "CREATE sequence if not exists seq_" + fmt.Sprintf("%d", time) + "_id START 1;" + modifiedSQL
+
+	if !hasWhere {
+		modifiedSQL = fmt.Sprintf("%s where nextval('seq_"+fmt.Sprintf("%d", time)+"_id') > %d order by CTID;", modifiedSQL, offset)
+	} else {
+		modifiedSQL = fmt.Sprintf("%s and nextval('seq_"+fmt.Sprintf("%d", time)+"_id') > %d order by CTID;", modifiedSQL, offset)
+	}
+
+	return modifiedSQL + "DROP SEQUENCE seq_" + fmt.Sprintf("%d", time) + "_id;"
+
+}
+
+// AnalyzeAndModifySQL detecta se a query tem WHERE e remove LIMIT e ORDER BY (simples, ignorando subqueries/CTEs).
+func AnalyzeAndModifySQL(query string) (bool, string) {
+	// Normaliza a query para lowercase para buscas insensíveis a case
+	lowerQuery := strings.ToLower(query)
+
+	// Detecta se há WHERE
+	hasWhere := regexp.MustCompile(`\bwhere\b`).MatchString(lowerQuery)
+
+	// Remove LIMIT (ex: LIMIT 5 ou LIMIT 10,20)
+	reLimit := regexp.MustCompile(`(?i)\blimit\s+\d+(\s*,\s*\d+)?\b`)
+	queryNoLimit := reLimit.ReplaceAllString(query, "")
+
+	// Agora, remove ORDER BY manualmente
+	lowerNoLimit := strings.ToLower(queryNoLimit)
+	orderByIndex := strings.Index(lowerNoLimit, "order by")
+
+	// Declara queryNoOrder no escopo externo
+	var queryNoOrder string
+	if orderByIndex != -1 {
+		// Encontra o início do ORDER BY na query original
+		orderByStart := orderByIndex
+		// Remove do ORDER BY até o final
+		queryNoOrder = queryNoLimit[:orderByStart]
+		queryNoOrder = strings.TrimSpace(queryNoOrder)
+	} else {
+		queryNoOrder = queryNoLimit
+	}
+
+	// Limpa espaços extras
+	queryModified := strings.TrimSpace(regexp.MustCompile(`\s+`).ReplaceAllString(queryNoOrder, " "))
+
+	fmt.Printf("Query modificada: %s\n", queryModified)
+	fmt.Printf("Possui WHERE: %v\n", hasWhere)
+
+	return hasWhere, queryModified
 }
 
 func (d PostgresDialect) BuildInsertQuery(job models.Job, records []map[string]interface{}) (string, []interface{}) {

@@ -1,0 +1,31 @@
+{
+  "pipeline_id": "Migração São Gabriel_2025-08-08_11-42-06",
+  "project": "Migração São Gabriel",
+  "status": "running",
+  "started_at": "2025-08-08T11:42:06.0884728-03:00",
+  "ended_at": "0001-01-01T00:00:00Z",
+  "jobs": [
+    {
+      "job_id": "e63c4df7-e96f-4020-ae8b-e4e27ef27b39",
+      "job_name": "Cria tabela teste",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-08-08T11:42:06.0903289-03:00",
+      "ended_at": "2025-08-08T11:42:06.1124545-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "bc06bf61-a220-452b-ab78-02c9990f70cd",
+      "job_name": "Insert teste",
+      "status": "running",
+      "stop_on_error": false,
+      "started_at": "2025-08-08T11:42:06.1145788-03:00",
+      "ended_at": "0001-01-01T00:00:00Z",
+      "processed": 0,
+      "total": 0,
+      "batches": []
+    }
+  ]
+}

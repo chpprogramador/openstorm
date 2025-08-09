@@ -1,0 +1,12 @@
+{
+  "id": "04948954-51c4-4fd4-a1e4-32ef8b033fe4",
+  "jobName": "Teste variável",
+  "selectSql": "select ${teste_numero} = 123",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "condition",
+  "stopOnError": true,
+  "left": 400,
+  "top": 0
+}

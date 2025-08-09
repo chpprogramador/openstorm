@@ -1,0 +1,12 @@
+{
+  "id": "f19f52b6-0b20-43ac-b224-be369a74b489",
+  "jobName": "ParametrosServicefy",
+  "selectSql": "select count(*) \u003e 0 from ParametrosServicefy",
+  "insertSql": "select count(*) \u003e 0 from ParametrosServicefy",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "condition",
+  "stopOnError": false,
+  "left": 0,
+  "top": 480
+}

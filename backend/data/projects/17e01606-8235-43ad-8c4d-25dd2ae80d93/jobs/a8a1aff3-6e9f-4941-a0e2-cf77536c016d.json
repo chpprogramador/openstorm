@@ -1,0 +1,12 @@
+{
+  "id": "a8a1aff3-6e9f-4941-a0e2-cf77536c016d",
+  "jobName": "CloudkeysWaterfy",
+  "selectSql": "select count(*) \u003e 0 from CloudkeysWaterfy",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "condition",
+  "stopOnError": false,
+  "left": 0,
+  "top": 240
+}

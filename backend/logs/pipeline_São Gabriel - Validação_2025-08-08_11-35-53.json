@@ -1,0 +1,69 @@
+{
+  "pipeline_id": "São Gabriel - Validação_2025-08-08_11-35-53",
+  "project": "São Gabriel - Validação",
+  "status": "done",
+  "started_at": "2025-08-08T11:35:53.8321345-03:00",
+  "ended_at": "2025-08-08T11:35:55.4935122-03:00",
+  "jobs": [
+    {
+      "job_id": "f19f52b6-0b20-43ac-b224-be369a74b489",
+      "job_name": "ParametrosServicefy",
+      "status": "error",
+      "error": "Condition returned false",
+      "stop_on_error": false,
+      "started_at": "2025-08-08T11:35:53.83546-03:00",
+      "ended_at": "2025-08-08T11:35:54.7626081-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "0a5310eb-52e1-43ab-bf27-be47461e493d",
+      "job_name": "ServicefyApk checa versão",
+      "status": "error",
+      "error": "Condition returned false",
+      "stop_on_error": false,
+      "started_at": "2025-08-08T11:35:54.7641381-03:00",
+      "ended_at": "2025-08-08T11:35:54.9519729-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "ee0ce6b0-e99b-4679-b9f2-9985c42771b0",
+      "job_name": "CloudKeys",
+      "status": "error",
+      "error": "pq: syntax error at or near \"SELECTcount\"",
+      "stop_on_error": false,
+      "started_at": "2025-08-08T11:35:54.9530135-03:00",
+      "ended_at": "2025-08-08T11:35:55.127712-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "a8a1aff3-6e9f-4941-a0e2-cf77536c016d",
+      "job_name": "CloudkeysWaterfy",
+      "status": "error",
+      "error": "Condition returned false",
+      "stop_on_error": false,
+      "started_at": "2025-08-08T11:35:55.1287539-03:00",
+      "ended_at": "2025-08-08T11:35:55.3137279-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "42305fdc-48d8-4f1a-8377-2cded94d85ec",
+      "job_name": "SegurancaParametros",
+      "status": "error",
+      "error": "Condition returned false",
+      "stop_on_error": false,
+      "started_at": "2025-08-08T11:35:55.3148178-03:00",
+      "ended_at": "2025-08-08T11:35:55.4924468-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": []
+    }
+  ]
+}

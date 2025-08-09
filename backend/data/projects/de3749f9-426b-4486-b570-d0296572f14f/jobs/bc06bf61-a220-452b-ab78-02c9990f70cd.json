@@ -1,9 +1,14 @@
 {
   "id": "bc06bf61-a220-452b-ab78-02c9990f70cd",
   "jobName": "Insert teste",
-  "selectSql": "select f.nome from fatura f limit 900000",
-  "insertSql": "insert into teste2 (teste2)",
+  "selectSql": "select f.nome, f.nome, f.nome, f.nome, f.nome, f.nome from fatura f ",
+  "insertSql": "insert into teste2 (teste1,teste2,teste3,teste4,teste5,teste6)",
   "columns": [
+    "nome",
+    "nome",
+    "nome",
+    "nome",
+    "nome",
     "nome"
   ],
   "recordsPerPage": 10000,

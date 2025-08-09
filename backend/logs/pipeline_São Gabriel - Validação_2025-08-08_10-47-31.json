@@ -1,0 +1,21 @@
+{
+  "pipeline_id": "São Gabriel - Validação_2025-08-08_10-47-31",
+  "project": "São Gabriel - Validação",
+  "status": "done",
+  "started_at": "2025-08-08T10:47:31.717245-03:00",
+  "ended_at": "2025-08-08T10:47:32.6379808-03:00",
+  "jobs": [
+    {
+      "job_id": "0a5310eb-52e1-43ab-bf27-be47461e493d",
+      "job_name": "ServicefyApk checa versão",
+      "status": "error",
+      "error": "Condição retornou falso",
+      "stop_on_error": false,
+      "started_at": "2025-08-08T10:47:31.7200745-03:00",
+      "ended_at": "2025-08-08T10:47:32.6367853-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": []
+    }
+  ]
+}
