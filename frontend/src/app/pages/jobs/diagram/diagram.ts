@@ -43,6 +43,7 @@ import { DialogJobs } from '../dialog-jobs/dialog-jobs';
   styleUrls: ['./diagram.scss'],
 })
 export class Diagram implements AfterViewInit {
+
   @Input() jobs: JobExtended[] = [];
   @Input() project: Project | null = null;
   @Input() isRunning = false;
@@ -259,43 +260,48 @@ export class Diagram implements AfterViewInit {
   }
 
   addNewJob(): void {
+  this.isSaving = true;
 
-    this.isSaving = true;
+  const newJob: Job = {
+    id: uuidv4(),
+    jobName: 'Novo Job',
+    selectSql: '',
+    insertSql: '',
+    columns: [],
+    recordsPerPage: 1000,
+    type: 'insert',
+    stopOnError: true,
+    top: 10,
+    left: 10,
+  };
 
-    const newJob: Job = {
-      id: uuidv4(),
-      jobName: 'Novo Job',
-      selectSql: '',
-      insertSql: '',
-      columns: [],
-      recordsPerPage: 1000,
-      type: 'insert',
-      stopOnError: true,
-      top: 10,
-      left: 10,
-    };
+  this.jobs.push(newJob);
 
-    this.jobs.push(newJob);
-
-    if (this.project) {
-      this.project.jobs = this.jobs.map(job => `jobs/${job.id}.json`);
-    }
-
-    this.jobService.addJob(this.project?.id || '', newJob).subscribe({
-      next: (job) => {
-        this.projectService.updateProject(this.project!).subscribe({
-          next: (updatedProject) => {
-            console.log('Projeto atualizado com novo job:', updatedProject);
-            this.isSaved();
-          },
-          error: (error) => {
-            console.error('Erro ao atualizar projeto com novo job:', error);
-            this.isSaved();
-          }
-        });
-      }
-    });
+  if (this.project) {
+    this.project.jobs = this.jobs.map(job => `jobs/${job.id}.json`);
   }
+
+  // aguarda Angular renderizar o novo job no DOM
+  setTimeout(() => {
+    this.addJobToJsPlumb(newJob);
+  }, 0);
+
+  this.jobService.addJob(this.project?.id || '', newJob).subscribe({
+    next: (job) => {
+      this.projectService.updateProject(this.project!).subscribe({
+        next: (updatedProject) => {
+          console.log('Projeto atualizado com novo job:', updatedProject);
+          this.isSaved();
+        },
+        error: (error) => {
+          console.error('Erro ao atualizar projeto com novo job:', error);
+          this.isSaved();
+        }
+      });
+    }
+  });
+}
+
 
   onRightClick(event: MouseEvent, job: Job) {
     event.preventDefault(); // impedir menu nativo do navegador
@@ -455,5 +461,22 @@ export class Diagram implements AfterViewInit {
       localStorage.setItem('diagramZoom', this.zoom.toString());
     }
   }
+
+
+  tempoTotal(dataIso: string): string {
+  const agora = new Date();
+  const data = new Date(dataIso);
+  const diffMs = agora.getTime() - data.getTime(); // diferença em milissegundos
+
+  const segundos = Math.floor(diffMs / 1000);
+  const minutos = Math.floor(segundos / 60);
+  const horas = Math.floor(minutos / 60);
+  const dias = Math.floor(horas / 24);
+
+  if (dias > 0) return `há ${dias} dia${dias > 1 ? 's' : ''}`;
+  if (horas > 0) return `há ${horas} hora${horas > 1 ? 's' : ''}`;
+  if (minutos > 0) return `há ${minutos} minuto${minutos > 1 ? 's' : ''}`;
+  return `há ${segundos} segundo${segundos > 1 ? 's' : ''}`;
+}
 
 }

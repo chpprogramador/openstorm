@@ -88,6 +88,8 @@
         </div>
         @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
         <div class="progress">
+          {{ job.progress | number:'1.2-2'}}%
+          {{ tempoTotal(job.startedAt!)  }}
           <mat-progress-bar
               [mode]="'determinate'"
               [value]="job.progress"

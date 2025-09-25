@@ -1,21 +1,35 @@
 import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    ViewChild
 } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
 import { LogEntry, LogStatusService } from '../services/log-status.service';
 
 @Component({
   selector: 'app-log-viewer',
+  standalone: true,
+  imports: [MatIconModule, MatButtonModule, MatTooltipModule],
   styleUrls: ['./app-log-viewer.component.scss'],
   template: `
-    <pre #logBox class="log-container">
+    <div class="log-viewer-container">
+      <div class="log-header">
+        <mat-icon>terminal</mat-icon>
+        <span>Logs em Tempo Real</span>
+        <button mat-icon-button (click)="clearLogs()" matTooltip="Limpar logs">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </div>
+      <pre #logBox class="log-container">
 {{ logText }}
-    </pre>
+      </pre>
+    </div>
   `
 })
 export class LogViewerComponent implements OnInit, OnDestroy {
@@ -52,5 +66,10 @@ export class LogViewerComponent implements OnInit, OnDestroy {
     if (el) {
       el.scrollTop = el.scrollHeight;
     }
+  }
+
+  clearLogs() {
+    this.logText = '';
+    this.logService.clearLogs();
   }
 }

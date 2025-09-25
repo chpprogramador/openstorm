@@ -19,4 +19,10 @@ export class LogStatusService {
   listen(): Observable<LogEntry[]> {
     return this.socket$;
   }
+
+  clearLogs() {
+    // Envia comando para limpar logs no backend
+    // Por enquanto, apenas reconecta o WebSocket
+    this.socket$ = webSocket(`${environment.ws}/ws/logs`);
+  }
 }

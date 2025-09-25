@@ -1,5 +1,6 @@
 <mat-toolbar >
-  <span class="logo_open">OPEN</span>&nbsp;<span class="logo_storm">STORM</span>
+  <!-- <span class="logo_open">OPEN</span>&nbsp;<span class="logo_storm">STORM</span> -->
+   <img src="assets/img/QUASAR_INV.png" alt="QUASAR Logo" class="logo" style="height: 60px; margin-right: 8px;">
 
   <div class="custom-nav-list">
       <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
@@ -17,6 +18,10 @@
       <a class="nav-item" routerLink="/history" routerLinkActive="active">
         <mat-icon fontIcon="list_alt"></mat-icon>
         <span>Histórico</span>
+      </a>
+      <a class="nav-item" routerLink="/errors" routerLinkActive="active">
+        <mat-icon fontIcon="bug_report"></mat-icon>
+        <span>Erros</span>
       </a>
       
     </div>
