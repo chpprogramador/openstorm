@@ -1,0 +1,45 @@
+{
+  "pipeline_id": "Flexsan_2025-09-16_23-00-53",
+  "project": "Flexsan",
+  "status": "error",
+  "started_at": "2025-09-16T23:00:53.9819192-03:00",
+  "ended_at": "2025-09-16T23:00:58.4711218-03:00",
+  "jobs": [
+    {
+      "job_id": "c261e485-8fd1-42af-bbc7-eebb02be84c5",
+      "job_name": "Limpa tudo",
+      "status": "error",
+      "error": "pq: syntax error at or near \"$\"",
+      "stop_on_error": true,
+      "started_at": "2025-09-16T23:00:53.9963331-03:00",
+      "ended_at": "2025-09-16T23:00:54.1194808-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "72f3dac1-43f7-449c-824e-49c40b30c1ac",
+      "job_name": "Cobrança Fase",
+      "status": "error",
+      "error": "pq: syntax error at or near \"$\"",
+      "stop_on_error": true,
+      "started_at": "2025-09-16T23:00:54.1288654-03:00",
+      "ended_at": "2025-09-16T23:00:54.1730831-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "f8fc93a7-3977-4cbc-84bd-8c8d025d6825",
+      "job_name": "Ligação",
+      "status": "error",
+      "error": "sql: expected 64 destination arguments in Scan, not 1",
+      "stop_on_error": true,
+      "started_at": "2025-09-16T23:00:54.2169011-03:00",
+      "ended_at": "2025-09-16T23:00:58.4662911-03:00",
+      "processed": 0,
+      "total": 0,
+      "batches": []
+    }
+  ]
+}

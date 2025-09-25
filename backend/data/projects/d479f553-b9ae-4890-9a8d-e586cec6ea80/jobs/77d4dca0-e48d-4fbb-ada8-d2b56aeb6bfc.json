@@ -1,0 +1,12 @@
+{
+  "id": "77d4dca0-e48d-4fbb-ada8-d2b56aeb6bfc",
+  "jobName": "Ligação Situação",
+  "selectSql": "INSERT INTO ${SCHEMA}.ligacao_situacao (id, aceita_medidor, envia_coletor, nome_situacao, sigla) VALUES\r\n(1, true, true, 'ATIVA', 'A'),\r\n(3, false, false, 'INATIVA', 'I'),\r\n(4, true, false, 'PROVISÓRIA', 'P'),\r\n(5, false, false, 'FACTÍVEL', 'F'),\r\n(6, false, false, 'POTENCIAL', 'P'),\r\n(7, false, false, 'SUSPENSA', 'S'),\r\n(10, true, true, 'FONTE ALTERNATIVA', 'F'),\r\n(9, true, true, 'EM ACORDO', 'E'),\r\n(13, false, false, 'LIGACAO COMERCIAL', 'L'),\r\n(11, false, false, 'SUPRIMIDA', 'S'),\r\n(12, false, false, 'AGUARDANDO LIGAÇÃO', 'A'),\r\n(14, false, false, 'OUTRO', 'O');",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1600,
+  "top": 360
+}

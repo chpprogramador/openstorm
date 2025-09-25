@@ -1,0 +1,12 @@
+{
+  "id": "b44168b1-9c27-4664-8769-f489790c09d7",
+  "jobName": "Leitura Tipo",
+  "selectSql": "INSERT INTO ${SCHEMA}.leitura_tipo (id, nome_leitura_tipo, sigla) VALUES(1, 'Simultânea', 'S');",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 400,
+  "top": 360
+}

@@ -197,12 +197,17 @@ func ValidateJobHandler(c *gin.Context) {
 	}
 	defer tx.Rollback()
 
-	_, modifiedSQL := dialects.AnalyzeAndModifySQL(req.SelectSQL)
-	modifiedSQL = modifiedSQL + " LIMIT 1" // Limita a 1 para otimizar a contagem
+	// Limpa quebras de linha para evitar problemas no PostgreSQL
+	cleanSelectSQL := cleanSQLNewlines(req.SelectSQL)
 
-	// Tenta extrair colunas com SELECT * LIMIT 0
-	//testSQL := fmt.Sprintf("SELECT * FROM (%s) AS t LIMIT 0", req.SelectSQL)
-	rows, err := tx.Query(modifiedSQL)
+	// Não modificamos a query original para validação
+	// Isso evita problemas com funções de janela (window functions) e outras construções SQL complexas
+	
+	// Usa subconsulta para aplicar LIMIT 1 de forma segura na query original
+	validationSQL := fmt.Sprintf("SELECT * FROM (%s) AS t LIMIT 1", cleanSelectSQL)
+
+	// Tenta extrair colunas
+	rows, err := tx.Query(validationSQL)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
 			Valid: false, Message: fmt.Sprintf("Erro no SELECT: %v", err),
@@ -212,7 +217,11 @@ func ValidateJobHandler(c *gin.Context) {
 	defer rows.Close()
 
 	columns, _ := rows.Columns()
-	insertCols, err := extractInsertColumns(req.InsertSQL)
+
+	// Limpa quebras de linha para evitar problemas no PostgreSQL
+	cleanInsertSQL := cleanSQLNewlines(req.InsertSQL)
+
+	insertCols, err := extractInsertColumns(cleanInsertSQL)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
 			Valid: false, Message: fmt.Sprintf("Erro no INSERT: %v", err),
@@ -280,6 +289,41 @@ func ValidateJobHandler(c *gin.Context) {
 		Valid:   true,
 		Message: "Validação bem-sucedida",
 	})
+}
+
+func cleanSQLNewlines(sql string) string {
+	// Preserva quebras de linha em strings literais (entre aspas simples)
+	// mas normaliza quebras de linha fora de strings literais
+
+	var result strings.Builder
+	inString := false
+
+	for i := 0; i < len(sql); i++ {
+		char := sql[i]
+
+		// Verifica se estamos dentro ou fora de uma string literal
+		if char == '\'' {
+			// Verifica se a aspa não está escapada
+			if i == 0 || sql[i-1] != '\\' {
+				inString = !inString
+			}
+		}
+
+		// Trata quebras de linha
+		if (char == '\n' || char == '\r') && !inString {
+			// Substitui quebras de linha por espaço fora de strings literais
+			result.WriteByte(' ')
+
+			// Pula o \n em sequências \r\n
+			if char == '\r' && i+1 < len(sql) && sql[i+1] == '\n' {
+				i++
+			}
+		} else {
+			result.WriteByte(char)
+		}
+	}
+
+	return result.String()
 }
 
 func extractInsertColumns(sql string) ([]string, error) {

@@ -1,7 +1,6 @@
 package jobrunner
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
 	"etl/dialects"
@@ -72,6 +71,9 @@ func (jr *JobRunner) RunJob(jobID string) {
 		log.Printf("Job %s não encontrado\n", jobID)
 		return
 	}
+
+	println("tipo de job:", job.Type)
+	println("nome do job:", job.JobName)
 
 	switch strings.ToLower(job.Type) {
 	case "insert":
@@ -184,7 +186,43 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					}
 
 					insertSQL, args := jr.Dialect.BuildInsertQuery(job, batch)
-					if _, err := jr.DestinationDB.Exec(insertSQL, args...); err != nil {
+
+					// Usa transação para garantir atomicidade do batch
+					tx, err := jr.DestinationDB.Begin()
+					if err != nil {
+						jobHadError.Store(true)
+						lastErr.Store(err.Error())
+						batchLog.Status = "error"
+						batchLog.Error = err.Error()
+						batchLog.EndedAt = time.Now()
+						logger.AddBatch(jr.PipelineLog, jobID, batchLog)
+						jr.savePipelineLog()
+						continue
+					}
+
+					if _, err := tx.Exec(insertSQL, args...); err != nil {
+						println(insertSQL)
+						println(args)
+
+						tx.Rollback()
+						jobHadError.Store(true)
+						lastErr.Store(err.Error())
+
+						// Analisa o erro para categorização
+						analyzer := &logger.ErrorAnalyzer{}
+						errorType, errorCode, _ := analyzer.AnalyzeError(err)
+
+						batchLog.Status = "error"
+						batchLog.Error = err.Error()
+						batchLog.ErrorType = errorType
+						batchLog.ErrorCode = errorCode
+						batchLog.EndedAt = time.Now()
+						logger.AddBatch(jr.PipelineLog, jobID, batchLog)
+						jr.savePipelineLog()
+						continue
+					}
+
+					if err := tx.Commit(); err != nil {
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
 						batchLog.Status = "error"
@@ -211,79 +249,63 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			}(w)
 		}
 
-		// Leitores paralelos com cursores
-		numReaders := jr.Concurrency
-		var readersWG sync.WaitGroup
-		for r := 0; r < numReaders; r++ {
-			readersWG.Add(1)
-			go func(readerID int) {
-				defer readersWG.Done()
+		// Leitor único com paginação coordenada
+		go func() {
+			defer close(batchChan)
 
-				// Nova conexão exclusiva para o cursor
-				srcConn, err := jr.SourceDB.Conn(context.Background())
+			offset := 0
+			batchSize := job.RecordsPerPage
+			
+			// Adiciona ORDER BY na query para garantir consistência na paginação
+			// e evitar registros duplicados durante execução concorrente
+			orderByColumns := jr.getOrderByColumns(job)
+
+			for {
+				// Usa paginação coordenada para evitar duplicatas
+				query := jr.Dialect.BuildPaginatedSelectQueryWithOrder(job, offset, batchSize, orderByColumns)
+				rows, err := jr.SourceDB.Query(query)
 				if err != nil {
-					log.Printf("[Reader %d] erro ao abrir conexão: %v", readerID, err)
-					jobHadError.Store(true)
-					lastErr.Store(err.Error())
-					return
-				}
-				defer srcConn.Close()
-
-				cursorName := fmt.Sprintf("cur_reader_%d", readerID)
-				if _, err := srcConn.ExecContext(context.Background(),
-					fmt.Sprintf("BEGIN; DECLARE %s NO SCROLL CURSOR FOR %s", cursorName, job.SelectSQL)); err != nil {
-					log.Printf("[Reader %d] erro ao criar cursor: %v", readerID, err)
+					log.Printf("Erro na query paginada: %v", err)
 					jobHadError.Store(true)
 					lastErr.Store(err.Error())
 					return
 				}
 
-				for {
-					rows, err := srcConn.QueryContext(context.Background(),
-						fmt.Sprintf("FETCH %d FROM %s", job.RecordsPerPage, cursorName))
-					if err != nil {
-						log.Printf("[Reader %d] erro no FETCH: %v", readerID, err)
+				cols, _ := rows.Columns()
+				var buffer []map[string]interface{}
+
+				for rows.Next() {
+					values := make([]interface{}, len(cols))
+					ptrs := make([]interface{}, len(cols))
+					for i := range cols {
+						ptrs[i] = &values[i]
+					}
+					if err := rows.Scan(ptrs...); err != nil {
+						rows.Close()
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
-						break
+						return
 					}
+					rec := make(map[string]interface{})
+					for i, col := range cols {
+						rec[col] = values[i]
+					}
+					buffer = append(buffer, rec)
+				}
+				rows.Close()
 
-					cols, _ := rows.Columns()
-					var buffer []map[string]interface{}
-					for rows.Next() {
-						values := make([]interface{}, len(cols))
-						ptrs := make([]interface{}, len(cols))
-						for i := range cols {
-							ptrs[i] = &values[i]
-						}
-						if err := rows.Scan(ptrs...); err != nil {
-							jobHadError.Store(true)
-							lastErr.Store(err.Error())
-							break
-						}
-						rec := make(map[string]interface{})
-						for i, col := range cols {
-							rec[col] = values[i]
-						}
-						buffer = append(buffer, rec)
-					}
-					rows.Close()
-
-					if len(buffer) == 0 {
-						break // Cursor esgotado
-					}
-					batchChan <- buffer
+				if len(buffer) == 0 {
+					break // Não há mais dados
 				}
 
-				// Fecha cursor
-				srcConn.ExecContext(context.Background(), fmt.Sprintf("CLOSE %s; COMMIT;", cursorName))
-			}(r)
-		}
+				batchChan <- buffer
+				offset += len(buffer)
 
-		// Fechamento do canal quando todos leitores terminarem
-		go func() {
-			readersWG.Wait()
-			close(batchChan)
+				// Se retornou menos registros que o batch size, chegamos ao fim
+				if len(buffer) < batchSize {
+					break
+				}
+			}
 		}()
 
 		writersWG.Wait()
@@ -338,8 +360,11 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 
 	// Substitui variáveis no SQL
 	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
+	
+	// Limpa quebras de linha para evitar problemas no PostgreSQL
+	cleanSQL := jr.CleanSQLNewlines(job.SelectSQL)
 
-	_, err := jr.DestinationDB.Exec(job.SelectSQL)
+	_, err := jr.DestinationDB.Exec(cleanSQL)
 	end := time.Now()
 
 	if err != nil {
@@ -609,10 +634,66 @@ func (jr *JobRunner) SubstituteVariables(query string) string {
 	return query
 }
 
+// CleanSQLNewlines limpa as quebras de linha nas queries SQL para evitar problemas no PostgreSQL
+func (jr *JobRunner) CleanSQLNewlines(sql string) string {
+	// Preserva quebras de linha em strings literais (entre aspas simples)
+	// mas normaliza quebras de linha fora de strings literais
+	
+	var result strings.Builder
+	inString := false
+	
+	for i := 0; i < len(sql); i++ {
+		char := sql[i]
+		
+		// Verifica se estamos dentro ou fora de uma string literal
+		if char == '\'' {
+			// Verifica se a aspa não está escapada
+			if i == 0 || sql[i-1] != '\\' {
+				inString = !inString
+			}
+		}
+		
+		// Trata quebras de linha
+		if (char == '\n' || char == '\r') && !inString {
+			// Substitui quebras de linha por espaço fora de strings literais
+			result.WriteByte(' ')
+			
+			// Pula o \n em sequências \r\n
+			if char == '\r' && i+1 < len(sql) && sql[i+1] == '\n' {
+				i++
+			}
+		} else {
+			result.WriteByte(char)
+		}
+	}
+	
+	return result.String()
+}
+
+// getOrderByColumns retorna as colunas para ordenação na paginação
+func (jr *JobRunner) getOrderByColumns(job models.Job) []string {
+	// Verifica se o job tem colunas de chave primária definidas
+	if len(job.PrimaryKeys) > 0 {
+		return job.PrimaryKeys
+	}
+	
+	// Se não tiver chaves primárias, tenta usar a primeira coluna da tabela
+	if len(job.Columns) > 0 {
+		return []string{job.Columns[0]}
+	}
+	
+	// Se não tiver colunas definidas, retorna vazio e o dialeto usará CTID
+	return []string{}
+}
+
 func (jr *JobRunner) runBatchDataTransfer(job models.Job, offset int, batchSize int) error {
 	// Substitui variáveis antes de executar a query
 	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
 	job.InsertSQL = jr.SubstituteVariables(job.InsertSQL)
+
+	// Limpa quebras de linha para evitar problemas no PostgreSQL
+	job.SelectSQL = jr.CleanSQLNewlines(job.SelectSQL)
+	job.InsertSQL = jr.CleanSQLNewlines(job.InsertSQL)
 
 	query := jr.Dialect.BuildPaginatedSelectQuery(job, offset, batchSize)
 	rows, err := jr.SourceDB.Query(query)

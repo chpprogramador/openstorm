@@ -1,0 +1,15 @@
+{
+  "id": "cf687d58-da2e-4061-a4c7-dcfd98461167",
+  "jobName": "Situação Cavalete",
+  "selectSql": "select id, situacaocavalete  from public.situacaocavalete",
+  "insertSql": "INSERT INTO ${SCHEMA}.cavalete_situacao (id, nome_cavalete_situacao)",
+  "columns": [
+    "id",
+    "situacaocavalete"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 800,
+  "top": 0
+}

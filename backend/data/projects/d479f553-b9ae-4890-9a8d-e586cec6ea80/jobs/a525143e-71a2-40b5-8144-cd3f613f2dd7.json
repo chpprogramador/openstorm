@@ -1,0 +1,21 @@
+{
+  "id": "a525143e-71a2-40b5-8144-cd3f613f2dd7",
+  "jobName": "Grupo Medição",
+  "selectSql": "select g.id, g.venctopadrao, true, true, g.grupo, true, true, 1 from public.grupo g",
+  "insertSql": "INSERT INTO ${SCHEMA}.grupo_medicao (id, dia_vencimento_padrao, exige_critica, imprime_reaviso_debito, nome_grupo_medicao, realiza_calculo_consumo, realiza_calculo_faturamento, id_leitura_tipo)",
+  "columns": [
+    "id",
+    "venctopadrao",
+    "bool",
+    "bool",
+    "grupo",
+    "bool",
+    "bool",
+    "?column?"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 800,
+  "top": 360
+}

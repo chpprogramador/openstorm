@@ -1,0 +1,16 @@
+{
+  "id": "dd7d85cd-11b5-4cc2-9ce1-cfa19e9c67f3",
+  "jobName": "Rota leitura",
+  "selectSql": "select id, rota, idgrupo from public.rota",
+  "insertSql": "INSERT INTO ${SCHEMA}.rota_leitura (id, numero_rota_leitura, id_grupo_medicao)",
+  "columns": [
+    "id",
+    "rota",
+    "idgrupo"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1200,
+  "top": 1080
+}

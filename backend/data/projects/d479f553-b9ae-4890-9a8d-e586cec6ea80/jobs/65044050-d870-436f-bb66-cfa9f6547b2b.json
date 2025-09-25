@@ -1,0 +1,12 @@
+{
+  "id": "65044050-d870-436f-bb66-cfa9f6547b2b",
+  "jobName": "Entrega Tipo",
+  "selectSql": "INSERT INTO ${SCHEMA}.entrega_tipo (id, assunto_email, entrega_alternativa, envia_fatura_email, imprime_aviso_debito, imprime_fatura, nome_entrega_tipo, texto_email) VALUES(1, NULL, false, false, true, true, 'Entrega no Local', NULL);\r\nINSERT INTO ${SCHEMA}.entrega_tipo (id, assunto_email, entrega_alternativa, envia_fatura_email, imprime_aviso_debito, imprime_fatura, nome_entrega_tipo, texto_email) VALUES(2, NULL, true, false, false, false, 'Entrega por Correios', NULL);\r\nINSERT INTO ${SCHEMA}.entrega_tipo (id, assunto_email, entrega_alternativa, envia_fatura_email, imprime_aviso_debito, imprime_fatura, nome_entrega_tipo, texto_email) VALUES(3, 'Fatura Mensal', false, true, false, false, 'Entrega por E-mail', 'Prezado cliente, segue sua fatura mensal em anexo.');\r\nINSERT INTO ${SCHEMA}.entrega_tipo (id, assunto_email, entrega_alternativa, envia_fatura_email, imprime_aviso_debito, imprime_fatura, nome_entrega_tipo, texto_email) VALUES(4, 'Fatura Mensal', false, true, true, true, 'Entrega no Local + E-mail', 'Prezado cliente, segue sua fatura mensal em anexo.');\r\nINSERT INTO ${SCHEMA}.entrega_tipo (id, assunto_email, entrega_alternativa, envia_fatura_email, imprime_aviso_debito, imprime_fatura, nome_entrega_tipo, texto_email) VALUES(5, NULL, true, false, false, false, 'Outro', NULL);",
+  "insertSql": "",
+  "columns": [],
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 800,
+  "top": 180
+}

@@ -1,0 +1,2424 @@
+{
+  "pipeline_id": "Flexsan_2025-09-20_15-29-57",
+  "project": "Flexsan",
+  "status": "running",
+  "started_at": "2025-09-20T15:29:57.796618-03:00",
+  "ended_at": "0001-01-01T00:00:00Z",
+  "jobs": [
+    {
+      "job_id": "f8fc93a7-3977-4cbc-84bd-8c8d025d6825",
+      "job_name": "Ligação",
+      "status": "error",
+      "error": "sql: expected 64 destination arguments in Scan, not 1",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:29:57.8229828-03:00",
+      "ended_at": "2025-09-20T15:30:02.3763007-03:00",
+      "processed": 0,
+      "total": 0,
+      "batches": []
+    },
+    {
+      "job_id": "c261e485-8fd1-42af-bbc7-eebb02be84c5",
+      "job_name": "Limpa tudo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:29:57.8276539-03:00",
+      "ended_at": "2025-09-20T15:30:05.5415326-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "ef3e7087-19f4-439c-b9a1-8f3b39172c64",
+      "job_name": "Bacia",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:05.5463135-03:00",
+      "ended_at": "2025-09-20T15:30:06.0974766-03:00",
+      "processed": 0,
+      "total": 8,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 8,
+          "status": "done",
+          "rows": 8,
+          "started_at": "2025-09-20T15:30:06.0599256-03:00",
+          "ended_at": "2025-09-20T15:30:06.096443-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "cf687d58-da2e-4061-a4c7-dcfd98461167",
+      "job_name": "Situação Cavalete",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:06.099705-03:00",
+      "ended_at": "2025-09-20T15:30:06.6484735-03:00",
+      "processed": 0,
+      "total": 8,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 8,
+          "status": "done",
+          "rows": 8,
+          "started_at": "2025-09-20T15:30:06.6144961-03:00",
+          "ended_at": "2025-09-20T15:30:06.6474374-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "954d7bd7-23c5-4169-8ad9-1b8dc67ae3fa",
+      "job_name": "Cliente",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:06.6501218-03:00",
+      "ended_at": "2025-09-20T15:30:23.6650265-03:00",
+      "processed": 0,
+      "total": 57563,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:07.6123137-03:00",
+          "ended_at": "2025-09-20T15:30:07.748168-03:00"
+        },
+        {
+          "offset": 1000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:07.8789163-03:00",
+          "ended_at": "2025-09-20T15:30:08.0004529-03:00"
+        },
+        {
+          "offset": 2000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:08.1482202-03:00",
+          "ended_at": "2025-09-20T15:30:08.2628198-03:00"
+        },
+        {
+          "offset": 3000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:08.4138035-03:00",
+          "ended_at": "2025-09-20T15:30:08.5223744-03:00"
+        },
+        {
+          "offset": 4000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:08.678656-03:00",
+          "ended_at": "2025-09-20T15:30:08.7862667-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:08.9452239-03:00",
+          "ended_at": "2025-09-20T15:30:09.0550075-03:00"
+        },
+        {
+          "offset": 6000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:09.2133959-03:00",
+          "ended_at": "2025-09-20T15:30:09.324047-03:00"
+        },
+        {
+          "offset": 7000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:09.4783284-03:00",
+          "ended_at": "2025-09-20T15:30:09.5853126-03:00"
+        },
+        {
+          "offset": 8000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:09.7476423-03:00",
+          "ended_at": "2025-09-20T15:30:09.8577066-03:00"
+        },
+        {
+          "offset": 9000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:10.0172649-03:00",
+          "ended_at": "2025-09-20T15:30:10.12433-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:10.2853856-03:00",
+          "ended_at": "2025-09-20T15:30:10.3952625-03:00"
+        },
+        {
+          "offset": 11000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:10.5568254-03:00",
+          "ended_at": "2025-09-20T15:30:10.6627231-03:00"
+        },
+        {
+          "offset": 12000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:10.8257223-03:00",
+          "ended_at": "2025-09-20T15:30:10.9354314-03:00"
+        },
+        {
+          "offset": 13000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:11.0988951-03:00",
+          "ended_at": "2025-09-20T15:30:11.2120576-03:00"
+        },
+        {
+          "offset": 14000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:11.3674636-03:00",
+          "ended_at": "2025-09-20T15:30:11.4730629-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:11.6375548-03:00",
+          "ended_at": "2025-09-20T15:30:11.7458211-03:00"
+        },
+        {
+          "offset": 16000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:11.9078866-03:00",
+          "ended_at": "2025-09-20T15:30:12.0230498-03:00"
+        },
+        {
+          "offset": 17000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:12.18636-03:00",
+          "ended_at": "2025-09-20T15:30:12.2987355-03:00"
+        },
+        {
+          "offset": 18000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:12.4588811-03:00",
+          "ended_at": "2025-09-20T15:30:12.569294-03:00"
+        },
+        {
+          "offset": 19000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:12.73235-03:00",
+          "ended_at": "2025-09-20T15:30:12.8472611-03:00"
+        },
+        {
+          "offset": 20000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:13.0087686-03:00",
+          "ended_at": "2025-09-20T15:30:13.1200532-03:00"
+        },
+        {
+          "offset": 21000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:13.2788543-03:00",
+          "ended_at": "2025-09-20T15:30:13.3932265-03:00"
+        },
+        {
+          "offset": 22000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:13.5553568-03:00",
+          "ended_at": "2025-09-20T15:30:13.7275187-03:00"
+        },
+        {
+          "offset": 23000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:13.8292484-03:00",
+          "ended_at": "2025-09-20T15:30:13.9401295-03:00"
+        },
+        {
+          "offset": 24000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:14.1047369-03:00",
+          "ended_at": "2025-09-20T15:30:14.2184894-03:00"
+        },
+        {
+          "offset": 25000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:14.3908325-03:00",
+          "ended_at": "2025-09-20T15:30:14.5047874-03:00"
+        },
+        {
+          "offset": 26000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:14.6762367-03:00",
+          "ended_at": "2025-09-20T15:30:14.7913236-03:00"
+        },
+        {
+          "offset": 27000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:14.9582647-03:00",
+          "ended_at": "2025-09-20T15:30:15.0713476-03:00"
+        },
+        {
+          "offset": 28000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:15.2527633-03:00",
+          "ended_at": "2025-09-20T15:30:15.3672007-03:00"
+        },
+        {
+          "offset": 29000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:15.5352638-03:00",
+          "ended_at": "2025-09-20T15:30:15.6442842-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:15.8126078-03:00",
+          "ended_at": "2025-09-20T15:30:15.9220739-03:00"
+        },
+        {
+          "offset": 31000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:16.0891872-03:00",
+          "ended_at": "2025-09-20T15:30:16.2038782-03:00"
+        },
+        {
+          "offset": 32000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:16.3723609-03:00",
+          "ended_at": "2025-09-20T15:30:16.4850888-03:00"
+        },
+        {
+          "offset": 33000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:16.6570271-03:00",
+          "ended_at": "2025-09-20T15:30:16.7676363-03:00"
+        },
+        {
+          "offset": 34000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:16.9577053-03:00",
+          "ended_at": "2025-09-20T15:30:17.069505-03:00"
+        },
+        {
+          "offset": 35000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:17.2459053-03:00",
+          "ended_at": "2025-09-20T15:30:17.3573627-03:00"
+        },
+        {
+          "offset": 36000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:17.5246911-03:00",
+          "ended_at": "2025-09-20T15:30:17.6349272-03:00"
+        },
+        {
+          "offset": 37000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:17.8037207-03:00",
+          "ended_at": "2025-09-20T15:30:17.9156378-03:00"
+        },
+        {
+          "offset": 38000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:18.0841257-03:00",
+          "ended_at": "2025-09-20T15:30:18.1950701-03:00"
+        },
+        {
+          "offset": 39000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:18.3701366-03:00",
+          "ended_at": "2025-09-20T15:30:18.482402-03:00"
+        },
+        {
+          "offset": 40000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:18.6590062-03:00",
+          "ended_at": "2025-09-20T15:30:18.7728947-03:00"
+        },
+        {
+          "offset": 41000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:18.9563712-03:00",
+          "ended_at": "2025-09-20T15:30:19.0667109-03:00"
+        },
+        {
+          "offset": 42000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:19.2505263-03:00",
+          "ended_at": "2025-09-20T15:30:19.3647177-03:00"
+        },
+        {
+          "offset": 43000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:19.5309918-03:00",
+          "ended_at": "2025-09-20T15:30:19.640553-03:00"
+        },
+        {
+          "offset": 44000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:19.8113182-03:00",
+          "ended_at": "2025-09-20T15:30:19.9272409-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:20.0935187-03:00",
+          "ended_at": "2025-09-20T15:30:20.2068309-03:00"
+        },
+        {
+          "offset": 46000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:20.374372-03:00",
+          "ended_at": "2025-09-20T15:30:20.4843614-03:00"
+        },
+        {
+          "offset": 47000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:20.6584757-03:00",
+          "ended_at": "2025-09-20T15:30:20.7683402-03:00"
+        },
+        {
+          "offset": 48000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:20.9405979-03:00",
+          "ended_at": "2025-09-20T15:30:21.0502257-03:00"
+        },
+        {
+          "offset": 49000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:21.2199931-03:00",
+          "ended_at": "2025-09-20T15:30:21.3346573-03:00"
+        },
+        {
+          "offset": 50000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:21.518683-03:00",
+          "ended_at": "2025-09-20T15:30:21.6312473-03:00"
+        },
+        {
+          "offset": 51000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:21.8109002-03:00",
+          "ended_at": "2025-09-20T15:30:21.9257883-03:00"
+        },
+        {
+          "offset": 52000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:22.1084144-03:00",
+          "ended_at": "2025-09-20T15:30:22.2201657-03:00"
+        },
+        {
+          "offset": 53000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:22.4025464-03:00",
+          "ended_at": "2025-09-20T15:30:22.5138364-03:00"
+        },
+        {
+          "offset": 54000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:22.6909709-03:00",
+          "ended_at": "2025-09-20T15:30:22.8085731-03:00"
+        },
+        {
+          "offset": 55000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:22.9794229-03:00",
+          "ended_at": "2025-09-20T15:30:23.0970442-03:00"
+        },
+        {
+          "offset": 56000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:23.2716018-03:00",
+          "ended_at": "2025-09-20T15:30:23.3918388-03:00"
+        },
+        {
+          "offset": 57000,
+          "limit": 563,
+          "status": "done",
+          "rows": 563,
+          "started_at": "2025-09-20T15:30:23.5674165-03:00",
+          "ended_at": "2025-09-20T15:30:23.6620829-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "72f3dac1-43f7-449c-824e-49c40b30c1ac",
+      "job_name": "Cobrança Fase",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:23.6874541-03:00",
+      "ended_at": "2025-09-20T15:30:23.7246305-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "450e0ff2-c6cd-4778-b067-60e4e1a82bed",
+      "job_name": "Cobrança Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:23.7330834-03:00",
+      "ended_at": "2025-09-20T15:30:23.7662452-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "35b82c31-8384-49a7-9b4c-be3edfedb464",
+      "job_name": "Endereço",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:23.7805819-03:00",
+      "ended_at": "2025-09-20T15:30:37.7050813-03:00",
+      "processed": 0,
+      "total": 46503,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:24.3456834-03:00",
+          "ended_at": "2025-09-20T15:30:24.469527-03:00"
+        },
+        {
+          "offset": 1000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:24.6187546-03:00",
+          "ended_at": "2025-09-20T15:30:24.7399926-03:00"
+        },
+        {
+          "offset": 2000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:24.8919836-03:00",
+          "ended_at": "2025-09-20T15:30:25.0122606-03:00"
+        },
+        {
+          "offset": 3000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:25.1608294-03:00",
+          "ended_at": "2025-09-20T15:30:25.2795691-03:00"
+        },
+        {
+          "offset": 4000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:25.4335366-03:00",
+          "ended_at": "2025-09-20T15:30:25.5527264-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:25.7046453-03:00",
+          "ended_at": "2025-09-20T15:30:25.8255551-03:00"
+        },
+        {
+          "offset": 6000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:25.9822723-03:00",
+          "ended_at": "2025-09-20T15:30:26.1016683-03:00"
+        },
+        {
+          "offset": 7000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:26.2576685-03:00",
+          "ended_at": "2025-09-20T15:30:26.3808914-03:00"
+        },
+        {
+          "offset": 8000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:26.5506844-03:00",
+          "ended_at": "2025-09-20T15:30:26.6883923-03:00"
+        },
+        {
+          "offset": 9000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:26.8313958-03:00",
+          "ended_at": "2025-09-20T15:30:26.9536508-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:27.1106026-03:00",
+          "ended_at": "2025-09-20T15:30:27.232405-03:00"
+        },
+        {
+          "offset": 11000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:27.3931815-03:00",
+          "ended_at": "2025-09-20T15:30:27.5163305-03:00"
+        },
+        {
+          "offset": 12000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:27.6784714-03:00",
+          "ended_at": "2025-09-20T15:30:27.8015974-03:00"
+        },
+        {
+          "offset": 13000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:27.9578735-03:00",
+          "ended_at": "2025-09-20T15:30:28.0806551-03:00"
+        },
+        {
+          "offset": 14000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:28.2386816-03:00",
+          "ended_at": "2025-09-20T15:30:28.3612119-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:28.5236136-03:00",
+          "ended_at": "2025-09-20T15:30:28.6414914-03:00"
+        },
+        {
+          "offset": 16000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:28.8004032-03:00",
+          "ended_at": "2025-09-20T15:30:28.9251202-03:00"
+        },
+        {
+          "offset": 17000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:29.0791985-03:00",
+          "ended_at": "2025-09-20T15:30:29.1971954-03:00"
+        },
+        {
+          "offset": 18000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:29.3577668-03:00",
+          "ended_at": "2025-09-20T15:30:29.4781174-03:00"
+        },
+        {
+          "offset": 19000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:29.6464927-03:00",
+          "ended_at": "2025-09-20T15:30:29.7664839-03:00"
+        },
+        {
+          "offset": 20000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:29.9375077-03:00",
+          "ended_at": "2025-09-20T15:30:30.0586712-03:00"
+        },
+        {
+          "offset": 21000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:30.2366579-03:00",
+          "ended_at": "2025-09-20T15:30:30.3595808-03:00"
+        },
+        {
+          "offset": 22000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:30.5281014-03:00",
+          "ended_at": "2025-09-20T15:30:30.6503819-03:00"
+        },
+        {
+          "offset": 23000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:30.8115861-03:00",
+          "ended_at": "2025-09-20T15:30:30.9308745-03:00"
+        },
+        {
+          "offset": 24000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:31.0952202-03:00",
+          "ended_at": "2025-09-20T15:30:31.215294-03:00"
+        },
+        {
+          "offset": 25000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:31.3856131-03:00",
+          "ended_at": "2025-09-20T15:30:31.5036987-03:00"
+        },
+        {
+          "offset": 26000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:31.6691832-03:00",
+          "ended_at": "2025-09-20T15:30:31.7901927-03:00"
+        },
+        {
+          "offset": 27000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:32.0022423-03:00",
+          "ended_at": "2025-09-20T15:30:32.1227172-03:00"
+        },
+        {
+          "offset": 28000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:32.3038949-03:00",
+          "ended_at": "2025-09-20T15:30:32.4246863-03:00"
+        },
+        {
+          "offset": 29000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:32.6106582-03:00",
+          "ended_at": "2025-09-20T15:30:32.7320507-03:00"
+        },
+        {
+          "offset": 30000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:32.8985016-03:00",
+          "ended_at": "2025-09-20T15:30:33.018349-03:00"
+        },
+        {
+          "offset": 31000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:33.1832661-03:00",
+          "ended_at": "2025-09-20T15:30:33.3060586-03:00"
+        },
+        {
+          "offset": 32000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:33.4728652-03:00",
+          "ended_at": "2025-09-20T15:30:33.5927105-03:00"
+        },
+        {
+          "offset": 33000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:33.7746749-03:00",
+          "ended_at": "2025-09-20T15:30:33.8961979-03:00"
+        },
+        {
+          "offset": 34000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:34.0795856-03:00",
+          "ended_at": "2025-09-20T15:30:34.1993377-03:00"
+        },
+        {
+          "offset": 35000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:34.3768939-03:00",
+          "ended_at": "2025-09-20T15:30:34.4959084-03:00"
+        },
+        {
+          "offset": 36000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:34.6805602-03:00",
+          "ended_at": "2025-09-20T15:30:34.8031082-03:00"
+        },
+        {
+          "offset": 37000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:34.9702438-03:00",
+          "ended_at": "2025-09-20T15:30:35.0925707-03:00"
+        },
+        {
+          "offset": 38000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:35.2621901-03:00",
+          "ended_at": "2025-09-20T15:30:35.3894028-03:00"
+        },
+        {
+          "offset": 39000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:35.5647402-03:00",
+          "ended_at": "2025-09-20T15:30:35.686016-03:00"
+        },
+        {
+          "offset": 40000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:35.858074-03:00",
+          "ended_at": "2025-09-20T15:30:35.9788292-03:00"
+        },
+        {
+          "offset": 41000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:36.1494492-03:00",
+          "ended_at": "2025-09-20T15:30:36.2711497-03:00"
+        },
+        {
+          "offset": 42000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:36.44934-03:00",
+          "ended_at": "2025-09-20T15:30:36.5733806-03:00"
+        },
+        {
+          "offset": 43000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:36.7426659-03:00",
+          "ended_at": "2025-09-20T15:30:36.8631929-03:00"
+        },
+        {
+          "offset": 44000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:37.0340899-03:00",
+          "ended_at": "2025-09-20T15:30:37.1542929-03:00"
+        },
+        {
+          "offset": 45000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-09-20T15:30:37.3275642-03:00",
+          "ended_at": "2025-09-20T15:30:37.4503807-03:00"
+        },
+        {
+          "offset": 46000,
+          "limit": 503,
+          "status": "done",
+          "rows": 503,
+          "started_at": "2025-09-20T15:30:37.6166909-03:00",
+          "ended_at": "2025-09-20T15:30:37.7034778-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "65044050-d870-436f-bb66-cfa9f6547b2b",
+      "job_name": "Entrega Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:37.721738-03:00",
+      "ended_at": "2025-09-20T15:30:37.7579988-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "ad35abb8-c90f-4ac7-b717-6265755fcf97",
+      "job_name": "Faturamento Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:37.7619031-03:00",
+      "ended_at": "2025-09-20T15:30:37.793995-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "5287e194-fb5f-4665-ab73-2227ee4956af",
+      "job_name": "Fonte Abastecimento",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:37.8000664-03:00",
+      "ended_at": "2025-09-20T15:30:38.3517215-03:00",
+      "processed": 0,
+      "total": 3,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 3,
+          "status": "done",
+          "rows": 3,
+          "started_at": "2025-09-20T15:30:38.3164753-03:00",
+          "ended_at": "2025-09-20T15:30:38.3501278-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "b44168b1-9c27-4664-8769-f489790c09d7",
+      "job_name": "Leitura Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:38.3692441-03:00",
+      "ended_at": "2025-09-20T15:30:38.4508318-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "a525143e-71a2-40b5-8144-cd3f613f2dd7",
+      "job_name": "Grupo Medição",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:38.4629716-03:00",
+      "ended_at": "2025-09-20T15:30:39.0171613-03:00",
+      "processed": 0,
+      "total": 18,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 18,
+          "status": "done",
+          "rows": 18,
+          "started_at": "2025-09-20T15:30:38.9755692-03:00",
+          "ended_at": "2025-09-20T15:30:39.0141684-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "e5f0f83f-f8e8-41f9-a5bd-360c9037109e",
+      "job_name": "Imovel Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:39.0405642-03:00",
+      "ended_at": "2025-09-20T15:30:39.5907297-03:00",
+      "processed": 0,
+      "total": 7,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 7,
+          "status": "done",
+          "rows": 7,
+          "started_at": "2025-09-20T15:30:39.5528331-03:00",
+          "ended_at": "2025-09-20T15:30:39.588509-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "77d4dca0-e48d-4fbb-ada8-d2b56aeb6bfc",
+      "job_name": "Ligação Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:39.6163953-03:00",
+      "ended_at": "2025-09-20T15:30:39.6557708-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "80315a4b-50e8-4784-9de9-9948bff2d8b3",
+      "job_name": "Ligacao Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:39.6680896-03:00",
+      "ended_at": "2025-09-20T15:30:39.6986841-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "315c6acf-2aaa-4b5a-974a-278a3bc4152a",
+      "job_name": "Padrão Instalação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:39.7107257-03:00",
+      "ended_at": "2025-09-20T15:30:40.2660679-03:00",
+      "processed": 0,
+      "total": 6,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 6,
+          "status": "done",
+          "rows": 6,
+          "started_at": "2025-09-20T15:30:40.2284945-03:00",
+          "ended_at": "2025-09-20T15:30:40.2644977-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "1529850a-7095-4924-a915-fb324a26d2db",
+      "job_name": "Classe Medidor",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:40.2857834-03:00",
+      "ended_at": "2025-09-20T15:30:40.837179-03:00",
+      "processed": 0,
+      "total": 5,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 5,
+          "status": "done",
+          "rows": 5,
+          "started_at": "2025-09-20T15:30:40.8005934-03:00",
+          "ended_at": "2025-09-20T15:30:40.8348605-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "b586a9ea-8438-429e-b91a-d93734208294",
+      "job_name": "Medidor Marca",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:40.8559306-03:00",
+      "ended_at": "2025-09-20T15:30:41.4066083-03:00",
+      "processed": 0,
+      "total": 44,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 44,
+          "status": "done",
+          "rows": 44,
+          "started_at": "2025-09-20T15:30:41.3697441-03:00",
+          "ended_at": "2025-09-20T15:30:41.4045542-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "708418fd-188d-44a9-8505-5cae2c482b4c",
+      "job_name": "Medidor Tecnologia",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:41.4259708-03:00",
+      "ended_at": "2025-09-20T15:30:41.9760105-03:00",
+      "processed": 0,
+      "total": 9,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 9,
+          "status": "done",
+          "rows": 9,
+          "started_at": "2025-09-20T15:30:41.939754-03:00",
+          "ended_at": "2025-09-20T15:30:41.9744459-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "c58e7a99-1f80-4ea0-8e9d-69c890384c39",
+      "job_name": "Medidor Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:41.998685-03:00",
+      "ended_at": "2025-09-20T15:30:42.5521664-03:00",
+      "processed": 0,
+      "total": 10,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 10,
+          "status": "done",
+          "rows": 10,
+          "started_at": "2025-09-20T15:30:42.515273-03:00",
+          "ended_at": "2025-09-20T15:30:42.5500558-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "de25d20b-6544-42ea-a57d-e2f0ab83cfa1",
+      "job_name": "Medidor Vazão",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:42.5733929-03:00",
+      "ended_at": "2025-09-20T15:30:43.1266411-03:00",
+      "processed": 0,
+      "total": 15,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 15,
+          "status": "done",
+          "rows": 15,
+          "started_at": "2025-09-20T15:30:43.0908209-03:00",
+          "ended_at": "2025-09-20T15:30:43.1250383-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "d83b32ab-8ced-428f-9a10-caddc22842bb",
+      "job_name": "Medidor Modelo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:43.14235-03:00",
+      "ended_at": "2025-09-20T15:30:43.6981752-03:00",
+      "processed": 0,
+      "total": 9,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 9,
+          "status": "done",
+          "rows": 9,
+          "started_at": "2025-09-20T15:30:43.6569891-03:00",
+          "ended_at": "2025-09-20T15:30:43.6966011-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "032f22ca-0b46-4081-9894-3eb6b0f52753",
+      "job_name": "Medidor",
+      "status": "running",
+      "stop_on_error": true,
+      "started_at": "2025-09-20T15:30:43.7188699-03:00",
+      "ended_at": "0001-01-01T00:00:00Z",
+      "processed": 0,
+      "total": 1200965,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:08.3512726-03:00",
+          "ended_at": "2025-09-20T15:31:08.4473897-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:08.6085071-03:00",
+          "ended_at": "2025-09-20T15:31:08.7016374-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:08.867684-03:00",
+          "ended_at": "2025-09-20T15:31:08.9625322-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:09.1284202-03:00",
+          "ended_at": "2025-09-20T15:31:09.2331142-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:09.3863638-03:00",
+          "ended_at": "2025-09-20T15:31:09.4784926-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:09.6457404-03:00",
+          "ended_at": "2025-09-20T15:31:09.738911-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:09.9169453-03:00",
+          "ended_at": "2025-09-20T15:31:10.0370641-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:10.1781664-03:00",
+          "ended_at": "2025-09-20T15:31:10.2875442-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:10.4376996-03:00",
+          "ended_at": "2025-09-20T15:31:10.5304317-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:10.8333264-03:00",
+          "ended_at": "2025-09-20T15:31:10.9264975-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:11.1238504-03:00",
+          "ended_at": "2025-09-20T15:31:11.2462222-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:11.3959218-03:00",
+          "ended_at": "2025-09-20T15:31:11.4967749-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:11.6679112-03:00",
+          "ended_at": "2025-09-20T15:31:11.7797885-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:11.9390849-03:00",
+          "ended_at": "2025-09-20T15:31:12.0433934-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:12.2171283-03:00",
+          "ended_at": "2025-09-20T15:31:12.3151694-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:12.4940735-03:00",
+          "ended_at": "2025-09-20T15:31:12.5908063-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:12.7774088-03:00",
+          "ended_at": "2025-09-20T15:31:12.8736561-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:13.0552672-03:00",
+          "ended_at": "2025-09-20T15:31:13.1525616-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:13.332557-03:00",
+          "ended_at": "2025-09-20T15:31:13.4282778-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:13.6130582-03:00",
+          "ended_at": "2025-09-20T15:31:13.7088582-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:13.893278-03:00",
+          "ended_at": "2025-09-20T15:31:13.9885515-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:14.1701318-03:00",
+          "ended_at": "2025-09-20T15:31:14.2699-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:14.4348687-03:00",
+          "ended_at": "2025-09-20T15:31:14.5293849-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:14.7028683-03:00",
+          "ended_at": "2025-09-20T15:31:14.8027522-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:14.9719904-03:00",
+          "ended_at": "2025-09-20T15:31:15.0688347-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:15.2426606-03:00",
+          "ended_at": "2025-09-20T15:31:15.3402277-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:15.5156775-03:00",
+          "ended_at": "2025-09-20T15:31:15.6216032-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:15.7920417-03:00",
+          "ended_at": "2025-09-20T15:31:15.8900938-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:16.066496-03:00",
+          "ended_at": "2025-09-20T15:31:16.1628644-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:16.3369063-03:00",
+          "ended_at": "2025-09-20T15:31:16.4353383-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:16.6061753-03:00",
+          "ended_at": "2025-09-20T15:31:16.7018579-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:16.8788914-03:00",
+          "ended_at": "2025-09-20T15:31:16.9749101-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:17.1589209-03:00",
+          "ended_at": "2025-09-20T15:31:17.2544702-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:17.4571325-03:00",
+          "ended_at": "2025-09-20T15:31:17.5516483-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:17.7396498-03:00",
+          "ended_at": "2025-09-20T15:31:17.8353039-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:18.0229135-03:00",
+          "ended_at": "2025-09-20T15:31:18.1240192-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:18.305138-03:00",
+          "ended_at": "2025-09-20T15:31:18.4021471-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:18.6067788-03:00",
+          "ended_at": "2025-09-20T15:31:18.7048-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:18.9013-03:00",
+          "ended_at": "2025-09-20T15:31:18.99834-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:19.1963427-03:00",
+          "ended_at": "2025-09-20T15:31:19.2961794-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:19.4925223-03:00",
+          "ended_at": "2025-09-20T15:31:19.5882547-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:19.7870935-03:00",
+          "ended_at": "2025-09-20T15:31:19.8804184-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:20.0842915-03:00",
+          "ended_at": "2025-09-20T15:31:20.1815942-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:20.3814613-03:00",
+          "ended_at": "2025-09-20T15:31:20.4763102-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:20.697639-03:00",
+          "ended_at": "2025-09-20T15:31:20.795516-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:20.9888474-03:00",
+          "ended_at": "2025-09-20T15:31:21.0851545-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:21.281836-03:00",
+          "ended_at": "2025-09-20T15:31:21.3781552-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:21.5810537-03:00",
+          "ended_at": "2025-09-20T15:31:21.6787768-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:31:21.8830159-03:00",
+          "ended_at": "2025-09-20T15:31:21.9797249-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:22.8037567-03:00",
+          "ended_at": "2025-09-20T15:32:22.8937296-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:23.2598431-03:00",
+          "ended_at": "2025-09-20T15:32:23.3594642-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:23.5659803-03:00",
+          "ended_at": "2025-09-20T15:32:23.6696756-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:23.8894247-03:00",
+          "ended_at": "2025-09-20T15:32:24.0020359-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:24.186421-03:00",
+          "ended_at": "2025-09-20T15:32:24.2906625-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:24.459332-03:00",
+          "ended_at": "2025-09-20T15:32:24.561814-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:24.740401-03:00",
+          "ended_at": "2025-09-20T15:32:24.844902-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:25.0147333-03:00",
+          "ended_at": "2025-09-20T15:32:25.1299718-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:25.2947716-03:00",
+          "ended_at": "2025-09-20T15:32:25.3957291-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:25.566678-03:00",
+          "ended_at": "2025-09-20T15:32:25.670852-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:25.8713451-03:00",
+          "ended_at": "2025-09-20T15:32:25.9710263-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:26.1705161-03:00",
+          "ended_at": "2025-09-20T15:32:26.2702539-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:26.4804786-03:00",
+          "ended_at": "2025-09-20T15:32:26.5821999-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:26.7965602-03:00",
+          "ended_at": "2025-09-20T15:32:26.904619-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:27.1075042-03:00",
+          "ended_at": "2025-09-20T15:32:27.2166018-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:27.4192869-03:00",
+          "ended_at": "2025-09-20T15:32:27.5235927-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:27.7375906-03:00",
+          "ended_at": "2025-09-20T15:32:27.8396994-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:28.0447254-03:00",
+          "ended_at": "2025-09-20T15:32:28.1448339-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:28.3493773-03:00",
+          "ended_at": "2025-09-20T15:32:28.4660538-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:32:28.6592212-03:00",
+          "ended_at": "2025-09-20T15:32:28.7594565-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:28.6538219-03:00",
+          "ended_at": "2025-09-20T15:33:28.7432136-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:29.1309944-03:00",
+          "ended_at": "2025-09-20T15:33:29.2408757-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:29.4542049-03:00",
+          "ended_at": "2025-09-20T15:33:29.5525223-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:29.759792-03:00",
+          "ended_at": "2025-09-20T15:33:29.8588745-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:30.0357165-03:00",
+          "ended_at": "2025-09-20T15:33:30.1340516-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:30.311543-03:00",
+          "ended_at": "2025-09-20T15:33:30.4163245-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:30.5912228-03:00",
+          "ended_at": "2025-09-20T15:33:30.689901-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:30.8794731-03:00",
+          "ended_at": "2025-09-20T15:33:30.9774819-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:31.2165255-03:00",
+          "ended_at": "2025-09-20T15:33:31.3138533-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:31.527398-03:00",
+          "ended_at": "2025-09-20T15:33:31.628006-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:31.8416072-03:00",
+          "ended_at": "2025-09-20T15:33:31.9432311-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:32.1611609-03:00",
+          "ended_at": "2025-09-20T15:33:32.2608041-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:32.4808836-03:00",
+          "ended_at": "2025-09-20T15:33:32.5797425-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:32.7977548-03:00",
+          "ended_at": "2025-09-20T15:33:32.9002151-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:33:33.1291777-03:00",
+          "ended_at": "2025-09-20T15:33:33.2213999-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:32.2244366-03:00",
+          "ended_at": "2025-09-20T15:34:32.3194402-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:32.7067021-03:00",
+          "ended_at": "2025-09-20T15:34:32.8033421-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:33.04367-03:00",
+          "ended_at": "2025-09-20T15:34:33.1420651-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:33.3549419-03:00",
+          "ended_at": "2025-09-20T15:34:33.4526954-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:33.6716889-03:00",
+          "ended_at": "2025-09-20T15:34:33.77183-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:33.9611668-03:00",
+          "ended_at": "2025-09-20T15:34:34.061455-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:34.2533042-03:00",
+          "ended_at": "2025-09-20T15:34:34.3596282-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:34.7432661-03:00",
+          "ended_at": "2025-09-20T15:34:34.8398016-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:35.0689919-03:00",
+          "ended_at": "2025-09-20T15:34:35.1675932-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:35.4012105-03:00",
+          "ended_at": "2025-09-20T15:34:35.4976886-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:35.7302287-03:00",
+          "ended_at": "2025-09-20T15:34:35.8308234-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:36.0614677-03:00",
+          "ended_at": "2025-09-20T15:34:36.1606382-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:36.3881919-03:00",
+          "ended_at": "2025-09-20T15:34:36.489991-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:34:36.7196467-03:00",
+          "ended_at": "2025-09-20T15:34:36.8208633-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:37.7156946-03:00",
+          "ended_at": "2025-09-20T15:35:37.8112633-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:38.0648583-03:00",
+          "ended_at": "2025-09-20T15:35:38.167824-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:38.3731242-03:00",
+          "ended_at": "2025-09-20T15:35:38.4833859-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:38.6603238-03:00",
+          "ended_at": "2025-09-20T15:35:38.7591186-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:38.9482718-03:00",
+          "ended_at": "2025-09-20T15:35:39.0465527-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:39.2765654-03:00",
+          "ended_at": "2025-09-20T15:35:39.3741988-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:39.6314885-03:00",
+          "ended_at": "2025-09-20T15:35:39.7273695-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:39.9713938-03:00",
+          "ended_at": "2025-09-20T15:35:40.0678518-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:40.3252727-03:00",
+          "ended_at": "2025-09-20T15:35:40.4268095-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:40.6776385-03:00",
+          "ended_at": "2025-09-20T15:35:40.7758057-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"medidor\" violates foreign key constraint \"fkjvsymbkhcm7i86bixoxgdwui5\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-09-20T15:35:41.0106444-03:00",
+          "ended_at": "2025-09-20T15:35:41.1101679-03:00"
+        }
+      ]
+    }
+  ]
+}

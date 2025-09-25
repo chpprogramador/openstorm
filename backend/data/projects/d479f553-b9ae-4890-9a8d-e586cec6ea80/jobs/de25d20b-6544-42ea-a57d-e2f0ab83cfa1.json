@@ -1,0 +1,19 @@
+{
+  "id": "de25d20b-6544-42ea-a57d-e2f0ab83cfa1",
+  "jobName": "Medidor Vazão",
+  "selectSql": "select id, capacidade, diametro, nrponteiro, vazao, v.vazaonominal from public.vazao v ",
+  "insertSql": "INSERT INTO ${SCHEMA}.medidor_vazao (id, capacidade, diametro, numero_ponteiro, vazao, vazao_nominal)",
+  "columns": [
+    "id",
+    "capacidade",
+    "diametro",
+    "nrponteiro",
+    "vazao",
+    "vazaonominal"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 720
+}

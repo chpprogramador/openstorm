@@ -1,0 +1,15 @@
+{
+  "id": "9c66585d-4dac-4b0d-bfe3-7a2ff7a12c05",
+  "jobName": "Zona Pressão",
+  "selectSql": "select id, zonapressao from public.zonapressao",
+  "insertSql": "INSERT INTO ${SCHEMA}.zona_pressao (id, nome_zona_pressao) ",
+  "columns": [
+    "id",
+    "zonapressao"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 900
+}

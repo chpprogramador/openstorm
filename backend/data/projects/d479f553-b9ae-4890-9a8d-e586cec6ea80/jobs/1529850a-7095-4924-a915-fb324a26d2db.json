@@ -1,0 +1,15 @@
+{
+  "id": "1529850a-7095-4924-a915-fb324a26d2db",
+  "jobName": "Classe Medidor",
+  "selectSql": "select id, classemedidor from public.classemedidor c ",
+  "insertSql": "INSERT INTO ${SCHEMA}.medidor_classe (id, nome_medidor_classe)",
+  "columns": [
+    "id",
+    "classemedidor"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 800,
+  "top": 540
+}

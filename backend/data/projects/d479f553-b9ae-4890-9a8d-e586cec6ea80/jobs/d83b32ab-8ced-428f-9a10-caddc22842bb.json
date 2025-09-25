@@ -1,0 +1,22 @@
+{
+  "id": "d83b32ab-8ced-428f-9a10-caddc22842bb",
+  "jobName": "Medidor Modelo",
+  "selectSql": "select id, coefa, coefb, modelomedidor, idclassemedidor, idmarcamedidor, idtecnomedidor, idtipomedidor, idvazao from modelomedidor",
+  "insertSql": "INSERT INTO ${SCHEMA}.medidor_modelo (id, calibracao_coeficiente_angular, calibracao_coeficiente_linear, nome_medidor_modelo, id_medidor_classe, id_medidor_marca, id_medidor_tecnologia, id_medidor_tipo, id_medidor_vazao) ",
+  "columns": [
+    "id",
+    "coefa",
+    "coefb",
+    "modelomedidor",
+    "idclassemedidor",
+    "idmarcamedidor",
+    "idtecnomedidor",
+    "idtipomedidor",
+    "idvazao"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 800,
+  "top": 720
+}

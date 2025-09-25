@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -15,22 +16,27 @@ type BatchLog struct {
 	Limit     int       `json:"limit"`
 	Status    string    `json:"status"`
 	Error     string    `json:"error,omitempty"`
+	ErrorType string    `json:"error_type,omitempty"` // "sql_error", "connection_error", "validation_error", etc.
+	ErrorCode string    `json:"error_code,omitempty"` // Código específico do erro
 	Rows      int       `json:"rows"`
 	StartedAt time.Time `json:"started_at"`
 	EndedAt   time.Time `json:"ended_at"`
 }
 
 type JobLog struct {
-	JobID       string     `json:"job_id"`
-	JobName     string     `json:"job_name"`
-	Status      string     `json:"status"`
-	Error       string     `json:"error,omitempty"`
-	StopOnError bool       `json:"stop_on_error"`
-	StartedAt   time.Time  `json:"started_at"`
-	EndedAt     time.Time  `json:"ended_at"`
-	Processed   int        `json:"processed"`
-	Total       int        `json:"total"`
-	Batches     []BatchLog `json:"batches"`
+	JobID        string                 `json:"job_id"`
+	JobName      string                 `json:"job_name"`
+	Status       string                 `json:"status"`
+	Error        string                 `json:"error,omitempty"`
+	ErrorType    string                 `json:"error_type,omitempty"`    // "sql_error", "connection_error", "validation_error", etc.
+	ErrorCode    string                 `json:"error_code,omitempty"`    // Código específico do erro
+	ErrorDetails map[string]interface{} `json:"error_details,omitempty"` // Detalhes adicionais do erro
+	StopOnError  bool                   `json:"stop_on_error"`
+	StartedAt    time.Time              `json:"started_at"`
+	EndedAt      time.Time              `json:"ended_at"`
+	Processed    int                    `json:"processed"`
+	Total        int                    `json:"total"`
+	Batches      []BatchLog             `json:"batches"`
 }
 
 type PipelineLog struct {
@@ -183,4 +189,126 @@ func GetPipelineStats(pipelineID string) (map[string]interface{}, error) {
 	stats["total_processed"] = totalProcessed
 
 	return stats, nil
+}
+
+// ErrorAnalyzer analisa e categoriza erros
+type ErrorAnalyzer struct{}
+
+// AnalyzeError analisa um erro e retorna informações estruturadas
+func (ea *ErrorAnalyzer) AnalyzeError(err error) (errorType, errorCode string, details map[string]interface{}) {
+	if err == nil {
+		return "", "", nil
+	}
+
+	errorMsg := err.Error()
+	details = make(map[string]interface{})
+	details["original_error"] = errorMsg
+	details["timestamp"] = time.Now()
+
+	// Análise de erros SQL
+	if strings.Contains(strings.ToLower(errorMsg), "duplicate key") ||
+		strings.Contains(strings.ToLower(errorMsg), "unique constraint") {
+		errorType = "duplicate_key_error"
+		errorCode = "DUPLICATE_KEY"
+		details["suggestion"] = "Verifique se há duplicatas na origem ou use UPSERT"
+	} else if strings.Contains(strings.ToLower(errorMsg), "foreign key") {
+		errorType = "foreign_key_error"
+		errorCode = "FOREIGN_KEY_VIOLATION"
+		details["suggestion"] = "Verifique se as referências existem na tabela de destino"
+	} else if strings.Contains(strings.ToLower(errorMsg), "connection") ||
+		strings.Contains(strings.ToLower(errorMsg), "timeout") {
+		errorType = "connection_error"
+		errorCode = "CONNECTION_FAILED"
+		details["suggestion"] = "Verifique a conectividade com o banco de dados"
+	} else if strings.Contains(strings.ToLower(errorMsg), "syntax error") ||
+		strings.Contains(strings.ToLower(errorMsg), "invalid sql") {
+		errorType = "sql_syntax_error"
+		errorCode = "SQL_SYNTAX_ERROR"
+		details["suggestion"] = "Verifique a sintaxe da query SQL"
+	} else if strings.Contains(strings.ToLower(errorMsg), "permission") ||
+		strings.Contains(strings.ToLower(errorMsg), "access denied") {
+		errorType = "permission_error"
+		errorCode = "PERMISSION_DENIED"
+		details["suggestion"] = "Verifique as permissões do usuário do banco"
+	} else if strings.Contains(strings.ToLower(errorMsg), "table") &&
+		strings.Contains(strings.ToLower(errorMsg), "doesn't exist") {
+		errorType = "table_not_found"
+		errorCode = "TABLE_NOT_FOUND"
+		details["suggestion"] = "Verifique se a tabela existe no banco de destino"
+	} else {
+		errorType = "unknown_error"
+		errorCode = "UNKNOWN_ERROR"
+		details["suggestion"] = "Consulte a documentação ou entre em contato com o suporte"
+	}
+
+	return errorType, errorCode, details
+}
+
+// GetErrorSummary retorna um resumo dos erros de um pipeline
+func GetErrorSummary(pipelineID string) (map[string]interface{}, error) {
+	log, err := LoadPipelineLog(pipelineID)
+	if err != nil {
+		return nil, err
+	}
+
+	summary := map[string]interface{}{
+		"pipeline_id":   pipelineID,
+		"total_errors":  0,
+		"error_types":   make(map[string]int),
+		"error_jobs":    []map[string]interface{}{},
+		"error_batches": []map[string]interface{}{},
+	}
+
+	analyzer := &ErrorAnalyzer{}
+
+	for _, job := range log.Jobs {
+		if job.Error != "" {
+			errorType, errorCode, details := analyzer.AnalyzeError(fmt.Errorf(job.Error))
+
+			jobError := map[string]interface{}{
+				"job_id":        job.JobID,
+				"job_name":      job.JobName,
+				"error":         job.Error,
+				"error_type":    errorType,
+				"error_code":    errorCode,
+				"error_details": details,
+				"started_at":    job.StartedAt,
+				"ended_at":      job.EndedAt,
+			}
+
+			summary["error_jobs"] = append(summary["error_jobs"].([]map[string]interface{}), jobError)
+			summary["total_errors"] = summary["total_errors"].(int) + 1
+
+			errorTypes := summary["error_types"].(map[string]int)
+			errorTypes[errorType]++
+		}
+
+		// Analisa erros de batches
+		for _, batch := range job.Batches {
+			if batch.Error != "" {
+				errorType, errorCode, details := analyzer.AnalyzeError(fmt.Errorf(batch.Error))
+
+				batchError := map[string]interface{}{
+					"job_id":        job.JobID,
+					"job_name":      job.JobName,
+					"batch_offset":  batch.Offset,
+					"batch_limit":   batch.Limit,
+					"error":         batch.Error,
+					"error_type":    errorType,
+					"error_code":    errorCode,
+					"error_details": details,
+					"started_at":    batch.StartedAt,
+					"ended_at":      batch.EndedAt,
+				}
+
+				summary["error_batches"] = append(summary["error_batches"].([]map[string]interface{}), batchError)
+				summary["total_errors"] = summary["total_errors"].(int) + 1
+
+				errorTypes := summary["error_types"].(map[string]int)
+				errorTypes[errorType]++
+			}
+		}
+	}
+
+	return summary, nil
 }

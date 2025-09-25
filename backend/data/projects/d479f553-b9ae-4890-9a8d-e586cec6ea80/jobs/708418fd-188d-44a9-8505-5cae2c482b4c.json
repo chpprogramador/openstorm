@@ -1,0 +1,15 @@
+{
+  "id": "708418fd-188d-44a9-8505-5cae2c482b4c",
+  "jobName": "Medidor Tecnologia",
+  "selectSql": "select id, tecnomedidor from public.tecnomedidor",
+  "insertSql": "INSERT INTO ${SCHEMA}.medidor_tecnologia (id, nome_medidor_tecnologia)",
+  "columns": [
+    "id",
+    "tecnomedidor"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 0,
+  "top": 540
+}

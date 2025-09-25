@@ -76,6 +76,32 @@ func main() {
 			}
 			c.JSON(http.StatusOK, stats)
 		})
+
+		// Resumo de erros de um pipeline específico
+		api.GET("/pipeline/:pipelineId/errors", func(c *gin.Context) {
+			pipelineID := c.Param("pipelineId")
+			errorSummary, err := logger.GetErrorSummary(pipelineID)
+			if err != nil {
+				c.JSON(http.StatusNotFound, gin.H{
+					"error": fmt.Sprintf("Pipeline não encontrado: %v", err),
+				})
+				return
+			}
+			c.JSON(http.StatusOK, errorSummary)
+		})
+
+		// Log completo de um pipeline específico
+		api.GET("/pipeline/:pipelineId/log", func(c *gin.Context) {
+			pipelineID := c.Param("pipelineId")
+			log, err := logger.LoadPipelineLog(pipelineID)
+			if err != nil {
+				c.JSON(http.StatusNotFound, gin.H{
+					"error": fmt.Sprintf("Pipeline não encontrado: %v", err),
+				})
+				return
+			}
+			c.JSON(http.StatusOK, log)
+		})
 	}
 
 	router.Run(":8080")

@@ -1,0 +1,15 @@
+{
+  "id": "b586a9ea-8438-429e-b91a-d93734208294",
+  "jobName": "Medidor Marca",
+  "selectSql": "select id, marcamedidor from public.marcamedidor",
+  "insertSql": "INSERT INTO ${SCHEMA}.medidor_marca (id, nome_medidor_marca) ",
+  "columns": [
+    "id",
+    "marcamedidor"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 540
+}

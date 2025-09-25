@@ -1,0 +1,23 @@
+{
+  "id": "35b82c31-8384-49a7-9b4c-be3edfedb464",
+  "jobName": "Endereço",
+  "selectSql": "select l.id, b.bairro bairro,\tl.cep cep,\tl.id complemento,\tl.nrimovel numero,\tconcat(lg.tipo, ' ', lg.logradouro)rua,\t'Ourinhos' cidade,\t'SP' estado,\tnull latitude,\tnull longitude\tfrom public.ligacao l\tjoin public.bairro b on (b.id = l.idbairro)\tjoin public.logradouro lg on (lg.id = l.idlogradouro)",
+  "insertSql": "insert into ${SCHEMA}.endereco (id, bairro,\tcep,complemento,numero,rua,cidade,estado,latitude,longitude\t)",
+  "columns": [
+    "id",
+    "bairro",
+    "cep",
+    "complemento",
+    "numero",
+    "rua",
+    "cidade",
+    "estado",
+    "latitude",
+    "longitude"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1200,
+  "top": 180
+}

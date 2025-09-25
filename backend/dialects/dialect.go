@@ -14,6 +14,7 @@ type SQLDialect interface {
 	BuildPaginatedInsertQuery(job models.Job, offset, limit int) string
 	BuildInsertQuery(job models.Job, records []map[string]interface{}) (string, []interface{})
 	BuildPaginatedSelectQuery(job models.Job, offset int, limit int) string
+	BuildPaginatedSelectQueryWithOrder(job models.Job, offset int, limit int, orderByColumns []string) string
 }
 
 type PostgresDialect struct{}
@@ -66,21 +67,28 @@ func (d PostgresDialect) BuildPaginatedInsertQuery(job models.Job, offset, limit
 }
 
 func (d PostgresDialect) BuildPaginatedSelectQuery(job models.Job, offset, limit int) string {
+	// Usa OFFSET e LIMIT padrão do PostgreSQL para paginação simples e eficiente
+	return fmt.Sprintf("%s OFFSET %d LIMIT %d", job.SelectSQL, offset, limit)
+}
 
-	time := time.Now().UnixNano()
-
-	hasWhere, modifiedSQL := AnalyzeAndModifySQL(job.SelectSQL)
-
-	modifiedSQL = "CREATE sequence if not exists seq_" + fmt.Sprintf("%d", time) + "_id START 1;" + modifiedSQL
-
-	if !hasWhere {
-		modifiedSQL = fmt.Sprintf("%s where nextval('seq_"+fmt.Sprintf("%d", time)+"_id') > %d order by CTID;", modifiedSQL, offset)
+func (d PostgresDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, offset, limit int, orderByColumns []string) string {
+	// Adiciona ORDER BY explícito para garantir consistência na paginação
+	orderByClause := ""
+	if len(orderByColumns) > 0 {
+		orderByClause = fmt.Sprintf(" ORDER BY %s", strings.Join(orderByColumns, ", "))
 	} else {
-		modifiedSQL = fmt.Sprintf("%s and nextval('seq_"+fmt.Sprintf("%d", time)+"_id') > %d order by CTID;", modifiedSQL, offset)
+		// Se não houver colunas específicas, usa CTID como fallback para garantir ordem consistente
+		orderByClause = " ORDER BY CTID"
 	}
-
-	return modifiedSQL + "DROP SEQUENCE seq_" + fmt.Sprintf("%d", time) + "_id;"
-
+	
+	// Verifica se já existe ORDER BY na query original
+	lowerQuery := strings.ToLower(job.SelectSQL)
+	if strings.Contains(lowerQuery, "order by") {
+		// Já tem ORDER BY, usa a query original
+		return fmt.Sprintf("%s OFFSET %d LIMIT %d", job.SelectSQL, offset, limit)
+	}
+	
+	return fmt.Sprintf("%s%s OFFSET %d LIMIT %d", job.SelectSQL, orderByClause, offset, limit)
 }
 
 // AnalyzeAndModifySQL detecta se a query tem WHERE e remove LIMIT e ORDER BY (simples, ignorando subqueries/CTEs).
@@ -114,7 +122,7 @@ func AnalyzeAndModifySQL(query string) (bool, string) {
 	// Limpa espaços extras
 	queryModified := strings.TrimSpace(regexp.MustCompile(`\s+`).ReplaceAllString(queryNoOrder, " "))
 
-	fmt.Printf("Query modificada: %s\n", queryModified)
+	fmt.Printf("Query modificada: %s\n", len([]rune(queryModified)), queryModified)
 	fmt.Printf("Possui WHERE: %v\n", hasWhere)
 
 	return hasWhere, queryModified
@@ -133,6 +141,19 @@ func (d PostgresDialect) BuildInsertQuery(job models.Job, records []map[string]i
 		valueStrings = append(valueStrings, fmt.Sprintf("(%s)", strings.Join(vals, ", ")))
 	}
 
+	// Constrói query com ON CONFLICT para evitar duplicatas
+	// Assume que a primeira coluna é a chave primária
+	if len(columns) > 0 {
+		pkColumn := columns[0]
+		query := fmt.Sprintf(`%s VALUES %s ON CONFLICT (%s) DO NOTHING`,
+			job.InsertSQL,
+			strings.Join(valueStrings, ", "),
+			pkColumn,
+		)
+		return query, nil
+	}
+
+	// Fallback para INSERT simples se não houver colunas
 	query := fmt.Sprintf("%s VALUES %s",
 		job.InsertSQL,
 		strings.Join(valueStrings, ", "),
@@ -181,6 +202,34 @@ func (d MySQLDialect) BuildPaginatedSelectQuery(job models.Job, offset int, limi
 	)
 }
 
+// BuildPaginatedSelectQueryWithOrder constrói uma consulta paginada com ordenação para MySQL
+func (d MySQLDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, offset int, limit int, orderByColumns []string) string {
+	orderByClause := ""
+	if len(orderByColumns) > 0 {
+		orderByClause = fmt.Sprintf(" ORDER BY %s", strings.Join(orderByColumns, ", "))
+	}
+	
+	// Verifica se já existe ORDER BY na query original
+	lowerQuery := strings.ToLower(job.SelectSQL)
+	if strings.Contains(lowerQuery, "order by") {
+		// Já tem ORDER BY, usa a query original
+		return fmt.Sprintf("SELECT %s FROM (%s) AS sub LIMIT %d OFFSET %d",
+			strings.Join(job.Columns, ", "),
+			job.SelectSQL,
+			limit,
+			offset,
+		)
+	}
+	
+	return fmt.Sprintf("SELECT %s FROM (%s) AS sub%s LIMIT %d OFFSET %d",
+		strings.Join(job.Columns, ", "),
+		job.SelectSQL,
+		orderByClause,
+		limit,
+		offset,
+	)
+}
+
 // BuildInsertQuery constrói uma consulta de inserção para MySQL
 func (d MySQLDialect) BuildInsertQuery(job models.Job, records []map[string]interface{}) (string, []interface{}) {
 	columns := job.Columns
@@ -197,6 +246,19 @@ func (d MySQLDialect) BuildInsertQuery(job models.Job, records []map[string]inte
 		valueStrings = append(valueStrings, fmt.Sprintf("(%s)", strings.Join(vals, ", ")))
 	}
 
+	// Constrói query com ON DUPLICATE KEY UPDATE para evitar duplicatas
+	// Assume que a primeira coluna é a chave primária
+	if len(columns) > 0 {
+		pkColumn := columns[0]
+		query := fmt.Sprintf(`%s VALUES %s ON DUPLICATE KEY UPDATE %s = VALUES(%s)`,
+			job.InsertSQL,
+			strings.Join(valueStrings, ", "),
+			pkColumn, pkColumn,
+		)
+		return query, args
+	}
+
+	// Fallback para INSERT simples se não houver colunas
 	query := fmt.Sprintf("%s VALUES %s",
 		job.InsertSQL,
 		strings.Join(valueStrings, ", "),
@@ -237,6 +299,33 @@ func (d SQLServerDialect) BuildPaginatedSelectQuery(job models.Job, offset int, 
 	return fmt.Sprintf("SELECT %s FROM (%s) AS sub WHERE rn > %d AND rn <= %d",
 		strings.Join(job.Columns, ", "),
 		job.SelectSQL,
+		offset,
+		offset+limit,
+	)
+}
+
+func (d SQLServerDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, offset int, limit int, orderByColumns []string) string {
+	orderByClause := ""
+	if len(orderByColumns) > 0 {
+		orderByClause = fmt.Sprintf(" ORDER BY %s", strings.Join(orderByColumns, ", "))
+	}
+	
+	// Verifica se já existe ORDER BY na query original
+	lowerQuery := strings.ToLower(job.SelectSQL)
+	if strings.Contains(lowerQuery, "order by") {
+		// Já tem ORDER BY, usa a query original
+		return fmt.Sprintf("SELECT %s FROM (%s) AS sub WHERE rn > %d AND rn <= %d",
+			strings.Join(job.Columns, ", "),
+			job.SelectSQL,
+			offset,
+			offset+limit,
+		)
+	}
+	
+	return fmt.Sprintf("SELECT %s FROM (%s) AS sub%s WHERE rn > %d AND rn <= %d",
+		strings.Join(job.Columns, ", "),
+		job.SelectSQL,
+		orderByClause,
 		offset,
 		offset+limit,
 	)
@@ -284,6 +373,33 @@ func (d AccessDialect) BuildPaginatedSelectQuery(job models.Job, offset int, lim
 	)
 }
 
+func (d AccessDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, offset int, limit int, orderByColumns []string) string {
+	orderByClause := ""
+	if len(orderByColumns) > 0 {
+		orderByClause = fmt.Sprintf(" ORDER BY %s", strings.Join(orderByColumns, ", "))
+	}
+	
+	// Verifica se já existe ORDER BY na query original
+	lowerQuery := strings.ToLower(job.SelectSQL)
+	if strings.Contains(lowerQuery, "order by") {
+		// Já tem ORDER BY, usa a query original
+		return fmt.Sprintf("SELECT TOP %d %s FROM (%s) AS sub WHERE rn > %d",
+			limit,
+			strings.Join(job.Columns, ", "),
+			job.SelectSQL,
+			offset,
+		)
+	}
+	
+	return fmt.Sprintf("SELECT TOP %d %s FROM (%s) AS sub%s WHERE rn > %d",
+		limit,
+		strings.Join(job.Columns, ", "),
+		job.SelectSQL,
+		orderByClause,
+		offset,
+	)
+}
+
 // BuildInsertQuery constrói uma consulta de inserção para Access
 func (d AccessDialect) BuildInsertQuery(job models.Job, records []map[string]interface{}) (string, []interface{}) {
 	columns := job.Columns
@@ -316,6 +432,21 @@ func escapeValue(value interface{}) string {
 		return "'" + strings.ReplaceAll(v, "'", "''") + "'"
 	case []byte:
 		return "'" + strings.ReplaceAll(string(v), "'", "''") + "'"
+	case *time.Time:
+		if v == nil || v.IsZero() {
+			return "NULL"
+		}
+		return fmt.Sprintf("'%s'", v.UTC().Format("2006-01-02 15:04:05Z07:00"))
+	case time.Time:
+		if v.IsZero() {
+			return "NULL"
+		}
+		return fmt.Sprintf("'%s'", v.UTC().Format("2006-01-02 15:04:05"))
+	case sql.NullTime:
+		if !v.Valid || v.Time.IsZero() {
+			return "NULL"
+		}
+		return fmt.Sprintf("'%s'", v.Time.UTC().Format("2006-01-02 15:04:05Z07:00"))
 	default:
 		return fmt.Sprintf("%v", v)
 	}

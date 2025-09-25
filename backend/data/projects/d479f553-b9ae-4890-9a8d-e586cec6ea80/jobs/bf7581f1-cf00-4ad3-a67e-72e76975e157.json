@@ -1,0 +1,15 @@
+{
+  "id": "bf7581f1-cf00-4ad3-a67e-72e76975e157",
+  "jobName": "Distrito",
+  "selectSql": "select id, distrito from public.distrito",
+  "insertSql": "INSERT INTO ${SCHEMA}.distrito (id, nome_distrito)",
+  "columns": [
+    "id",
+    "distrito"
+  ],
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 0,
+  "top": 900
+}
