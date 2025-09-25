@@ -20,12 +20,7 @@ type SQLDialect interface {
 type PostgresDialect struct{}
 
 func (d PostgresDialect) FetchTotalCount(db *sql.DB, job models.Job) (int, error) {
-	//countQuery := fmt.Sprintf("SELECT COUNT(*) FROM (%s) AS count_subquery", job.SelectSQL)
-	//_, modifiedSQL := AnalyzeAndModifySQL(job.SelectSQL)
-	//countQuery := modifiedSQL + " LIMIT 1" // Limita a 1 para otimizar a contagem
-
-	selectRegex := regexp.MustCompile(`(?i)^SELECT\s+(.*?)\s+FROM`)
-	countSQL := selectRegex.ReplaceAllString(job.SelectSQL, "SELECT COUNT(*) FROM")
+	countSQL := fmt.Sprintf("SELECT COUNT(*) FROM (%s) AS count_subquery", job.SelectSQL)
 
 	var count int
 	err := db.QueryRow(countSQL).Scan(&count)
@@ -80,14 +75,14 @@ func (d PostgresDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, offs
 		// Se não houver colunas específicas, usa CTID como fallback para garantir ordem consistente
 		orderByClause = " ORDER BY CTID"
 	}
-	
+
 	// Verifica se já existe ORDER BY na query original
 	lowerQuery := strings.ToLower(job.SelectSQL)
 	if strings.Contains(lowerQuery, "order by") {
 		// Já tem ORDER BY, usa a query original
 		return fmt.Sprintf("%s OFFSET %d LIMIT %d", job.SelectSQL, offset, limit)
 	}
-	
+
 	return fmt.Sprintf("%s%s OFFSET %d LIMIT %d", job.SelectSQL, orderByClause, offset, limit)
 }
 
@@ -208,7 +203,7 @@ func (d MySQLDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, offset 
 	if len(orderByColumns) > 0 {
 		orderByClause = fmt.Sprintf(" ORDER BY %s", strings.Join(orderByColumns, ", "))
 	}
-	
+
 	// Verifica se já existe ORDER BY na query original
 	lowerQuery := strings.ToLower(job.SelectSQL)
 	if strings.Contains(lowerQuery, "order by") {
@@ -220,7 +215,7 @@ func (d MySQLDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, offset 
 			offset,
 		)
 	}
-	
+
 	return fmt.Sprintf("SELECT %s FROM (%s) AS sub%s LIMIT %d OFFSET %d",
 		strings.Join(job.Columns, ", "),
 		job.SelectSQL,
@@ -309,7 +304,7 @@ func (d SQLServerDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, off
 	if len(orderByColumns) > 0 {
 		orderByClause = fmt.Sprintf(" ORDER BY %s", strings.Join(orderByColumns, ", "))
 	}
-	
+
 	// Verifica se já existe ORDER BY na query original
 	lowerQuery := strings.ToLower(job.SelectSQL)
 	if strings.Contains(lowerQuery, "order by") {
@@ -321,7 +316,7 @@ func (d SQLServerDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, off
 			offset+limit,
 		)
 	}
-	
+
 	return fmt.Sprintf("SELECT %s FROM (%s) AS sub%s WHERE rn > %d AND rn <= %d",
 		strings.Join(job.Columns, ", "),
 		job.SelectSQL,
@@ -378,7 +373,7 @@ func (d AccessDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, offset
 	if len(orderByColumns) > 0 {
 		orderByClause = fmt.Sprintf(" ORDER BY %s", strings.Join(orderByColumns, ", "))
 	}
-	
+
 	// Verifica se já existe ORDER BY na query original
 	lowerQuery := strings.ToLower(job.SelectSQL)
 	if strings.Contains(lowerQuery, "order by") {
@@ -390,7 +385,7 @@ func (d AccessDialect) BuildPaginatedSelectQueryWithOrder(job models.Job, offset
 			offset,
 		)
 	}
-	
+
 	return fmt.Sprintf("SELECT TOP %d %s FROM (%s) AS sub%s WHERE rn > %d",
 		limit,
 		strings.Join(job.Columns, ", "),

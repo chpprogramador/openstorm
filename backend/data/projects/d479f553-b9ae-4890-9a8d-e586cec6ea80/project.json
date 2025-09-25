@@ -192,6 +192,13 @@
     "password": "vzm123",
     "database": "vzmsaneamento"
   },
-  "concurrency": 10,
-  "variables": null
+  "concurrency": 1,
+  "variables": [
+    {
+      "name": "SCHEMA",
+      "value": "tnt_ourinhos",
+      "description": "",
+      "type": "string"
+    }
+  ]
 }

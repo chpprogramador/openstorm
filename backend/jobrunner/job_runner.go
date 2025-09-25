@@ -255,7 +255,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 			offset := 0
 			batchSize := job.RecordsPerPage
-			
+
 			// Adiciona ORDER BY na query para garantir consistência na paginação
 			// e evitar registros duplicados durante execução concorrente
 			orderByColumns := jr.getOrderByColumns(job)
@@ -355,12 +355,13 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 	status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
 		js.Name = job.JobName
 		js.Status = "running"
+		js.StartedAt = &start
 		status.NotifySubscribers()
 	})
 
 	// Substitui variáveis no SQL
 	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
-	
+
 	// Limpa quebras de linha para evitar problemas no PostgreSQL
 	cleanSQL := jr.CleanSQLNewlines(job.SelectSQL)
 
@@ -404,6 +405,7 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 
 		status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
 			js.Status = "done"
+			js.EndedAt = &end
 			status.NotifySubscribers()
 		})
 	}
@@ -638,13 +640,13 @@ func (jr *JobRunner) SubstituteVariables(query string) string {
 func (jr *JobRunner) CleanSQLNewlines(sql string) string {
 	// Preserva quebras de linha em strings literais (entre aspas simples)
 	// mas normaliza quebras de linha fora de strings literais
-	
+
 	var result strings.Builder
 	inString := false
-	
+
 	for i := 0; i < len(sql); i++ {
 		char := sql[i]
-		
+
 		// Verifica se estamos dentro ou fora de uma string literal
 		if char == '\'' {
 			// Verifica se a aspa não está escapada
@@ -652,12 +654,12 @@ func (jr *JobRunner) CleanSQLNewlines(sql string) string {
 				inString = !inString
 			}
 		}
-		
+
 		// Trata quebras de linha
 		if (char == '\n' || char == '\r') && !inString {
 			// Substitui quebras de linha por espaço fora de strings literais
 			result.WriteByte(' ')
-			
+
 			// Pula o \n em sequências \r\n
 			if char == '\r' && i+1 < len(sql) && sql[i+1] == '\n' {
 				i++
@@ -666,7 +668,7 @@ func (jr *JobRunner) CleanSQLNewlines(sql string) string {
 			result.WriteByte(char)
 		}
 	}
-	
+
 	return result.String()
 }
 
@@ -676,12 +678,12 @@ func (jr *JobRunner) getOrderByColumns(job models.Job) []string {
 	if len(job.PrimaryKeys) > 0 {
 		return job.PrimaryKeys
 	}
-	
+
 	// Se não tiver chaves primárias, tenta usar a primeira coluna da tabela
 	if len(job.Columns) > 0 {
 		return []string{job.Columns[0]}
 	}
-	
+
 	// Se não tiver colunas definidas, retorna vazio e o dialeto usará CTID
 	return []string{}
 }

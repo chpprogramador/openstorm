@@ -1,0 +1,20 @@
+{
+  "pipeline_id": "Flexsan_2025-09-25_20-14-03",
+  "project": "Flexsan",
+  "status": "running",
+  "started_at": "2025-09-25T20:14:03.3486048-03:00",
+  "ended_at": "0001-01-01T00:00:00Z",
+  "jobs": [
+    {
+      "job_id": "c261e485-8fd1-42af-bbc7-eebb02be84c5",
+      "job_name": "Limpa tudo",
+      "status": "running",
+      "stop_on_error": true,
+      "started_at": "2025-09-25T20:14:03.3689188-03:00",
+      "ended_at": "0001-01-01T00:00:00Z",
+      "processed": 0,
+      "total": 1,
+      "batches": []
+    }
+  ]
+}
