@@ -86,10 +86,13 @@
             <mat-icon class="pending">hourglass_empty</mat-icon>
           } -->
         </div>
-        @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
+        
         <div class="progress">
-          {{ job.progress | number:'1.2-2'}}%
-          {{ tempoTotal(job.startedAt!)  }}
+          @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
+          {{ job.progress | number:'1.2-2'}}% | 
+          }
+          {{ tempoTotal(job.startedAt!, job.endedAt!)  }}
+          @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
           <mat-progress-bar
               [mode]="'determinate'"
               [value]="job.progress"
@@ -97,8 +100,9 @@
               >
           </mat-progress-bar>
           {{ job.processed }} / {{ job.total }}
-        </div>
         }
+        </div>
+        
         <div class="icons">
           <mat-icon>bookmark_border_outline</mat-icon> SQL {{ job.type.toUpperCase() }}
         </div>

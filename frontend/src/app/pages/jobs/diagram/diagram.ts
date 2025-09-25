@@ -463,20 +463,29 @@ export class Diagram implements AfterViewInit {
   }
 
 
-  tempoTotal(dataIso: string): string {
+  tempoTotal(dataIso: string, dataIso2: string): string {
   const agora = new Date();
   const data = new Date(dataIso);
-  const diffMs = agora.getTime() - data.getTime(); // diferença em milissegundos
+  const data2 = new Date(dataIso2);
+
+   if (isNaN(data.getTime()) ) return '';
+
+  let diffMs: number;
+  if (isNaN(data2.getTime())) {
+    diffMs = agora.getTime() - data.getTime(); // diferença em milissegundos
+  } else {
+    diffMs = data2.getTime() - data.getTime(); // diferença em milissegundos
+  }
 
   const segundos = Math.floor(diffMs / 1000);
   const minutos = Math.floor(segundos / 60);
   const horas = Math.floor(minutos / 60);
   const dias = Math.floor(horas / 24);
 
-  if (dias > 0) return `há ${dias} dia${dias > 1 ? 's' : ''}`;
-  if (horas > 0) return `há ${horas} hora${horas > 1 ? 's' : ''}`;
-  if (minutos > 0) return `há ${minutos} minuto${minutos > 1 ? 's' : ''}`;
-  return `há ${segundos} segundo${segundos > 1 ? 's' : ''}`;
+  if (dias > 0) return `${dias} dia${dias > 1 ? 's' : ''}`;
+  if (horas > 0) return `${horas} hora${horas > 1 ? 's' : ''}`;
+  if (minutos > 0) return `${minutos} minuto${minutos > 1 ? 's' : ''}`;
+  return `${segundos} segundo${segundos > 1 ? 's' : ''}`;
 }
 
 }
