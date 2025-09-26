@@ -103,7 +103,7 @@ func (jr *JobRunner) RunJob(jobID string) {
 }
 
 func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
-	log.Printf("Iniciando job com leitura e escrita paralela via cursores: %s", job.JobName)
+	log.Printf("Iniciando job com leitura e escrita paralela via hash: %s", job.JobName)
 
 	jr.WaitGroup.Add(1)
 	go func() {
@@ -132,24 +132,11 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
 		job.InsertSQL = jr.SubstituteVariables(job.InsertSQL)
 
-		//total de registros
+		// total de registros
 		total, err := jr.Dialect.FetchTotalCount(jr.SourceDB, job)
 		if err != nil {
 			log.Printf("Erro ao contar registros: %v\n", err)
-
-			// Atualiza log do job com erro
-			logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
-				jl.Status = "error"
-				jl.Error = err.Error()
-				jl.EndedAt = time.Now()
-			})
-			jr.savePipelineLog()
-
-			status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
-				js.Status = "error"
-				js.Error = err.Error()
-				status.NotifySubscribers()
-			})
+			jr.markJobFinalStatus(jobID, job, "error", err.Error(), time.Now())
 			return
 		}
 
@@ -166,13 +153,20 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 		batchChan := make(chan []map[string]interface{}, jr.Concurrency*5)
 
+		// Ajusta concurrency: se total < batchSize, usa apenas 1 worker
+		concurrency := jr.Concurrency
+		if total <= job.RecordsPerPage {
+			concurrency = 1
+			log.Printf("Total (%d) menor que batchSize (%d), usando apenas 1 worker", total, job.RecordsPerPage)
+		}
+
 		// Workers de escrita
 		var writersWG sync.WaitGroup
 		var processed int64
 		var jobHadError atomic.Bool
 		var lastErr atomic.Value
 
-		for w := 0; w < jr.Concurrency; w++ {
+		for w := 0; w < concurrency; w++ {
 			writersWG.Add(1)
 			go func(workerID int) {
 				defer writersWG.Done()
@@ -187,7 +181,6 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 					insertSQL, args := jr.Dialect.BuildInsertQuery(job, batch)
 
-					// Usa transação para garantir atomicidade do batch
 					tx, err := jr.DestinationDB.Begin()
 					if err != nil {
 						jobHadError.Store(true)
@@ -201,14 +194,10 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					}
 
 					if _, err := tx.Exec(insertSQL, args...); err != nil {
-						println(insertSQL)
-						println(args)
-
 						tx.Rollback()
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
 
-						// Analisa o erro para categorização
 						analyzer := &logger.ErrorAnalyzer{}
 						errorType, errorCode, _ := analyzer.AnalyzeError(err)
 
@@ -249,30 +238,47 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			}(w)
 		}
 
-		// Leitor único com paginação coordenada
-		go func() {
-			defer close(batchChan)
+		// Leitura paralela por bucket (cada worker lê o seu)
+		var readersWG sync.WaitGroup
+		for w := 0; w < concurrency; w++ {
+			readersWG.Add(1)
+			go func(workerID int) {
+				defer readersWG.Done()
 
-			offset := 0
-			batchSize := job.RecordsPerPage
+				queryExplain := jr.Dialect.BuildExplainSelectQueryByHash(job)
+				rowsExplain, err := jr.SourceDB.Query(queryExplain)
+				if err != nil {
+					panic(err)
+				}
+				defer rowsExplain.Close()
 
-			// Adiciona ORDER BY na query para garantir consistência na paginação
-			// e evitar registros duplicados durante execução concorrente
-			orderByColumns := jr.getOrderByColumns(job)
+				var explainJSON []byte
+				for rowsExplain.Next() {
+					var col string
+					if err := rowsExplain.Scan(&col); err != nil {
+						panic(err)
+					}
+					explainJSON = []byte(col)
+				}
 
-			for {
-				// Usa paginação coordenada para evitar duplicatas
-				query := jr.Dialect.BuildPaginatedSelectQueryWithOrder(job, offset, batchSize, orderByColumns)
+				mainTable, err := GetMainTableFromExplain(explainJSON)
+				if err != nil {
+					panic(err)
+				}
+
+				query := jr.Dialect.BuildSelectQueryByHash(job, workerID, concurrency, mainTable)
 				rows, err := jr.SourceDB.Query(query)
 				if err != nil {
-					log.Printf("Erro na query paginada: %v", err)
+					log.Printf("Erro na query do bucket %d: %v", workerID, err)
 					jobHadError.Store(true)
 					lastErr.Store(err.Error())
 					return
 				}
+				defer rows.Close()
 
 				cols, _ := rows.Columns()
-				var buffer []map[string]interface{}
+				batchSize := job.RecordsPerPage
+				buffer := make([]map[string]interface{}, 0, batchSize)
 
 				for rows.Next() {
 					values := make([]interface{}, len(cols))
@@ -281,31 +287,33 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 						ptrs[i] = &values[i]
 					}
 					if err := rows.Scan(ptrs...); err != nil {
-						rows.Close()
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
 						return
 					}
+
 					rec := make(map[string]interface{})
 					for i, col := range cols {
 						rec[col] = values[i]
 					}
 					buffer = append(buffer, rec)
-				}
-				rows.Close()
 
-				if len(buffer) == 0 {
-					break // Não há mais dados
+					if len(buffer) == batchSize {
+						batchChan <- buffer
+						buffer = make([]map[string]interface{}, 0, batchSize)
+					}
 				}
 
-				batchChan <- buffer
-				offset += len(buffer)
-
-				// Se retornou menos registros que o batch size, chegamos ao fim
-				if len(buffer) < batchSize {
-					break
+				if len(buffer) > 0 {
+					batchChan <- buffer
 				}
-			}
+			}(w)
+		}
+
+		// Fecha o canal quando todos leitores terminarem
+		go func() {
+			readersWG.Wait()
+			close(batchChan)
 		}()
 
 		writersWG.Wait()
@@ -672,68 +680,50 @@ func (jr *JobRunner) CleanSQLNewlines(sql string) string {
 	return result.String()
 }
 
-// getOrderByColumns retorna as colunas para ordenação na paginação
-func (jr *JobRunner) getOrderByColumns(job models.Job) []string {
-	// Verifica se o job tem colunas de chave primária definidas
-	if len(job.PrimaryKeys) > 0 {
-		return job.PrimaryKeys
-	}
-
-	// Se não tiver chaves primárias, tenta usar a primeira coluna da tabela
-	if len(job.Columns) > 0 {
-		return []string{job.Columns[0]}
-	}
-
-	// Se não tiver colunas definidas, retorna vazio e o dialeto usará CTID
-	return []string{}
+type PlanNode struct {
+	NodeType     string     `json:"Node Type"`
+	RelationName string     `json:"Relation Name,omitempty"`
+	Schema       string     `json:"Schema,omitempty"`
+	Alias        string     `json:"Alias,omitempty"`
+	Plans        []PlanNode `json:"Plans,omitempty"`
 }
 
-func (jr *JobRunner) runBatchDataTransfer(job models.Job, offset int, batchSize int) error {
-	// Substitui variáveis antes de executar a query
-	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
-	job.InsertSQL = jr.SubstituteVariables(job.InsertSQL)
+type Explain struct {
+	Plan PlanNode `json:"Plan"`
+}
 
-	// Limpa quebras de linha para evitar problemas no PostgreSQL
-	job.SelectSQL = jr.CleanSQLNewlines(job.SelectSQL)
-	job.InsertSQL = jr.CleanSQLNewlines(job.InsertSQL)
-
-	query := jr.Dialect.BuildPaginatedSelectQuery(job, offset, batchSize)
-	rows, err := jr.SourceDB.Query(query)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	columns, err := rows.Columns()
-	if err != nil {
-		return err
+func getMainTable(node PlanNode) (string, bool) {
+	// Retorna alias se existir
+	if node.Alias != "" {
+		return node.Alias, true
 	}
 
-	var records []map[string]interface{}
-
-	for rows.Next() {
-		values := make([]interface{}, len(columns))
-		valuePtrs := make([]interface{}, len(columns))
-		for i := range columns {
-			valuePtrs[i] = &values[i]
-		}
-
-		if err := rows.Scan(valuePtrs...); err != nil {
-			return err
-		}
-
-		record := make(map[string]interface{})
-		for i, col := range columns {
-			record[col] = values[i]
-		}
-		records = append(records, record)
+	// Caso contrário, retorna schema.tabela se possível
+	if node.RelationName != "" && node.Schema != "" {
+		return node.Schema + "." + node.RelationName, true
 	}
 
-	if len(records) == 0 {
-		return nil
+	// Busca recursivamente no próximo plano
+	if len(node.Plans) > 0 {
+		return getMainTable(node.Plans[0])
 	}
 
-	insertSQL, args := jr.Dialect.BuildInsertQuery(job, records)
-	_, err = jr.DestinationDB.Exec(insertSQL, args...)
-	return err
+	return "", false
+}
+
+func GetMainTableFromExplain(jsonData []byte) (string, error) {
+	var explainOutput []Explain
+	if err := json.Unmarshal(jsonData, &explainOutput); err != nil {
+		return "", err
+	}
+
+	if len(explainOutput) == 0 {
+		return "", fmt.Errorf("nenhum plano encontrado")
+	}
+
+	if table, found := getMainTable(explainOutput[0].Plan); found {
+		return table, nil
+	}
+
+	return "", fmt.Errorf("tabela principal não encontrada")
 }

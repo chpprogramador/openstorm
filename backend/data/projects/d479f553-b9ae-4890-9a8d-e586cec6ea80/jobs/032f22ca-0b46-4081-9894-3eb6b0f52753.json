@@ -14,7 +14,8 @@
     "idsitmedidor",
     "bool"
   ],
-  "recordsPerPage": 10000000,
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
   "left": 1600,
