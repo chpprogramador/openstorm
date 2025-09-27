@@ -1,0 +1,13 @@
+{
+  "id": "2293b292-34e1-4851-8e53-529013ae6220",
+  "jobName": "Cobrança Processo Parametros",
+  "selectSql": "insert\r\n\tinto\r\n\t${SCHEMA}.cobranca_processo_parametros (id,\r\n\tdesconsidera_ligacao_cortada,\r\n\tdesconsidera_processo_judicial,\r\n\tdesconsidera_white_list,\r\n\tdias_minimo_corte,\r\n\tdias_vencimento_aviso_debito,\r\n\tmensagem_comunicado_debito,\r\n\tnome_processo,\r\n\tpermite_fatura_processo_anterior,\r\n\tprocesso_automatico,\r\n\tquantidade_maxima_faturas,\r\n\tquantidade_minima_faturas,\r\n\tvalor_maximo_debito,\r\n\tvalor_minimo_debito,\r\n\tid_cobranca_processo_tipo,\r\n\tid_cobranca_regua,\r\n\tid_usuario_cadastro,\r\n\tid_servico_corte,\r\n\tid_servico_regularizacao_regua)\r\nvalues(1, false, true, false, 30, 30, 'Mensagem comunicado padrão', 'Processo padrão', true, true, 50, 1, 9999999.0, 10.0, 1, null, 1, null, null);",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1600,
+  "top": 1440
+}

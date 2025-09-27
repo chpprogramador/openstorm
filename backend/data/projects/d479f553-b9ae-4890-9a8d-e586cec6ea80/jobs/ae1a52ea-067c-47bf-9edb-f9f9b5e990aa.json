@@ -1,0 +1,22 @@
+{
+  "id": "ae1a52ea-067c-47bf-9edb-f9f9b5e990aa",
+  "jobName": "Decreto Categoria Produto",
+  "selectSql": "select \r\n\tdcp.id,\r\n\tdcp.faixamaxima,\r\n\tdcp.faixaminima,\r\n\tdcp.valor,\r\n\tdcp.valordeducao,\r\n\tdcp.valortarifafixa,\r\n\tdcp.iddecretocategoria,\r\n\tdcp.idproduto \r\nfrom decretocategoriaproduto dcp",
+  "insertSql": "INSERT INTO ${SCHEMA}.decreto_categoria_produto (id, faixa_maxima, faixa_minima, valor, valor_deducao, valor_tarifa_fixa, id_decreto_categoria, id_produto)",
+  "columns": [
+    "id",
+    "faixamaxima",
+    "faixaminima",
+    "valor",
+    "valordeducao",
+    "valortarifafixa",
+    "iddecretocategoria",
+    "idproduto"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 1440
+}

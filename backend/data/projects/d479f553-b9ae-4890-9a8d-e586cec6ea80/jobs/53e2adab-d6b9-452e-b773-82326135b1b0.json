@@ -1,0 +1,17 @@
+{
+  "id": "53e2adab-d6b9-452e-b773-82326135b1b0",
+  "jobName": "Produto",
+  "selectSql": "select\r\n\tp.id,\r\n\tp.produto,\r\n\tleft(p.sigla,1) sigla\r\nfrom produto p",
+  "insertSql": "INSERT INTO ${SCHEMA}.produto (id, nome_produto, sigla_produto)",
+  "columns": [
+    "id",
+    "produto",
+    "sigla"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 1260
+}

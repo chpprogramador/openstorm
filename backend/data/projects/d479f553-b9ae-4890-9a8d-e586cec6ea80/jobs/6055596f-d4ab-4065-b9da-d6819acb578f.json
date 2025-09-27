@@ -1,0 +1,19 @@
+{
+  "id": "6055596f-d4ab-4065-b9da-d6819acb578f",
+  "jobName": "Categoria",
+  "selectSql": "select\r\n\tc.id,\r\n\tc.categoria,\r\n\tc.prioridade,\r\n\tc.volconsminimo,\r\n\tc.idtipocategoria \r\nfrom categoria c",
+  "insertSql": "INSERT INTO ${SCHEMA}.categoria (id, nome_categoria, prioridade, volume_minimo_consumo, id_categoria_tipo)",
+  "columns": [
+    "id",
+    "categoria",
+    "prioridade",
+    "volconsminimo",
+    "idtipocategoria"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 800,
+  "top": 1260
+}

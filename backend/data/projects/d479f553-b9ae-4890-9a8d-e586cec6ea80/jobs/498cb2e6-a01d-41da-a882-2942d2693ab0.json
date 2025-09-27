@@ -1,0 +1,13 @@
+{
+  "id": "498cb2e6-a01d-41da-a882-2942d2693ab0",
+  "jobName": "Parametros Medição",
+  "selectSql": "INSERT INTO ${SCHEMA}.parametros_medicao (id, dias_minimo_entrega_vencimento) VALUES(1, 5);",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1600,
+  "top": 1620
+}
