@@ -89,7 +89,7 @@ export class Diagram implements AfterViewInit {
   setTimeout(() => {
     this.jobs.forEach((job) => this.addJobToJsPlumb(job));
     this.addExistingConnections();
-  }, 50);
+  }, 1000);
 
   const container = this.scrollContainer.nativeElement;
   const content = container.querySelector('.diagram-content') as HTMLElement;
