@@ -42,6 +42,7 @@ export class DialogProject {
       id: [this.data?.id || ''],
       jobs: [this.data?.jobs || []],
       connections: [this.data?.connections || []],
+      variables: [this.data?.variables || []],
       projectName: [this.data?.projectName || '', [Validators.required]],
       concurrency: [this.data?.concurrency || 1, [Validators.required, Validators.min(1)]],
       sourceDatabase: this.fb.group({

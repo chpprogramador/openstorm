@@ -166,6 +166,7 @@ export class ErrorsComponent implements OnInit {
     this.isLoading = true;
     this.errorService.listPipelines().subscribe({
       next: (pipelines) => {
+        console.log('Pipelines disponíveis:', pipelines);
         this.availablePipelines = pipelines;
         this.isLoading = false;
       },
