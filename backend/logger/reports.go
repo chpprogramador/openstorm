@@ -173,31 +173,33 @@ func ListPipelineReportsHandler(c *gin.Context) {
 		return
 	}
 
-	// Formata a lista com informações básicas
-	var pipelines []map[string]interface{}
-	for _, logFile := range logs {
-		pipelineID := strings.TrimSuffix(strings.TrimPrefix(logFile, "pipeline_"), ".json")
+	c.JSON(http.StatusOK, logs)
 
-		// Tenta carregar informações básicas do pipeline
-		if log, err := LoadPipelineLog(pipelineID); err == nil {
-			pipelines = append(pipelines, map[string]interface{}{
-				"pipeline_id":  pipelineID,
-				"project":      log.Project,
-				"status":       log.Status,
-				"started_at":   log.StartedAt,
-				"ended_at":     log.EndedAt,
-				"duration":     log.EndedAt.Sub(log.StartedAt).String(),
-				"total_jobs":   len(log.Jobs),
-				"download_url": fmt.Sprintf("/api/pipeline/%s/report", pipelineID),
-				"preview_url":  fmt.Sprintf("/api/pipeline/%s/report/preview", pipelineID),
-			})
-		}
-	}
+	// // Formata a lista com informações básicas
+	// var pipelines []map[string]interface{}
+	// for _, logFile := range logs {
+	// 	pipelineID := strings.TrimSuffix(strings.TrimPrefix(logFile, "pipeline_"), ".json")
 
-	c.JSON(http.StatusOK, gin.H{
-		"pipelines": pipelines,
-		"total":     len(pipelines),
-	})
+	// 	// Tenta carregar informações básicas do pipeline
+	// 	if log, err := LoadPipelineLog(pipelineID); err == nil {
+	// 		pipelines = append(pipelines, map[string]interface{}{
+	// 			"pipeline_id":  pipelineID,
+	// 			"project":      log.Project,
+	// 			"status":       log.Status,
+	// 			"started_at":   log.StartedAt,
+	// 			"ended_at":     log.EndedAt,
+	// 			"duration":     log.EndedAt.Sub(log.StartedAt).String(),
+	// 			"total_jobs":   len(log.Jobs),
+	// 			"download_url": fmt.Sprintf("/api/pipeline/%s/report", pipelineID),
+	// 			"preview_url":  fmt.Sprintf("/api/pipeline/%s/report/preview", pipelineID),
+	// 		})
+	// 	}
+	// }
+
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"pipelines": pipelines,
+	// 	"total":     len(pipelines),
+	// })
 }
 
 // Funções auxiliares para geração do PDF

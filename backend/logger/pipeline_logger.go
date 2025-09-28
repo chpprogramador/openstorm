@@ -79,7 +79,9 @@ func SavePipelineLog(log *PipelineLog) error {
 }
 
 func LoadPipelineLog(pipelineID string) (*PipelineLog, error) {
-	path := filepath.Join("logs", fmt.Sprintf("pipeline_%s.json", pipelineID))
+	println("Carregando log do pipeline:", pipelineID)
+	path := filepath.Join("logs", fmt.Sprintf("%s.json", pipelineID))
+	println("Caminho do arquivo de log:", path)
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -150,15 +152,17 @@ func ListPipelineLogs() ([]string, error) {
 	for _, file := range files {
 		if filepath.Ext(file.Name()) == ".json" &&
 			len(file.Name()) > 9 && file.Name()[:9] == "pipeline_" {
-			logs = append(logs, file.Name())
+			logs = append(logs, strings.TrimPrefix(strings.TrimSuffix(file.Name(), ".json"), "\\"))
 		}
 	}
+
 	return logs, nil
 }
 
 // Função para obter estatísticas de um pipeline
 func GetPipelineStats(pipelineID string) (map[string]interface{}, error) {
 	log, err := LoadPipelineLog(pipelineID)
+	println("Obtendo estatísticas para o pipeline:", pipelineID)
 	if err != nil {
 		return nil, err
 	}
@@ -187,6 +191,8 @@ func GetPipelineStats(pipelineID string) (map[string]interface{}, error) {
 	stats["job_stats"] = jobStats
 	stats["total_batches"] = totalBatches
 	stats["total_processed"] = totalProcessed
+
+	println("Estatísticas obtidas com sucesso para o pipeline:", stats)
 
 	return stats, nil
 }
