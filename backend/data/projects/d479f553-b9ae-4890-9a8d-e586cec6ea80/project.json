@@ -50,7 +50,13 @@
     "jobs/2293b292-34e1-4851-8e53-529013ae6220.json",
     "jobs/498cb2e6-a01d-41da-a882-2942d2693ab0.json",
     "jobs/bf0de41d-8736-463d-925d-50cac38d0759.json",
-    "jobs/88f359ce-b47f-497c-9f9d-ff80702f69a6.json"
+    "jobs/88f359ce-b47f-497c-9f9d-ff80702f69a6.json",
+    "jobs/bfb588d7-c488-4528-9e66-1e1f2eca37ae.json",
+    "jobs/20af9d77-b283-468e-b820-5cb600ab85c3.json",
+    "jobs/e60f3c70-f4f0-4d39-8e1d-28ccf1f4fae9.json",
+    "jobs/047d5c2f-03f9-4735-9e96-3a1e2d6c0307.json",
+    "jobs/c2ba33ed-4662-49f4-b351-184564cc9bc8.json",
+    "jobs/637e8713-ee09-4904-8b9b-372036ed5981.json"
   ],
   "connections": [
     {
@@ -244,6 +250,30 @@
     {
       "source": "d5caee76-8fce-4de0-a712-45283a595a7f",
       "target": "d61c8895-90a8-44ca-a8d4-2dc0cd634a81"
+    },
+    {
+      "source": "3a9a2b45-68d4-4274-abe3-ad4fe9a5aa42",
+      "target": "bfb588d7-c488-4528-9e66-1e1f2eca37ae"
+    },
+    {
+      "source": "bfb588d7-c488-4528-9e66-1e1f2eca37ae",
+      "target": "20af9d77-b283-468e-b820-5cb600ab85c3"
+    },
+    {
+      "source": "20af9d77-b283-468e-b820-5cb600ab85c3",
+      "target": "047d5c2f-03f9-4735-9e96-3a1e2d6c0307"
+    },
+    {
+      "source": "047d5c2f-03f9-4735-9e96-3a1e2d6c0307",
+      "target": "e60f3c70-f4f0-4d39-8e1d-28ccf1f4fae9"
+    },
+    {
+      "source": "e60f3c70-f4f0-4d39-8e1d-28ccf1f4fae9",
+      "target": "c2ba33ed-4662-49f4-b351-184564cc9bc8"
+    },
+    {
+      "source": "c2ba33ed-4662-49f4-b351-184564cc9bc8",
+      "target": "637e8713-ee09-4904-8b9b-372036ed5981"
     }
   ],
   "sourceDatabase": {

@@ -1,0 +1,13 @@
+{
+  "id": "c2ba33ed-4662-49f4-b351-184564cc9bc8",
+  "jobName": "Cavalete Situação",
+  "selectSql": "INSERT INTO ${SCHEMA}.lacre_cavalete_situacao (id, ativo, nome_lacre_cavalete_situacao) VALUES(1, true, 'Em uso');\r\nINSERT INTO ${SCHEMA}.lacre_cavalete_situacao (id, ativo, nome_lacre_cavalete_situacao) VALUES(2, true, 'Disponível');\r\nINSERT INTO ${SCHEMA}.lacre_cavalete_situacao (id, ativo, nome_lacre_cavalete_situacao) VALUES(3, true, 'Em Manutenção');\r\nINSERT INTO ${SCHEMA}.lacre_cavalete_situacao (id, ativo, nome_lacre_cavalete_situacao) VALUES(4, true, 'Sucata');\r\nINSERT INTO ${SCHEMA}.lacre_cavalete_situacao (id, ativo, nome_lacre_cavalete_situacao) VALUES(5, true, 'Recodificado');\r\nINSERT INTO ${SCHEMA}.lacre_cavalete_situacao (id, ativo, nome_lacre_cavalete_situacao) VALUES(6, true, 'Roubado');\r\nINSERT INTO ${SCHEMA}.lacre_cavalete_situacao (id, ativo, nome_lacre_cavalete_situacao) VALUES(7, true, 'Reservado');",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1200,
+  "top": 1800
+}

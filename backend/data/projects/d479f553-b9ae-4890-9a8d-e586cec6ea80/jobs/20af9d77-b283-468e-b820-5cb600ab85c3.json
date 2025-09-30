@@ -1,0 +1,13 @@
+{
+  "id": "20af9d77-b283-468e-b820-5cb600ab85c3",
+  "jobName": "Status",
+  "selectSql": "INSERT INTO ${SCHEMA}.status (id, nome_status) VALUES(1, 'Pendente');\r\nINSERT INTO ${SCHEMA}.status (id, nome_status) VALUES(2, 'Executado');\r\nINSERT INTO ${SCHEMA}.status (id, nome_status) VALUES(3, 'Iniciado');",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 0,
+  "top": 1800
+}
