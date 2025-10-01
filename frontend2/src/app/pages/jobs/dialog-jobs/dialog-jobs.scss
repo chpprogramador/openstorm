@@ -1,0 +1,111 @@
+// Dialog header styling
+.dialog-header {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    margin-bottom: 0;
+}
+
+.dialog-header h2 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary, #333);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+    gap: 16px;
+    padding: 1.5rem !important;
+}
+
+// Dialog actions styling
+.dialog-actions {
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    gap: 0.75rem;
+}
+
+.cancel-btn, .save-btn {
+    min-width: 80px;
+    height: 36px;
+    border-radius: 6px;
+    font-weight: 500;
+    text-transform: none;
+}
+
+.cancel-btn {
+    color: var(--text-secondary, #666);
+}
+
+.lineFull {
+    width: 100%;
+    display: flex;
+    align-items: start;
+    justify-content: start;
+    gap: 10px;
+    flex-grow: 1;
+    align-items: stretch;
+}
+
+.editors {
+    height: calc(100vh - 340px);
+}
+
+/* Permite que o conteúdo flexível dentro de .editor cresça */
+.editor {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Faz o app-sql-editor crescer e ocupar todo o espaço disponível */
+.editor app-sql-editor {
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+}
+
+.w50 {
+    width: 50%;
+}
+
+.w50 mat-form-field{
+    width: 100%;
+}
+
+.w75 {
+    width: 75%;
+}
+
+.w75 mat-form-field{
+    width: 100%;
+}
+
+.w25 {
+    width: 25%;
+}
+
+.w25 mat-form-field {
+    width: 100%;
+}
+
+.w15 {
+    width: 15%;
+}
+
+.w15 mat-form-field {
+    width: 100%;
+}
+
+.w10 {
+    width: 10%;
+}
+
+.w10 mat-form-field {
+    width: 100%;
+}

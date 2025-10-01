@@ -1,0 +1,90 @@
+<div class="dialog-header">
+    <h2 mat-dialog-title>Projeto</h2>
+</div>
+
+<mat-dialog-content class="dialog-content" [formGroup]="form" >
+
+  <div class="tileContent">
+
+    
+    <div style="display: none">
+      <input matInput formControlName="id">
+      <input matInput formControlName="jobs">
+      <input matInput formControlName="connections">
+      <input matInput formControlName="Variables">
+    </div>
+
+    <div class="lineFull">
+      <div class="w75">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome do Projeto</mat-label>
+          <input matInput formControlName="projectName" required>
+          <mat-error></mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="w25">
+        <mat-form-field appearance="outline">
+          <mat-label>Concorrência</mat-label>
+          <input matInput formControlName="concurrency" type="number" required>
+          <mat-error></mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+  </div>
+  <div class="database">
+    <div class="sourceDatabase">
+
+      <h3>Banco de Origem</h3>
+      <div formGroupName="sourceDatabase" class="db-group">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="postgres">Postgres</mat-option>
+            <mat-option value="sqlserver">SQLServer</mat-option>
+            <mat-option value="mysql">MySQL</mat-option>
+            <mat-option value="access">Access</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="lineFull">
+          <div class="w75"><mat-form-field appearance="outline"><mat-label>Host</mat-label><input matInput formControlName="host"></mat-form-field></div>
+          <div class="w25"><mat-form-field appearance="outline"><mat-label>Porta</mat-label><input matInput type="number" formControlName="port"></mat-form-field></div>
+        </div>
+        <mat-form-field appearance="outline"><mat-label>Usuário</mat-label><input matInput formControlName="user"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Senha</mat-label><input matInput type="password" formControlName="password"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Database</mat-label><input matInput formControlName="database"></mat-form-field>
+      </div>
+
+    </div>
+    <div class="destinationDatabase">
+    
+      <h3>Banco de Destino</h3>
+      <div formGroupName="destinationDatabase" class="db-group">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="postgres">Postgres</mat-option>
+            <mat-option value="sqlserver">SQLServer</mat-option>
+            <mat-option value="mysql">MySQL</mat-option>
+            <mat-option value="access">Access</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="lineFull">
+          <div class="w75"><mat-form-field appearance="outline"><mat-label>Host</mat-label><input matInput formControlName="host"></mat-form-field></div>
+          <div class="w25"><mat-form-field appearance="outline"><mat-label>Porta</mat-label><input matInput type="number" formControlName="port"></mat-form-field></div>
+        </div>
+        <mat-form-field appearance="outline"><mat-label>Usuário</mat-label><input matInput formControlName="user"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Senha</mat-label><input matInput type="password" formControlName="password"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Database</mat-label><input matInput formControlName="database"></mat-form-field>
+      </div>
+
+    </div>
+  </div>
+  
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions" align="end">
+  <button mat-button class="cancel-btn" (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" class="save-btn" (click)="onSave()" [disabled]="!this.form.valid">Salvar</button>
+</mat-dialog-actions>

@@ -1,0 +1,74 @@
+<div class="dialog-header">
+    <h2 mat-dialog-title>Jobs</h2>
+</div>
+
+<mat-dialog-content class="dialog-content">
+
+    <form [formGroup]="form">
+
+        <div class="lineFull">
+            <div class="w50">
+                <mat-form-field appearance="outline">
+                    <mat-label>Nome do Job</mat-label>
+                    <input matInput formControlName="jobName" required>
+                </mat-form-field>
+            </div>
+
+            <div class="w25">
+                <mat-form-field appearance="outline">
+                    <mat-label>Registros por Página</mat-label>
+                    <input matInput type="number" formControlName="recordsPerPage" required>
+                </mat-form-field>
+            </div>
+
+            <div class="w15">
+                 <mat-form-field appearance="outline">
+                    <mat-label>Tipo</mat-label>
+                    <mat-select formControlName="type">
+                        <mat-option value="insert">Insert</mat-option>
+                        <mat-option value="execution">Execução</mat-option>
+                        <mat-option value="condition">Condição</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="w10">
+                <mat-slide-toggle formControlName="stopOnError">Parar quando erro?</mat-slide-toggle>
+            </div>
+
+        </div>
+
+        <input type="hidden" formControlName="id">
+        <input type="hidden" formControlName="left">
+        <input type="hidden" formControlName="top">
+        <input type="hidden" formControlName="columns">
+    </form>
+
+    <div class="lineFull editors">
+        <div class="w50 editor" *ngIf="form.get('type')?.value === 'insert'">
+            
+            <h2>insert</h2>
+            <app-sql-editor
+            [initialSql]="sqlInsert"
+            (sqlChanged)="onInsertAtualizado($event)">
+            </app-sql-editor>
+
+        </div>
+        <div class="w50 editor" >
+
+            <h2 *ngIf="form.get('type')?.value === 'insert'">Select</h2>
+            <h2 *ngIf="form.get('type')?.value != 'insert'">Query</h2>
+            <app-sql-editor
+            [initialSql]="sqlSelect"
+            (sqlChanged)="onSelectAtualizado($event)">
+            </app-sql-editor>
+
+        </div>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions" align="end">
+  <button mat-button class="cancel-btn" (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" class="save-btn" (click)="onSave()" [disabled]="!this.form.valid">Salvar</button>
+</mat-dialog-actions>

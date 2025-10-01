@@ -1,0 +1,41 @@
+.log-viewer-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fafafa;
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 500;
+  color: #333;
+  
+  mat-icon {
+    color: #666;
+  }
+  
+  button {
+    margin-left: auto;
+  }
+}
+
+pre.log-container {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  padding: 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+  width: 100%;
+  height: auto;
+}

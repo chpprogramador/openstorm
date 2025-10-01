@@ -1,0 +1,329 @@
+// Dashboard Header - SB Admin 2 Style
+.dashboard-header {
+  margin-bottom: 1.5rem;
+  
+  .dashboard-title {
+    font-size: 1.75rem;
+    font-weight: 400;
+    margin: 0;
+    color: var(--title-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .dashboard-subtitle {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px rgba(0, 183, 255, 0.3);
+  }
+  to {
+    text-shadow: 0 0 20px rgba(0, 183, 255, 0.6);
+  }
+}
+
+// Stats Container
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+// Stat Cards - SB Admin 2 Style
+.stat-card {
+  background: var(--bg-card);
+  border-radius: 0.60rem;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  padding: 20px;
+  
+  &:hover {
+    box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    
+    .card-icon {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+      transition: all 0.3s ease;
+      opacity: 0.8;
+    }
+    
+    .card-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+  }
+  
+  .card-content {
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 600;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 0.8rem;
+      font-weight: 400;
+    }
+    
+    .stat-change {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      display: inline-block;
+      
+      &.positive {
+        background: rgba(0, 255, 0, 0.1);
+        color: #4ade80;
+      }
+      
+      &.negative {
+        background: rgba(255, 0, 0, 0.1);
+        color: #f87171;
+      }
+      
+      &.neutral {
+        background: rgba(255, 255, 255, 0.1);
+        color: #c9e0f8;
+      }
+    }
+  }
+}
+
+// Specific card colors - adaptativos aos temas
+.jobs-card {
+  .card-icon {
+    color: var(--primary-color);
+  }
+  
+  .card-indicator.jobs {
+    background: var(--primary-color);
+  }
+}
+
+.success-card {
+  .card-icon {
+    color: var(--success-color);
+  }
+  
+  .card-indicator.success {
+    background: var(--success-color);
+  }
+}
+
+.time-card {
+  .card-icon {
+    color: var(--warning-color);
+  }
+  
+  .card-indicator.time {
+    background: var(--warning-color);
+  }
+}
+
+.errors-card {
+  .card-icon {
+    color: var(--error-color);
+  }
+  
+  .card-indicator.errors {
+    background: var(--error-color);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Activity Section - SB Admin 2 Style
+.activity-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 0.60rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  padding: 1.5rem;
+  
+  .section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+  }
+  
+  .activity-card {
+    border-bottom: 1px solid rgba(58, 59, 69, 0.1);
+    transition: all 0.2s ease;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:hover {
+      background: rgba(58, 59, 69, 0.05);
+    }
+    
+    .activity-content {
+      display: flex;
+      align-items: center;
+      padding: 1rem 0;
+      gap: 1rem;
+      
+      .activity-icon {
+        color: #4e73df;
+        font-size: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        opacity: 0.9;
+      }
+      
+      .activity-text {
+        flex: 1;
+        
+        .activity-title {
+          font-weight: 600;
+          font-size: 0.875rem;
+          margin-bottom: 0.125rem;
+          color: var(--text-primary);
+        }
+        
+        .activity-description {
+          font-size: 0.8rem;
+          color: #5a5c69;
+          line-height: 1.4;
+        }
+      }
+      
+      .activity-time {
+        font-size: 0.75rem;
+        color: #858796;
+        white-space: nowrap;
+        font-weight: 400;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .dashboard-header .dashboard-title {
+    font-size: 2rem;
+  }
+  
+  .stat-card {
+    padding: 1.25rem;
+    
+    .card-content .stat-value {
+      font-size: 2rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header .dashboard-title {
+    font-size: 1.8rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+}
+
+
+mat-card{
+    margin: 10px;
+    padding: 20px;
+}
+
+  mat-card{
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    width: 100%;
+  }
+
+  mat-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      //background-color: #00ff00; /* Cor da faixa */
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    mat-card.card_projects::before {
+      background-color: #00ff00; /* Cor da faixa para projetos */
+    }
+    mat-card.card_jobs::before {
+      background-color: #00b7ff; /* Cor da faixa para tarefas */
+    }
+    mat-card.card_porcentagem::before {
+      background-color: #ffff00; /* Cor da faixa para notas */
+    }
+    mat-card.card_erros::before {
+      background-color: #ff0000; /* Cor da faixa para outros */
+    }
+
+    mat-card .destaque{
+      //color: #00ff00;
+      font-size: 2.2em;
+      display: block;
+      width: 100%;
+    }
+
+    mat-card.card_projects .destaque{
+      color: #00ff00;
+    }
+    mat-card.card_jobs .destaque{
+      color: #00b7ff;
+    }
+    mat-card.card_porcentagem .destaque{
+      color: #ffff00;
+    }
+    mat-card.card_erros .destaque{
+      color: #ff0000;
+    }
+
+    mat-card .subtexto{
+      font-size: 1.2em;
+      display: block;
+    }
+
+
+    
