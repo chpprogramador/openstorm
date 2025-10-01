@@ -282,7 +282,7 @@
     "port": 5430,
     "user": "consult",
     "password": "AQLnm;mNl3vr(RRA",
-    "database": "ourinhos"
+    "database": "samar"
   },
   "destinationDatabase": {
     "type": "postgres",
