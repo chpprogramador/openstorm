@@ -7,22 +7,24 @@
         <mat-icon fontIcon="leaderboard"></mat-icon>
         <span>Dashboard</span>
       </a>
-      <a class="nav-item" routerLink="/variables" routerLinkActive="active">
-        <mat-icon fontIcon="settings"></mat-icon>
-        <span>Variáveis</span>
-      </a>
-      <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
-        <mat-icon fontIcon="dns"></mat-icon>
-        <span>Jobs</span>
-      </a>      
-      <a class="nav-item" routerLink="/history" routerLinkActive="active">
-        <mat-icon fontIcon="list_alt"></mat-icon>
-        <span>Histórico</span>
-      </a>
-      <a class="nav-item" routerLink="/errors" routerLinkActive="active">
-        <mat-icon fontIcon="bug_report"></mat-icon>
-        <span>Erros</span>
-      </a>
+      @if (selectedProject){
+        <a class="nav-item" routerLink="/variables" routerLinkActive="active">
+          <mat-icon fontIcon="settings"></mat-icon>
+          <span>Variáveis</span>
+        </a>
+        <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
+          <mat-icon fontIcon="dns"></mat-icon>
+          <span>Jobs</span>
+        </a>      
+        <a class="nav-item" routerLink="/history" routerLinkActive="active">
+          <mat-icon fontIcon="list_alt"></mat-icon>
+          <span>Histórico</span>
+        </a>
+        <a class="nav-item" routerLink="/errors" routerLinkActive="active">
+          <mat-icon fontIcon="bug_report"></mat-icon>
+          <span>Erros</span>
+        </a>
+      }
       
     </div>
 
