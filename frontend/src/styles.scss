@@ -292,8 +292,8 @@ ngx-monaco-editor {
     box-shadow: 0 10px 25px var(--shadow-primary);
   }
 
-  span.mat-mdc-select-min-line {
-    color: #FFF !important;
+  span.mat-mdc-select-min-line, .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-text-field__input {
+    color: var(--text-primary) !important;
 }
 
 .mat-mdc-select-arrow svg {
