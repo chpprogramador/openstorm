@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { ConfirmDialogComponent } from './pages/dialog-confirm/dialog-confirm';
 import { DialogProject } from './pages/project/dialog-project/dialog-project';
 import { AppState } from './services/app-state';
@@ -53,7 +53,8 @@ export class App {
     private projectservice: ProjectService,
     private appState: AppState,
     private dialog: MatDialog,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private router: Router
   ) {
     // Inicializa o tema
     this.themeService.setTheme(this.themeService.getCurrentTheme());
@@ -64,6 +65,11 @@ export class App {
   }
 
   ngOnInit() {
+
+    if (!this.selectedProject && this.router.url !== '') {
+      this.router.navigate(['/']);
+    }
+
     this.projectservice.listProjects().subscribe({
       next: (projects) => {
         this.projects = projects;
@@ -74,6 +80,7 @@ export class App {
       }
     });
   }
+
 
    onSelectChange(event: any) {
     this.appState.project = event.value;  

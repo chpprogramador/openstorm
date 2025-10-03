@@ -129,10 +129,12 @@ body:not(.light-theme) {
     fill: var(--text-secondary) !important;
   }
   
-  * {
+  *:not(span) {
     color: var(--text-primary);
   }
 }
+
+
 
 // Estilos para tema light - Clean e minimalista
 .light-theme {
