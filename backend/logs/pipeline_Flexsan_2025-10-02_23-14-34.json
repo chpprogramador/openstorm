@@ -1,0 +1,1215 @@
+{
+  "pipeline_id": "Flexsan_2025-10-02_23-14-34",
+  "project": "Flexsan",
+  "status": "error",
+  "started_at": "2025-10-02T23:14:34.409938642-03:00",
+  "ended_at": "2025-10-02T23:15:26.247455081-03:00",
+  "jobs": [
+    {
+      "job_id": "c261e485-8fd1-42af-bbc7-eebb02be84c5",
+      "job_name": "Limpa tudo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:34.42326744-03:00",
+      "ended_at": "2025-10-02T23:14:35.10472483-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "ef3e7087-19f4-439c-b9a1-8f3b39172c64",
+      "job_name": "Bacia",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:35.105605292-03:00",
+      "ended_at": "2025-10-02T23:14:37.212050118-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:14:37.168188224-03:00",
+          "ended_at": "2025-10-02T23:14:37.211148713-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "cf687d58-da2e-4061-a4c7-dcfd98461167",
+      "job_name": "Situação Cavalete",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:37.212732593-03:00",
+      "ended_at": "2025-10-02T23:14:38.01077129-03:00",
+      "processed": 0,
+      "total": 8,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 8,
+          "status": "done",
+          "rows": 8,
+          "started_at": "2025-10-02T23:14:37.965907298-03:00",
+          "ended_at": "2025-10-02T23:14:38.009703545-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "954d7bd7-23c5-4169-8ad9-1b8dc67ae3fa",
+      "job_name": "Cliente",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:38.012872295-03:00",
+      "ended_at": "2025-10-02T23:14:43.541557089-03:00",
+      "processed": 0,
+      "total": 23952,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:39.232866152-03:00",
+          "ended_at": "2025-10-02T23:14:39.446244522-03:00"
+        },
+        {
+          "offset": 1000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:39.447080798-03:00",
+          "ended_at": "2025-10-02T23:14:39.61339016-03:00"
+        },
+        {
+          "offset": 2000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:39.613945659-03:00",
+          "ended_at": "2025-10-02T23:14:39.835246021-03:00"
+        },
+        {
+          "offset": 3000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:39.835831318-03:00",
+          "ended_at": "2025-10-02T23:14:40.094909351-03:00"
+        },
+        {
+          "offset": 4000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:40.095714276-03:00",
+          "ended_at": "2025-10-02T23:14:40.257771252-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:40.26084125-03:00",
+          "ended_at": "2025-10-02T23:14:40.429451581-03:00"
+        },
+        {
+          "offset": 6000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:40.432254909-03:00",
+          "ended_at": "2025-10-02T23:14:40.587449145-03:00"
+        },
+        {
+          "offset": 7000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:40.588988162-03:00",
+          "ended_at": "2025-10-02T23:14:40.751891872-03:00"
+        },
+        {
+          "offset": 8000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:40.753365002-03:00",
+          "ended_at": "2025-10-02T23:14:41.183035256-03:00"
+        },
+        {
+          "offset": 9000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:41.184194281-03:00",
+          "ended_at": "2025-10-02T23:14:41.374024164-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:41.375447405-03:00",
+          "ended_at": "2025-10-02T23:14:41.529589207-03:00"
+        },
+        {
+          "offset": 11000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:41.530327566-03:00",
+          "ended_at": "2025-10-02T23:14:41.684361415-03:00"
+        },
+        {
+          "offset": 12000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:41.684923916-03:00",
+          "ended_at": "2025-10-02T23:14:41.826221345-03:00"
+        },
+        {
+          "offset": 13000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:41.828564222-03:00",
+          "ended_at": "2025-10-02T23:14:41.989171985-03:00"
+        },
+        {
+          "offset": 14000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:41.991508636-03:00",
+          "ended_at": "2025-10-02T23:14:42.171270964-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:42.171889623-03:00",
+          "ended_at": "2025-10-02T23:14:42.315212109-03:00"
+        },
+        {
+          "offset": 16000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:42.316003513-03:00",
+          "ended_at": "2025-10-02T23:14:42.470419138-03:00"
+        },
+        {
+          "offset": 17000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:42.473727249-03:00",
+          "ended_at": "2025-10-02T23:14:42.627354566-03:00"
+        },
+        {
+          "offset": 18000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:42.628086401-03:00",
+          "ended_at": "2025-10-02T23:14:42.773459762-03:00"
+        },
+        {
+          "offset": 19000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:42.774194448-03:00",
+          "ended_at": "2025-10-02T23:14:42.911308117-03:00"
+        },
+        {
+          "offset": 20000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:42.911991316-03:00",
+          "ended_at": "2025-10-02T23:14:43.107863626-03:00"
+        },
+        {
+          "offset": 21000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:43.108880208-03:00",
+          "ended_at": "2025-10-02T23:14:43.250516957-03:00"
+        },
+        {
+          "offset": 22000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:43.25118587-03:00",
+          "ended_at": "2025-10-02T23:14:43.394014422-03:00"
+        },
+        {
+          "offset": 23000,
+          "limit": 952,
+          "status": "done",
+          "rows": 952,
+          "started_at": "2025-10-02T23:14:43.394943532-03:00",
+          "ended_at": "2025-10-02T23:14:43.540863035-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "72f3dac1-43f7-449c-824e-49c40b30c1ac",
+      "job_name": "Cobrança Fase",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:43.542503262-03:00",
+      "ended_at": "2025-10-02T23:14:43.560138569-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "450e0ff2-c6cd-4778-b067-60e4e1a82bed",
+      "job_name": "Cobrança Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:43.560983701-03:00",
+      "ended_at": "2025-10-02T23:14:43.577479173-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "35b82c31-8384-49a7-9b4c-be3edfedb464",
+      "job_name": "Endereço",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:43.578875689-03:00",
+      "ended_at": "2025-10-02T23:14:45.153271764-03:00",
+      "processed": 0,
+      "total": 21714,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1318,
+          "status": "done",
+          "rows": 1318,
+          "started_at": "2025-10-02T23:14:44.819834688-03:00",
+          "ended_at": "2025-10-02T23:14:45.152110208-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "65044050-d870-436f-bb66-cfa9f6547b2b",
+      "job_name": "Entrega Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:45.154279082-03:00",
+      "ended_at": "2025-10-02T23:14:45.17440016-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "ad35abb8-c90f-4ac7-b717-6265755fcf97",
+      "job_name": "Faturamento Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:45.178170856-03:00",
+      "ended_at": "2025-10-02T23:14:45.202800386-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "5287e194-fb5f-4665-ab73-2227ee4956af",
+      "job_name": "Fonte Abastecimento",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:45.203813726-03:00",
+      "ended_at": "2025-10-02T23:14:45.990476931-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:14:45.94716673-03:00",
+          "ended_at": "2025-10-02T23:14:45.98901282-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "2be8d97a-34fa-4afb-9136-f6d46983f27a",
+      "job_name": "Fonte Alternativa",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:45.993998552-03:00",
+      "ended_at": "2025-10-02T23:14:46.782710388-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:14:46.73847489-03:00",
+          "ended_at": "2025-10-02T23:14:46.780517099-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "b44168b1-9c27-4664-8769-f489790c09d7",
+      "job_name": "Leitura Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:46.784939546-03:00",
+      "ended_at": "2025-10-02T23:14:46.807608289-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "a525143e-71a2-40b5-8144-cd3f613f2dd7",
+      "job_name": "Grupo Medição",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:46.812191296-03:00",
+      "ended_at": "2025-10-02T23:14:47.607844307-03:00",
+      "processed": 0,
+      "total": 24,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 24,
+          "status": "done",
+          "rows": 24,
+          "started_at": "2025-10-02T23:14:47.560182001-03:00",
+          "ended_at": "2025-10-02T23:14:47.606550553-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "e5f0f83f-f8e8-41f9-a5bd-360c9037109e",
+      "job_name": "Imovel Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:47.609402169-03:00",
+      "ended_at": "2025-10-02T23:14:48.399649487-03:00",
+      "processed": 0,
+      "total": 7,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 7,
+          "status": "done",
+          "rows": 7,
+          "started_at": "2025-10-02T23:14:48.357906627-03:00",
+          "ended_at": "2025-10-02T23:14:48.398095322-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "77d4dca0-e48d-4fbb-ada8-d2b56aeb6bfc",
+      "job_name": "Ligação Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:48.401106276-03:00",
+      "ended_at": "2025-10-02T23:14:48.418706852-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "80315a4b-50e8-4784-9de9-9948bff2d8b3",
+      "job_name": "Ligacao Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:48.447464544-03:00",
+      "ended_at": "2025-10-02T23:14:48.469739033-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "315c6acf-2aaa-4b5a-974a-278a3bc4152a",
+      "job_name": "Padrão Instalação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:48.471106543-03:00",
+      "ended_at": "2025-10-02T23:14:49.367466855-03:00",
+      "processed": 0,
+      "total": 6,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 6,
+          "status": "done",
+          "rows": 6,
+          "started_at": "2025-10-02T23:14:49.319497657-03:00",
+          "ended_at": "2025-10-02T23:14:49.365404989-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "1529850a-7095-4924-a915-fb324a26d2db",
+      "job_name": "Classe Medidor",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:49.371208605-03:00",
+      "ended_at": "2025-10-02T23:14:50.16189482-03:00",
+      "processed": 0,
+      "total": 4,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 4,
+          "status": "done",
+          "rows": 4,
+          "started_at": "2025-10-02T23:14:50.120465855-03:00",
+          "ended_at": "2025-10-02T23:14:50.160625824-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "b586a9ea-8438-429e-b91a-d93734208294",
+      "job_name": "Medidor Marca",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:50.163852794-03:00",
+      "ended_at": "2025-10-02T23:14:50.953859894-03:00",
+      "processed": 0,
+      "total": 41,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 41,
+          "status": "done",
+          "rows": 41,
+          "started_at": "2025-10-02T23:14:50.909261687-03:00",
+          "ended_at": "2025-10-02T23:14:50.951821492-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "708418fd-188d-44a9-8505-5cae2c482b4c",
+      "job_name": "Medidor Tecnologia",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:50.957536088-03:00",
+      "ended_at": "2025-10-02T23:14:51.750561344-03:00",
+      "processed": 0,
+      "total": 9,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 9,
+          "status": "done",
+          "rows": 9,
+          "started_at": "2025-10-02T23:14:51.705899-03:00",
+          "ended_at": "2025-10-02T23:14:51.749359559-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "c58e7a99-1f80-4ea0-8e9d-69c890384c39",
+      "job_name": "Medidor Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:51.753503573-03:00",
+      "ended_at": "2025-10-02T23:14:52.581768092-03:00",
+      "processed": 0,
+      "total": 8,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 8,
+          "status": "done",
+          "rows": 8,
+          "started_at": "2025-10-02T23:14:52.506618714-03:00",
+          "ended_at": "2025-10-02T23:14:52.579523694-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "de25d20b-6544-42ea-a57d-e2f0ab83cfa1",
+      "job_name": "Medidor Vazão",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:52.583671441-03:00",
+      "ended_at": "2025-10-02T23:14:53.426070414-03:00",
+      "processed": 0,
+      "total": 12,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 12,
+          "status": "done",
+          "rows": 12,
+          "started_at": "2025-10-02T23:14:53.369897593-03:00",
+          "ended_at": "2025-10-02T23:14:53.42494298-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "d83b32ab-8ced-428f-9a10-caddc22842bb",
+      "job_name": "Medidor Modelo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:53.42713384-03:00",
+      "ended_at": "2025-10-02T23:14:54.239994587-03:00",
+      "processed": 0,
+      "total": 3,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 3,
+          "status": "done",
+          "rows": 3,
+          "started_at": "2025-10-02T23:14:54.172885806-03:00",
+          "ended_at": "2025-10-02T23:14:54.238854599-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "b937f899-796c-4068-b199-2cc1d54c6c04",
+      "job_name": "Medidor Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:54.241079693-03:00",
+      "ended_at": "2025-10-02T23:14:55.518009178-03:00",
+      "processed": 0,
+      "total": 7,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 7,
+          "status": "done",
+          "rows": 7,
+          "started_at": "2025-10-02T23:14:55.442463158-03:00",
+          "ended_at": "2025-10-02T23:14:55.512082899-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "032f22ca-0b46-4081-9894-3eb6b0f52753",
+      "job_name": "Medidor",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:14:55.520981539-03:00",
+      "ended_at": "2025-10-02T23:15:01.242038529-03:00",
+      "processed": 0,
+      "total": 24797,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:56.429825122-03:00",
+          "ended_at": "2025-10-02T23:14:56.642086948-03:00"
+        },
+        {
+          "offset": 1000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:56.643366628-03:00",
+          "ended_at": "2025-10-02T23:14:56.817061582-03:00"
+        },
+        {
+          "offset": 2000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:56.818404852-03:00",
+          "ended_at": "2025-10-02T23:14:56.982355238-03:00"
+        },
+        {
+          "offset": 3000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:56.983988821-03:00",
+          "ended_at": "2025-10-02T23:14:57.141724027-03:00"
+        },
+        {
+          "offset": 4000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:57.142851605-03:00",
+          "ended_at": "2025-10-02T23:14:57.299087851-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:57.300816077-03:00",
+          "ended_at": "2025-10-02T23:14:57.459882623-03:00"
+        },
+        {
+          "offset": 6000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:57.461673063-03:00",
+          "ended_at": "2025-10-02T23:14:57.676555301-03:00"
+        },
+        {
+          "offset": 7000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:57.678930008-03:00",
+          "ended_at": "2025-10-02T23:14:57.879367642-03:00"
+        },
+        {
+          "offset": 8000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:57.880620231-03:00",
+          "ended_at": "2025-10-02T23:14:58.059113676-03:00"
+        },
+        {
+          "offset": 9000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:58.069373621-03:00",
+          "ended_at": "2025-10-02T23:14:58.270536498-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:58.272904002-03:00",
+          "ended_at": "2025-10-02T23:14:58.435806755-03:00"
+        },
+        {
+          "offset": 11000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:58.440687057-03:00",
+          "ended_at": "2025-10-02T23:14:58.608987631-03:00"
+        },
+        {
+          "offset": 12000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:58.611046301-03:00",
+          "ended_at": "2025-10-02T23:14:58.798722143-03:00"
+        },
+        {
+          "offset": 13000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:58.800718297-03:00",
+          "ended_at": "2025-10-02T23:14:59.053009942-03:00"
+        },
+        {
+          "offset": 14000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:59.055254255-03:00",
+          "ended_at": "2025-10-02T23:14:59.247029578-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:59.249518576-03:00",
+          "ended_at": "2025-10-02T23:14:59.417399532-03:00"
+        },
+        {
+          "offset": 16000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:59.418698093-03:00",
+          "ended_at": "2025-10-02T23:14:59.573666985-03:00"
+        },
+        {
+          "offset": 17000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:59.575095145-03:00",
+          "ended_at": "2025-10-02T23:14:59.753759071-03:00"
+        },
+        {
+          "offset": 18000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:14:59.755984285-03:00",
+          "ended_at": "2025-10-02T23:15:00.03264209-03:00"
+        },
+        {
+          "offset": 19000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:15:00.03713624-03:00",
+          "ended_at": "2025-10-02T23:15:00.272818699-03:00"
+        },
+        {
+          "offset": 20000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:15:00.274652091-03:00",
+          "ended_at": "2025-10-02T23:15:00.503827126-03:00"
+        },
+        {
+          "offset": 21000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:15:00.506528495-03:00",
+          "ended_at": "2025-10-02T23:15:00.691085442-03:00"
+        },
+        {
+          "offset": 22000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:15:00.693765953-03:00",
+          "ended_at": "2025-10-02T23:15:00.863565982-03:00"
+        },
+        {
+          "offset": 23000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:15:00.865956319-03:00",
+          "ended_at": "2025-10-02T23:15:01.042556745-03:00"
+        },
+        {
+          "offset": 24000,
+          "limit": 797,
+          "status": "done",
+          "rows": 797,
+          "started_at": "2025-10-02T23:15:01.045653162-03:00",
+          "ended_at": "2025-10-02T23:15:01.236938573-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "e402531b-2cb1-4736-9c6e-381914eafd1a",
+      "job_name": "Pavimento Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:01.250609891-03:00",
+      "ended_at": "2025-10-02T23:15:02.08847005-03:00",
+      "processed": 0,
+      "total": 9,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 9,
+          "status": "done",
+          "rows": 9,
+          "started_at": "2025-10-02T23:15:02.02418099-03:00",
+          "ended_at": "2025-10-02T23:15:02.085658722-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "a60b21da-80c9-4248-86c5-16aa1a8327ea",
+      "job_name": "Reservatorio",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:02.091912501-03:00",
+      "ended_at": "2025-10-02T23:15:02.920108391-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:15:02.869691072-03:00",
+          "ended_at": "2025-10-02T23:15:02.917605028-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "ac7738ab-c643-4657-b11c-a909821e0d54",
+      "job_name": "Zona Macro",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:02.922588069-03:00",
+      "ended_at": "2025-10-02T23:15:03.71763278-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:15:03.674253646-03:00",
+          "ended_at": "2025-10-02T23:15:03.716454901-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "9c66585d-4dac-4b0d-bfe3-7a2ff7a12c05",
+      "job_name": "Zona Pressão",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:03.719020727-03:00",
+      "ended_at": "2025-10-02T23:15:04.541421103-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:15:04.475141449-03:00",
+          "ended_at": "2025-10-02T23:15:04.534337626-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "bf7581f1-cf00-4ad3-a67e-72e76975e157",
+      "job_name": "Distrito",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:04.545750963-03:00",
+      "ended_at": "2025-10-02T23:15:05.373797512-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:15:05.322583687-03:00",
+          "ended_at": "2025-10-02T23:15:05.371948894-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "9587a320-098a-46db-8bd1-29c4e6ffa10d",
+      "job_name": "Calçada Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:05.377847552-03:00",
+      "ended_at": "2025-10-02T23:15:06.252443454-03:00",
+      "processed": 0,
+      "total": 19,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 19,
+          "status": "done",
+          "rows": 19,
+          "started_at": "2025-10-02T23:15:06.156859084-03:00",
+          "ended_at": "2025-10-02T23:15:06.243173191-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "79bef5d0-6ee1-47bd-87d8-bb9ceafba737",
+      "job_name": "Rede Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:06.258237453-03:00",
+      "ended_at": "2025-10-02T23:15:07.084411632-03:00",
+      "processed": 0,
+      "total": 41,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 41,
+          "status": "done",
+          "rows": 41,
+          "started_at": "2025-10-02T23:15:07.019926211-03:00",
+          "ended_at": "2025-10-02T23:15:07.082960454-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "74f128b5-0c80-44be-b024-3b2b65400ffb",
+      "job_name": "Rede Posição",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:07.086193815-03:00",
+      "ended_at": "2025-10-02T23:15:07.93467634-03:00",
+      "processed": 0,
+      "total": 6,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 6,
+          "status": "done",
+          "rows": 6,
+          "started_at": "2025-10-02T23:15:07.889651592-03:00",
+          "ended_at": "2025-10-02T23:15:07.932657802-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "dd7d85cd-11b5-4cc2-9ce1-cfa19e9c67f3",
+      "job_name": "Rota leitura",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:07.937984452-03:00",
+      "ended_at": "2025-10-02T23:15:08.881364262-03:00",
+      "processed": 0,
+      "total": 128,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 128,
+          "status": "done",
+          "rows": 128,
+          "started_at": "2025-10-02T23:15:08.798029653-03:00",
+          "ended_at": "2025-10-02T23:15:08.879149753-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "f8fc93a7-3977-4cbc-84bd-8c8d025d6825",
+      "job_name": "Ligação",
+      "status": "error",
+      "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:15:08.882936499-03:00",
+      "ended_at": "2025-10-02T23:15:26.240789569-03:00",
+      "processed": 0,
+      "total": 18077,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:10.95715963-03:00",
+          "ended_at": "2025-10-02T23:15:11.44683544-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:11.732768877-03:00",
+          "ended_at": "2025-10-02T23:15:12.167253413-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:12.490930193-03:00",
+          "ended_at": "2025-10-02T23:15:12.920238877-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:13.28047719-03:00",
+          "ended_at": "2025-10-02T23:15:14.218175231-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:14.482278547-03:00",
+          "ended_at": "2025-10-02T23:15:14.86149834-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:15.402439-03:00",
+          "ended_at": "2025-10-02T23:15:15.854662632-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:16.294966462-03:00",
+          "ended_at": "2025-10-02T23:15:16.662873602-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:17.063827223-03:00",
+          "ended_at": "2025-10-02T23:15:17.4987954-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:17.854451984-03:00",
+          "ended_at": "2025-10-02T23:15:18.217695519-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:18.796284108-03:00",
+          "ended_at": "2025-10-02T23:15:19.222596923-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:19.632148207-03:00",
+          "ended_at": "2025-10-02T23:15:19.97741394-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:20.41172342-03:00",
+          "ended_at": "2025-10-02T23:15:20.835942644-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:21.195455995-03:00",
+          "ended_at": "2025-10-02T23:15:22.204065157-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:22.383760292-03:00",
+          "ended_at": "2025-10-02T23:15:22.757051942-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:23.179686919-03:00",
+          "ended_at": "2025-10-02T23:15:24.163321015-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:24.167331683-03:00",
+          "ended_at": "2025-10-02T23:15:25.078899686-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:25.134876188-03:00",
+          "ended_at": "2025-10-02T23:15:25.544768037-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:25.6043924-03:00",
+          "ended_at": "2025-10-02T23:15:26.130588791-03:00"
+        },
+        {
+          "offset": 0,
+          "limit": 77,
+          "status": "error",
+          "error": "pq: insert or update on table \"ligacao_imovel\" violates foreign key constraint \"fkl9a5imbujxmnxdr8p804ucd5i\"",
+          "error_type": "foreign_key_error",
+          "error_code": "FOREIGN_KEY_VIOLATION",
+          "rows": 0,
+          "started_at": "2025-10-02T23:15:26.133258204-03:00",
+          "ended_at": "2025-10-02T23:15:26.238050101-03:00"
+        }
+      ]
+    }
+  ]
+}

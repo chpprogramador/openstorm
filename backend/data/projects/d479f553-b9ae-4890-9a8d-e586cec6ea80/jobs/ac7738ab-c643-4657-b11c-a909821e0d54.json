@@ -1,7 +1,7 @@
 {
   "id": "ac7738ab-c643-4657-b11c-a909821e0d54",
   "jobName": "Zona Macro",
-  "selectSql": "select id, zonamacro from public.zonamacro",
+  "selectSql": "select (id-1) id, zonamacro from public.zonamacro",
   "insertSql": "INSERT INTO ${SCHEMA}.zona_macro (id, nome_zona_macro) ",
   "columns": [
     "id",

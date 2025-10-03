@@ -1,0 +1,1440 @@
+{
+  "pipeline_id": "Flexsan_2025-10-02_23-17-13",
+  "project": "Flexsan",
+  "status": "done",
+  "started_at": "2025-10-02T23:17:13.821153118-03:00",
+  "ended_at": "2025-10-02T23:18:11.964445584-03:00",
+  "jobs": [
+    {
+      "job_id": "c261e485-8fd1-42af-bbc7-eebb02be84c5",
+      "job_name": "Limpa tudo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:13.834100977-03:00",
+      "ended_at": "2025-10-02T23:17:14.513113741-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "ef3e7087-19f4-439c-b9a1-8f3b39172c64",
+      "job_name": "Bacia",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:14.513863392-03:00",
+      "ended_at": "2025-10-02T23:17:16.33072449-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:17:16.280431871-03:00",
+          "ended_at": "2025-10-02T23:17:16.330001215-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "cf687d58-da2e-4061-a4c7-dcfd98461167",
+      "job_name": "Situação Cavalete",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:16.331236689-03:00",
+      "ended_at": "2025-10-02T23:17:17.151338376-03:00",
+      "processed": 0,
+      "total": 8,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 8,
+          "status": "done",
+          "rows": 8,
+          "started_at": "2025-10-02T23:17:17.084905166-03:00",
+          "ended_at": "2025-10-02T23:17:17.149252885-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "954d7bd7-23c5-4169-8ad9-1b8dc67ae3fa",
+      "job_name": "Cliente",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:17.152006543-03:00",
+      "ended_at": "2025-10-02T23:17:23.190521387-03:00",
+      "processed": 0,
+      "total": 23952,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:18.363219419-03:00",
+          "ended_at": "2025-10-02T23:17:18.592639562-03:00"
+        },
+        {
+          "offset": 1000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:18.593080692-03:00",
+          "ended_at": "2025-10-02T23:17:18.82626759-03:00"
+        },
+        {
+          "offset": 2000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:18.827625963-03:00",
+          "ended_at": "2025-10-02T23:17:19.171008491-03:00"
+        },
+        {
+          "offset": 3000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:19.171577204-03:00",
+          "ended_at": "2025-10-02T23:17:19.378203839-03:00"
+        },
+        {
+          "offset": 4000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:19.37966521-03:00",
+          "ended_at": "2025-10-02T23:17:19.561120306-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:19.561805473-03:00",
+          "ended_at": "2025-10-02T23:17:19.846500139-03:00"
+        },
+        {
+          "offset": 6000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:19.850313886-03:00",
+          "ended_at": "2025-10-02T23:17:20.019376533-03:00"
+        },
+        {
+          "offset": 7000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:20.019873057-03:00",
+          "ended_at": "2025-10-02T23:17:20.191680545-03:00"
+        },
+        {
+          "offset": 8000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:20.192450776-03:00",
+          "ended_at": "2025-10-02T23:17:20.343902843-03:00"
+        },
+        {
+          "offset": 9000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:20.344849469-03:00",
+          "ended_at": "2025-10-02T23:17:20.491714338-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:20.492449367-03:00",
+          "ended_at": "2025-10-02T23:17:20.642124948-03:00"
+        },
+        {
+          "offset": 11000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:20.642746206-03:00",
+          "ended_at": "2025-10-02T23:17:20.905651794-03:00"
+        },
+        {
+          "offset": 12000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:20.907318268-03:00",
+          "ended_at": "2025-10-02T23:17:21.116583601-03:00"
+        },
+        {
+          "offset": 13000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:21.117198512-03:00",
+          "ended_at": "2025-10-02T23:17:21.271991231-03:00"
+        },
+        {
+          "offset": 14000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:21.272599209-03:00",
+          "ended_at": "2025-10-02T23:17:21.44265929-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:21.443340728-03:00",
+          "ended_at": "2025-10-02T23:17:21.603076908-03:00"
+        },
+        {
+          "offset": 16000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:21.604381384-03:00",
+          "ended_at": "2025-10-02T23:17:21.83158135-03:00"
+        },
+        {
+          "offset": 17000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:21.832318137-03:00",
+          "ended_at": "2025-10-02T23:17:21.985666895-03:00"
+        },
+        {
+          "offset": 18000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:21.986655882-03:00",
+          "ended_at": "2025-10-02T23:17:22.201328834-03:00"
+        },
+        {
+          "offset": 19000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:22.202466992-03:00",
+          "ended_at": "2025-10-02T23:17:22.358528773-03:00"
+        },
+        {
+          "offset": 20000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:22.359430618-03:00",
+          "ended_at": "2025-10-02T23:17:22.527015835-03:00"
+        },
+        {
+          "offset": 21000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:22.528119633-03:00",
+          "ended_at": "2025-10-02T23:17:22.714660311-03:00"
+        },
+        {
+          "offset": 22000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:22.715557179-03:00",
+          "ended_at": "2025-10-02T23:17:22.887526767-03:00"
+        },
+        {
+          "offset": 23000,
+          "limit": 952,
+          "status": "done",
+          "rows": 952,
+          "started_at": "2025-10-02T23:17:22.888076674-03:00",
+          "ended_at": "2025-10-02T23:17:23.188605119-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "72f3dac1-43f7-449c-824e-49c40b30c1ac",
+      "job_name": "Cobrança Fase",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:23.192057-03:00",
+      "ended_at": "2025-10-02T23:17:23.208770213-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "450e0ff2-c6cd-4778-b067-60e4e1a82bed",
+      "job_name": "Cobrança Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:23.209726888-03:00",
+      "ended_at": "2025-10-02T23:17:23.225491537-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "35b82c31-8384-49a7-9b4c-be3edfedb464",
+      "job_name": "Endereço",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:23.226250287-03:00",
+      "ended_at": "2025-10-02T23:17:27.520603808-03:00",
+      "processed": 0,
+      "total": 21714,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 21714,
+          "status": "done",
+          "rows": 21714,
+          "started_at": "2025-10-02T23:17:25.219503712-03:00",
+          "ended_at": "2025-10-02T23:17:27.519760836-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "65044050-d870-436f-bb66-cfa9f6547b2b",
+      "job_name": "Entrega Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:27.521908277-03:00",
+      "ended_at": "2025-10-02T23:17:27.54123014-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "ad35abb8-c90f-4ac7-b717-6265755fcf97",
+      "job_name": "Faturamento Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:27.543569527-03:00",
+      "ended_at": "2025-10-02T23:17:27.563239052-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "5287e194-fb5f-4665-ab73-2227ee4956af",
+      "job_name": "Fonte Abastecimento",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:27.565030735-03:00",
+      "ended_at": "2025-10-02T23:17:28.355898175-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:17:28.311918122-03:00",
+          "ended_at": "2025-10-02T23:17:28.353900221-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "2be8d97a-34fa-4afb-9136-f6d46983f27a",
+      "job_name": "Fonte Alternativa",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:28.357963139-03:00",
+      "ended_at": "2025-10-02T23:17:29.153656533-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:17:29.10743329-03:00",
+          "ended_at": "2025-10-02T23:17:29.151806497-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "b44168b1-9c27-4664-8769-f489790c09d7",
+      "job_name": "Leitura Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:29.157023223-03:00",
+      "ended_at": "2025-10-02T23:17:29.174534981-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "a525143e-71a2-40b5-8144-cd3f613f2dd7",
+      "job_name": "Grupo Medição",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:29.177344318-03:00",
+      "ended_at": "2025-10-02T23:17:29.989870034-03:00",
+      "processed": 0,
+      "total": 24,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 24,
+          "status": "done",
+          "rows": 24,
+          "started_at": "2025-10-02T23:17:29.929613468-03:00",
+          "ended_at": "2025-10-02T23:17:29.988019868-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "e5f0f83f-f8e8-41f9-a5bd-360c9037109e",
+      "job_name": "Imovel Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:29.993257705-03:00",
+      "ended_at": "2025-10-02T23:17:30.872673459-03:00",
+      "processed": 0,
+      "total": 7,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 7,
+          "status": "done",
+          "rows": 7,
+          "started_at": "2025-10-02T23:17:30.826829484-03:00",
+          "ended_at": "2025-10-02T23:17:30.871679976-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "77d4dca0-e48d-4fbb-ada8-d2b56aeb6bfc",
+      "job_name": "Ligação Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:30.878878316-03:00",
+      "ended_at": "2025-10-02T23:17:31.031934697-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "80315a4b-50e8-4784-9de9-9948bff2d8b3",
+      "job_name": "Ligacao Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:31.036137852-03:00",
+      "ended_at": "2025-10-02T23:17:31.054927331-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "315c6acf-2aaa-4b5a-974a-278a3bc4152a",
+      "job_name": "Padrão Instalação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:31.056511006-03:00",
+      "ended_at": "2025-10-02T23:17:31.961983789-03:00",
+      "processed": 0,
+      "total": 6,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 6,
+          "status": "done",
+          "rows": 6,
+          "started_at": "2025-10-02T23:17:31.903915178-03:00",
+          "ended_at": "2025-10-02T23:17:31.954732285-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "1529850a-7095-4924-a915-fb324a26d2db",
+      "job_name": "Classe Medidor",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:31.971028961-03:00",
+      "ended_at": "2025-10-02T23:17:32.771180305-03:00",
+      "processed": 0,
+      "total": 4,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 4,
+          "status": "done",
+          "rows": 4,
+          "started_at": "2025-10-02T23:17:32.722794367-03:00",
+          "ended_at": "2025-10-02T23:17:32.770122041-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "b586a9ea-8438-429e-b91a-d93734208294",
+      "job_name": "Medidor Marca",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:32.773422587-03:00",
+      "ended_at": "2025-10-02T23:17:33.718142397-03:00",
+      "processed": 0,
+      "total": 41,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 41,
+          "status": "done",
+          "rows": 41,
+          "started_at": "2025-10-02T23:17:33.642283115-03:00",
+          "ended_at": "2025-10-02T23:17:33.711784367-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "708418fd-188d-44a9-8505-5cae2c482b4c",
+      "job_name": "Medidor Tecnologia",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:33.721014692-03:00",
+      "ended_at": "2025-10-02T23:17:34.54768355-03:00",
+      "processed": 0,
+      "total": 9,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 9,
+          "status": "done",
+          "rows": 9,
+          "started_at": "2025-10-02T23:17:34.48982667-03:00",
+          "ended_at": "2025-10-02T23:17:34.536480155-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "c58e7a99-1f80-4ea0-8e9d-69c890384c39",
+      "job_name": "Medidor Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:34.55616919-03:00",
+      "ended_at": "2025-10-02T23:17:35.385942093-03:00",
+      "processed": 0,
+      "total": 8,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 8,
+          "status": "done",
+          "rows": 8,
+          "started_at": "2025-10-02T23:17:35.333679546-03:00",
+          "ended_at": "2025-10-02T23:17:35.379891727-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "de25d20b-6544-42ea-a57d-e2f0ab83cfa1",
+      "job_name": "Medidor Vazão",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:35.389587042-03:00",
+      "ended_at": "2025-10-02T23:17:36.210834457-03:00",
+      "processed": 0,
+      "total": 12,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 12,
+          "status": "done",
+          "rows": 12,
+          "started_at": "2025-10-02T23:17:36.151120455-03:00",
+          "ended_at": "2025-10-02T23:17:36.209111048-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "d83b32ab-8ced-428f-9a10-caddc22842bb",
+      "job_name": "Medidor Modelo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:36.212496328-03:00",
+      "ended_at": "2025-10-02T23:17:37.189125791-03:00",
+      "processed": 0,
+      "total": 3,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 3,
+          "status": "done",
+          "rows": 3,
+          "started_at": "2025-10-02T23:17:37.072839871-03:00",
+          "ended_at": "2025-10-02T23:17:37.188090951-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "b937f899-796c-4068-b199-2cc1d54c6c04",
+      "job_name": "Medidor Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:37.190175774-03:00",
+      "ended_at": "2025-10-02T23:17:38.023096868-03:00",
+      "processed": 0,
+      "total": 7,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 7,
+          "status": "done",
+          "rows": 7,
+          "started_at": "2025-10-02T23:17:37.977218966-03:00",
+          "ended_at": "2025-10-02T23:17:38.02150929-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "032f22ca-0b46-4081-9894-3eb6b0f52753",
+      "job_name": "Medidor",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:38.029075766-03:00",
+      "ended_at": "2025-10-02T23:17:43.266853764-03:00",
+      "processed": 0,
+      "total": 24797,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:39.088506317-03:00",
+          "ended_at": "2025-10-02T23:17:39.245719632-03:00"
+        },
+        {
+          "offset": 1000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:39.248250697-03:00",
+          "ended_at": "2025-10-02T23:17:39.397470546-03:00"
+        },
+        {
+          "offset": 2000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:39.398628535-03:00",
+          "ended_at": "2025-10-02T23:17:39.554231289-03:00"
+        },
+        {
+          "offset": 3000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:39.555323479-03:00",
+          "ended_at": "2025-10-02T23:17:39.699957817-03:00"
+        },
+        {
+          "offset": 4000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:39.701273038-03:00",
+          "ended_at": "2025-10-02T23:17:39.895905938-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:39.898350931-03:00",
+          "ended_at": "2025-10-02T23:17:40.04289901-03:00"
+        },
+        {
+          "offset": 6000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:40.044452055-03:00",
+          "ended_at": "2025-10-02T23:17:40.209472018-03:00"
+        },
+        {
+          "offset": 7000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:40.21075492-03:00",
+          "ended_at": "2025-10-02T23:17:40.362339745-03:00"
+        },
+        {
+          "offset": 8000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:40.364513323-03:00",
+          "ended_at": "2025-10-02T23:17:40.502761964-03:00"
+        },
+        {
+          "offset": 9000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:40.505468245-03:00",
+          "ended_at": "2025-10-02T23:17:40.754115773-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:40.75656168-03:00",
+          "ended_at": "2025-10-02T23:17:40.893201435-03:00"
+        },
+        {
+          "offset": 11000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:40.894529649-03:00",
+          "ended_at": "2025-10-02T23:17:41.168516396-03:00"
+        },
+        {
+          "offset": 12000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:41.180755371-03:00",
+          "ended_at": "2025-10-02T23:17:41.335509315-03:00"
+        },
+        {
+          "offset": 13000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:41.342466779-03:00",
+          "ended_at": "2025-10-02T23:17:41.496636456-03:00"
+        },
+        {
+          "offset": 14000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:41.505437398-03:00",
+          "ended_at": "2025-10-02T23:17:41.781919052-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:41.783720039-03:00",
+          "ended_at": "2025-10-02T23:17:41.933574805-03:00"
+        },
+        {
+          "offset": 16000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:41.934978675-03:00",
+          "ended_at": "2025-10-02T23:17:42.077449631-03:00"
+        },
+        {
+          "offset": 17000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:42.082618762-03:00",
+          "ended_at": "2025-10-02T23:17:42.246669358-03:00"
+        },
+        {
+          "offset": 18000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:42.248025607-03:00",
+          "ended_at": "2025-10-02T23:17:42.390897723-03:00"
+        },
+        {
+          "offset": 19000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:42.392266774-03:00",
+          "ended_at": "2025-10-02T23:17:42.535007021-03:00"
+        },
+        {
+          "offset": 20000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:42.535965685-03:00",
+          "ended_at": "2025-10-02T23:17:42.67407222-03:00"
+        },
+        {
+          "offset": 21000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:42.675348465-03:00",
+          "ended_at": "2025-10-02T23:17:42.822422689-03:00"
+        },
+        {
+          "offset": 22000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:42.823555392-03:00",
+          "ended_at": "2025-10-02T23:17:42.97506862-03:00"
+        },
+        {
+          "offset": 23000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:42.976514179-03:00",
+          "ended_at": "2025-10-02T23:17:43.128153924-03:00"
+        },
+        {
+          "offset": 24000,
+          "limit": 797,
+          "status": "done",
+          "rows": 797,
+          "started_at": "2025-10-02T23:17:43.131584775-03:00",
+          "ended_at": "2025-10-02T23:17:43.265605972-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "e402531b-2cb1-4736-9c6e-381914eafd1a",
+      "job_name": "Pavimento Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:43.268867379-03:00",
+      "ended_at": "2025-10-02T23:17:44.064500799-03:00",
+      "processed": 0,
+      "total": 9,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 9,
+          "status": "done",
+          "rows": 9,
+          "started_at": "2025-10-02T23:17:44.018456682-03:00",
+          "ended_at": "2025-10-02T23:17:44.062949529-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "a60b21da-80c9-4248-86c5-16aa1a8327ea",
+      "job_name": "Reservatorio",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:44.067326706-03:00",
+      "ended_at": "2025-10-02T23:17:44.865627789-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:17:44.81444443-03:00",
+          "ended_at": "2025-10-02T23:17:44.859345546-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "ac7738ab-c643-4657-b11c-a909821e0d54",
+      "job_name": "Zona Macro",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:44.868811227-03:00",
+      "ended_at": "2025-10-02T23:17:45.77778633-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:17:45.630175994-03:00",
+          "ended_at": "2025-10-02T23:17:45.775056524-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "9c66585d-4dac-4b0d-bfe3-7a2ff7a12c05",
+      "job_name": "Zona Pressão",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:45.780800265-03:00",
+      "ended_at": "2025-10-02T23:17:46.585734719-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:17:46.536384292-03:00",
+          "ended_at": "2025-10-02T23:17:46.580819478-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "bf7581f1-cf00-4ad3-a67e-72e76975e157",
+      "job_name": "Distrito",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:46.589988196-03:00",
+      "ended_at": "2025-10-02T23:17:47.387968697-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:17:47.341590272-03:00",
+          "ended_at": "2025-10-02T23:17:47.386087793-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "9587a320-098a-46db-8bd1-29c4e6ffa10d",
+      "job_name": "Calçada Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:47.391102687-03:00",
+      "ended_at": "2025-10-02T23:17:48.187182195-03:00",
+      "processed": 0,
+      "total": 19,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 19,
+          "status": "done",
+          "rows": 19,
+          "started_at": "2025-10-02T23:17:48.141746673-03:00",
+          "ended_at": "2025-10-02T23:17:48.184051759-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "79bef5d0-6ee1-47bd-87d8-bb9ceafba737",
+      "job_name": "Rede Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:48.19360356-03:00",
+      "ended_at": "2025-10-02T23:17:48.997278292-03:00",
+      "processed": 0,
+      "total": 41,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 41,
+          "status": "done",
+          "rows": 41,
+          "started_at": "2025-10-02T23:17:48.949331819-03:00",
+          "ended_at": "2025-10-02T23:17:48.994050021-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "74f128b5-0c80-44be-b024-3b2b65400ffb",
+      "job_name": "Rede Posição",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:49.003586517-03:00",
+      "ended_at": "2025-10-02T23:17:49.816150473-03:00",
+      "processed": 0,
+      "total": 6,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 6,
+          "status": "done",
+          "rows": 6,
+          "started_at": "2025-10-02T23:17:49.768437569-03:00",
+          "ended_at": "2025-10-02T23:17:49.812274515-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "dd7d85cd-11b5-4cc2-9ce1-cfa19e9c67f3",
+      "job_name": "Rota leitura",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:49.820392475-03:00",
+      "ended_at": "2025-10-02T23:17:50.722507517-03:00",
+      "processed": 0,
+      "total": 128,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 128,
+          "status": "done",
+          "rows": 128,
+          "started_at": "2025-10-02T23:17:50.664865336-03:00",
+          "ended_at": "2025-10-02T23:17:50.716811656-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "f8fc93a7-3977-4cbc-84bd-8c8d025d6825",
+      "job_name": "Ligação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:17:50.727231081-03:00",
+      "ended_at": "2025-10-02T23:18:05.39886779-03:00",
+      "processed": 0,
+      "total": 18077,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:52.526006358-03:00",
+          "ended_at": "2025-10-02T23:17:53.34572512-03:00"
+        },
+        {
+          "offset": 1000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:53.349687862-03:00",
+          "ended_at": "2025-10-02T23:17:54.140810293-03:00"
+        },
+        {
+          "offset": 2000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:54.143880539-03:00",
+          "ended_at": "2025-10-02T23:17:54.801744512-03:00"
+        },
+        {
+          "offset": 3000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:54.805617905-03:00",
+          "ended_at": "2025-10-02T23:17:55.496993373-03:00"
+        },
+        {
+          "offset": 4000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:55.500368231-03:00",
+          "ended_at": "2025-10-02T23:17:56.164642424-03:00"
+        },
+        {
+          "offset": 5000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:56.167439498-03:00",
+          "ended_at": "2025-10-02T23:17:56.81882292-03:00"
+        },
+        {
+          "offset": 6000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:56.821022132-03:00",
+          "ended_at": "2025-10-02T23:17:57.615255141-03:00"
+        },
+        {
+          "offset": 7000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:57.618753274-03:00",
+          "ended_at": "2025-10-02T23:17:58.422604862-03:00"
+        },
+        {
+          "offset": 8000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:58.427609608-03:00",
+          "ended_at": "2025-10-02T23:17:59.090636539-03:00"
+        },
+        {
+          "offset": 9000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:59.09266384-03:00",
+          "ended_at": "2025-10-02T23:17:59.747735379-03:00"
+        },
+        {
+          "offset": 10000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:17:59.749619492-03:00",
+          "ended_at": "2025-10-02T23:18:00.365239399-03:00"
+        },
+        {
+          "offset": 11000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:18:00.368381312-03:00",
+          "ended_at": "2025-10-02T23:18:01.040092773-03:00"
+        },
+        {
+          "offset": 12000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:18:01.043908929-03:00",
+          "ended_at": "2025-10-02T23:18:01.78785439-03:00"
+        },
+        {
+          "offset": 13000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:18:01.790138231-03:00",
+          "ended_at": "2025-10-02T23:18:02.449403462-03:00"
+        },
+        {
+          "offset": 14000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:18:02.452916971-03:00",
+          "ended_at": "2025-10-02T23:18:03.107431458-03:00"
+        },
+        {
+          "offset": 15000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:18:03.110675924-03:00",
+          "ended_at": "2025-10-02T23:18:03.824547298-03:00"
+        },
+        {
+          "offset": 16000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:18:03.828420301-03:00",
+          "ended_at": "2025-10-02T23:18:04.56341589-03:00"
+        },
+        {
+          "offset": 17000,
+          "limit": 1000,
+          "status": "done",
+          "rows": 1000,
+          "started_at": "2025-10-02T23:18:04.567011555-03:00",
+          "ended_at": "2025-10-02T23:18:05.234702377-03:00"
+        },
+        {
+          "offset": 18000,
+          "limit": 77,
+          "status": "done",
+          "rows": 77,
+          "started_at": "2025-10-02T23:18:05.238884152-03:00",
+          "ended_at": "2025-10-02T23:18:05.396675576-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "b31ad490-fe97-43c2-9de9-81c9048cb011",
+      "job_name": "Período",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:05.400363761-03:00",
+      "ended_at": "2025-10-02T23:18:06.442037979-03:00",
+      "processed": 0,
+      "total": 640,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 640,
+          "status": "done",
+          "rows": 640,
+          "started_at": "2025-10-02T23:18:06.330623284-03:00",
+          "ended_at": "2025-10-02T23:18:06.440171796-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "fc53e8eb-6773-48d6-be58-b8a560c5ccd5",
+      "job_name": "Categoria Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:06.445070543-03:00",
+      "ended_at": "2025-10-02T23:18:07.25554728-03:00",
+      "processed": 0,
+      "total": 4,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 4,
+          "status": "done",
+          "rows": 4,
+          "started_at": "2025-10-02T23:18:07.211198647-03:00",
+          "ended_at": "2025-10-02T23:18:07.253354462-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "6055596f-d4ab-4065-b9da-d6819acb578f",
+      "job_name": "Categoria",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:07.257989768-03:00",
+      "ended_at": "2025-10-02T23:18:08.089154423-03:00",
+      "processed": 0,
+      "total": 10,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 10,
+          "status": "done",
+          "rows": 10,
+          "started_at": "2025-10-02T23:18:08.026836632-03:00",
+          "ended_at": "2025-10-02T23:18:08.087099483-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "53e2adab-d6b9-452e-b773-82326135b1b0",
+      "job_name": "Produto",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:08.091315155-03:00",
+      "ended_at": "2025-10-02T23:18:08.896594299-03:00",
+      "processed": 0,
+      "total": 2,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 2,
+          "status": "done",
+          "rows": 2,
+          "started_at": "2025-10-02T23:18:08.852906532-03:00",
+          "ended_at": "2025-10-02T23:18:08.8948107-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "3b195a3c-da08-4e0a-95fe-3e625f0bf4f5",
+      "job_name": "Decreto",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:08.898806903-03:00",
+      "ended_at": "2025-10-02T23:18:09.718777205-03:00",
+      "processed": 0,
+      "total": 1,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 1,
+          "status": "done",
+          "rows": 1,
+          "started_at": "2025-10-02T23:18:09.674064194-03:00",
+          "ended_at": "2025-10-02T23:18:09.716756174-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "d88d54d0-0d73-4020-bd61-f3daec9869ee",
+      "job_name": "Decreto Categoria",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:09.724670479-03:00",
+      "ended_at": "2025-10-02T23:18:10.564701947-03:00",
+      "processed": 0,
+      "total": 10,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 10,
+          "status": "done",
+          "rows": 10,
+          "started_at": "2025-10-02T23:18:10.517415438-03:00",
+          "ended_at": "2025-10-02T23:18:10.561960739-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "ae1a52ea-067c-47bf-9edb-f9f9b5e990aa",
+      "job_name": "Decreto Categoria Produto",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:10.571464729-03:00",
+      "ended_at": "2025-10-02T23:18:11.523819424-03:00",
+      "processed": 0,
+      "total": 80,
+      "batches": [
+        {
+          "offset": 0,
+          "limit": 80,
+          "status": "done",
+          "rows": 80,
+          "started_at": "2025-10-02T23:18:11.359567099-03:00",
+          "ended_at": "2025-10-02T23:18:11.521885937-03:00"
+        }
+      ]
+    },
+    {
+      "job_id": "d5caee76-8fce-4de0-a712-45283a595a7f",
+      "job_name": "Atraso Encargo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.528525823-03:00",
+      "ended_at": "2025-10-02T23:18:11.558007095-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "d61c8895-90a8-44ca-a8d4-2dc0cd634a81",
+      "job_name": "Cobrança Processo Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.563687564-03:00",
+      "ended_at": "2025-10-02T23:18:11.584408212-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "2293b292-34e1-4851-8e53-529013ae6220",
+      "job_name": "Cobrança Processo Parametros",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.59102703-03:00",
+      "ended_at": "2025-10-02T23:18:11.613853509-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "498cb2e6-a01d-41da-a882-2942d2693ab0",
+      "job_name": "Parametros Medição",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.618871744-03:00",
+      "ended_at": "2025-10-02T23:18:11.638355568-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "bf0de41d-8736-463d-925d-50cac38d0759",
+      "job_name": "Rubricas",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.64113319-03:00",
+      "ended_at": "2025-10-02T23:18:11.673351769-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "88f359ce-b47f-497c-9f9d-ff80702f69a6",
+      "job_name": "Parcelamento Parametro",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.6857356-03:00",
+      "ended_at": "2025-10-02T23:18:11.71175464-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "3a9a2b45-68d4-4274-abe3-ad4fe9a5aa42",
+      "job_name": "Arrecadação Parametro",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.715033586-03:00",
+      "ended_at": "2025-10-02T23:18:11.735245228-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "bfb588d7-c488-4528-9e66-1e1f2eca37ae",
+      "job_name": "Cronograma Fases",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.742503788-03:00",
+      "ended_at": "2025-10-02T23:18:11.765232492-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "20af9d77-b283-468e-b820-5cb600ab85c3",
+      "job_name": "Status",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.771851539-03:00",
+      "ended_at": "2025-10-02T23:18:11.798662156-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "047d5c2f-03f9-4735-9e96-3a1e2d6c0307",
+      "job_name": "Situação Processo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.807777669-03:00",
+      "ended_at": "2025-10-02T23:18:11.826640797-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "e60f3c70-f4f0-4d39-8e1d-28ccf1f4fae9",
+      "job_name": "Fatura Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.835201156-03:00",
+      "ended_at": "2025-10-02T23:18:11.854261761-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "c2ba33ed-4662-49f4-b351-184564cc9bc8",
+      "job_name": "Cavalete Situação",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.865143544-03:00",
+      "ended_at": "2025-10-02T23:18:11.887081554-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    },
+    {
+      "job_id": "637e8713-ee09-4904-8b9b-372036ed5981",
+      "job_name": "Tabelas Tipo",
+      "status": "done",
+      "stop_on_error": true,
+      "started_at": "2025-10-02T23:18:11.900435299-03:00",
+      "ended_at": "2025-10-02T23:18:11.957825127-03:00",
+      "processed": 1,
+      "total": 1,
+      "batches": []
+    }
+  ]
+}

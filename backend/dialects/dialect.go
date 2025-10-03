@@ -30,7 +30,7 @@ func (d PostgresDialect) BuildSelectQueryByHash(job models.Job, concurrencyIndex
 	withWhere, modifiedSQL := AnalyzeAndModifySQL(job.SelectSQL)
 
 	// Usa hashtextextended (mais robusto que hashtext simples)
-	hashExpr := fmt.Sprintf("abs(mod(hashtextextended(%s, 0), %d)) = %d",
+	hashExpr := fmt.Sprintf("mod(abs(hashtextextended(%s, 0)), %d) = %d",
 		mainTable+".ctid::text", totalConcurrency, concurrencyIndex)
 
 	var queryRet string
