@@ -15,7 +15,7 @@
     "bool"
   ],
   "primaryKeys": null,
-  "recordsPerPage": 1000,
+  "recordsPerPage": 10000,
   "type": "insert",
   "stopOnError": true,
   "left": 1600,

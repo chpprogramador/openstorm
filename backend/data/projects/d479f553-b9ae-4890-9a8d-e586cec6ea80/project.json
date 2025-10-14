@@ -56,7 +56,8 @@
     "jobs/e60f3c70-f4f0-4d39-8e1d-28ccf1f4fae9.json",
     "jobs/047d5c2f-03f9-4735-9e96-3a1e2d6c0307.json",
     "jobs/c2ba33ed-4662-49f4-b351-184564cc9bc8.json",
-    "jobs/637e8713-ee09-4904-8b9b-372036ed5981.json"
+    "jobs/637e8713-ee09-4904-8b9b-372036ed5981.json",
+    "jobs/901d5b4f-3afe-4878-af4b-3188b779783d.json"
   ],
   "connections": [
     {
@@ -180,10 +181,6 @@
       "target": "dd7d85cd-11b5-4cc2-9ce1-cfa19e9c67f3"
     },
     {
-      "source": "dd7d85cd-11b5-4cc2-9ce1-cfa19e9c67f3",
-      "target": "f8fc93a7-3977-4cbc-84bd-8c8d025d6825"
-    },
-    {
       "source": "ad35abb8-c90f-4ac7-b717-6265755fcf97",
       "target": "5287e194-fb5f-4665-ab73-2227ee4956af"
     },
@@ -272,8 +269,16 @@
       "target": "c2ba33ed-4662-49f4-b351-184564cc9bc8"
     },
     {
-      "source": "c2ba33ed-4662-49f4-b351-184564cc9bc8",
+      "source": "dd7d85cd-11b5-4cc2-9ce1-cfa19e9c67f3",
       "target": "637e8713-ee09-4904-8b9b-372036ed5981"
+    },
+    {
+      "source": "637e8713-ee09-4904-8b9b-372036ed5981",
+      "target": "f8fc93a7-3977-4cbc-84bd-8c8d025d6825"
+    },
+    {
+      "source": "c2ba33ed-4662-49f4-b351-184564cc9bc8",
+      "target": "901d5b4f-3afe-4878-af4b-3188b779783d"
     }
   ],
   "sourceDatabase": {
@@ -282,7 +287,7 @@
     "port": 5430,
     "user": "consult",
     "password": "AQLnm;mNl3vr(RRA",
-    "database": "samar"
+    "database": "ourinhos"
   },
   "destinationDatabase": {
     "type": "postgres",
