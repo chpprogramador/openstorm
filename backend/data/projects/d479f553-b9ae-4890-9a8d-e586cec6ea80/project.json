@@ -285,16 +285,16 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "consult",
-    "password": "AQLnm;mNl3vr(RRA",
+    "user": "gaUbjvFQw6PrkVK+u9UtfGt/09W4yqs=",
+    "password": "21MXXTPy0RwSNiKdAXmPABG+RyxTK1mTOMtvdkG1JR0=",
     "database": "ourinhos"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "vzm",
-    "password": "vzm123",
+    "user": "QewNo/20LNRucuJCe4wj36dJSA==",
+    "password": "yeJ6aCbkrXvDMLdNVq+16nq372Dd6Q==",
     "database": "vzmsaneamento"
   },
   "concurrency": 5,

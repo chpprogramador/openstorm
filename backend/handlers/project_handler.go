@@ -4,10 +4,12 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"etl/models"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -15,8 +17,9 @@ import (
 	"github.com/google/uuid"
 )
 
-var chave []byte = []byte("a1b2c3d4e5f6g7h8")
+var chave = []byte("a1b2c3d4e5f6g7h8a1b2c3d4e5f6g7h8") // 32 bytes para AES-256
 
+// -------------------- List Projects --------------------
 func ListProjects(c *gin.Context) {
 	baseDir := "data/projects"
 	entries, err := os.ReadDir(baseDir)
@@ -32,7 +35,7 @@ func ListProjects(c *gin.Context) {
 			projectPath := filepath.Join(baseDir, entry.Name(), "project.json")
 			projectBytes, err := os.ReadFile(projectPath)
 			if err != nil {
-				continue // ignora se não conseguir ler
+				continue
 			}
 
 			var project models.Project
@@ -40,18 +43,8 @@ func ListProjects(c *gin.Context) {
 				continue
 			}
 
-			// Descriptografa usuário e senha dos bancos de dados
-			decryptedUserBytes, _ := Descriptografar([]byte(project.SourceDatabase.User))
-			project.SourceDatabase.User = string(decryptedUserBytes)
-
-			decryptedPassBytes, _ := Descriptografar([]byte(project.SourceDatabase.Password))
-			project.SourceDatabase.Password = string(decryptedPassBytes)
-
-			decryptedDestUserBytes, _ := Descriptografar([]byte(project.DestinationDatabase.User))
-			project.DestinationDatabase.User = string(decryptedDestUserBytes)
-
-			decryptedDestPassBytes, _ := Descriptografar([]byte(project.DestinationDatabase.Password))
-			project.DestinationDatabase.Password = string(decryptedDestPassBytes)
+			// Descriptografa os campos
+			decryptProjectFields(&project)
 
 			projects = append(projects, project)
 		}
@@ -60,6 +53,7 @@ func ListProjects(c *gin.Context) {
 	c.JSON(200, projects)
 }
 
+// -------------------- Create Project --------------------
 func CreateProject(c *gin.Context) {
 	var project models.Project
 	if err := c.BindJSON(&project); err != nil {
@@ -67,18 +61,8 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
-	// Criptografa usuário e senha dos bancos de dados
-	decryptedUserBytes, _ := Descriptografar([]byte(project.SourceDatabase.User))
-	project.SourceDatabase.User = string(decryptedUserBytes)
-
-	decryptedPassBytes, _ := Descriptografar([]byte(project.SourceDatabase.Password))
-	project.SourceDatabase.Password = string(decryptedPassBytes)
-
-	decryptedDestUserBytes, _ := Descriptografar([]byte(project.DestinationDatabase.User))
-	project.DestinationDatabase.User = string(decryptedDestUserBytes)
-
-	decryptedDestPassBytes, _ := Descriptografar([]byte(project.DestinationDatabase.Password))
-	project.DestinationDatabase.Password = string(decryptedDestPassBytes)
+	// Criptografa os campos
+	encryptProjectFields(&project)
 
 	project.ID = uuid.New().String()
 	projectDir := filepath.Join("data", "projects", project.ID)
@@ -94,9 +78,13 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
+	// Retorna descriptografado para o cliente
+	decryptProjectFields(&project)
+
 	c.JSON(201, project)
 }
 
+// -------------------- Get Project by ID --------------------
 func GetProjectByID(c *gin.Context) {
 	projectID := c.Param("id")
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")
@@ -112,55 +100,30 @@ func GetProjectByID(c *gin.Context) {
 		return
 	}
 
-	// Descriptografa usuário e senha dos bancos de dados
-	decryptedUserBytes, _ := Descriptografar([]byte(project.SourceDatabase.User))
-	project.SourceDatabase.User = string(decryptedUserBytes)
-
-	decryptedPassBytes, _ := Descriptografar([]byte(project.SourceDatabase.Password))
-	project.SourceDatabase.Password = string(decryptedPassBytes)
-
-	decryptedDestUserBytes, _ := Descriptografar([]byte(project.DestinationDatabase.User))
-	project.DestinationDatabase.User = string(decryptedDestUserBytes)
-
-	decryptedDestPassBytes, _ := Descriptografar([]byte(project.DestinationDatabase.Password))
-	project.DestinationDatabase.Password = string(decryptedDestPassBytes)
+	decryptProjectFields(&project)
 
 	c.JSON(200, project)
 }
 
+// -------------------- Update Project --------------------
 func UpdateProject(c *gin.Context) {
 	projectID := c.Param("id")
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")
 
-	// Verifica se o arquivo existe
 	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
 		c.JSON(404, gin.H{"error": "Projeto não encontrado"})
 		return
 	}
 
-	// Lê o corpo da requisição com os novos dados
 	var updatedProject models.Project
 	if err := c.BindJSON(&updatedProject); err != nil {
 		c.JSON(400, gin.H{"error": "JSON inválido"})
 		return
 	}
 
-	// Garante que o ID continua o mesmo
 	updatedProject.ID = projectID
+	encryptProjectFields(&updatedProject)
 
-	decryptedUserBytes, _ := Descriptografar([]byte(updatedProject.SourceDatabase.User))
-	updatedProject.SourceDatabase.User = string(decryptedUserBytes)
-
-	decryptedPassBytes, _ := Descriptografar([]byte(updatedProject.SourceDatabase.Password))
-	updatedProject.SourceDatabase.Password = string(decryptedPassBytes)
-
-	decryptedDestUserBytes, _ := Descriptografar([]byte(updatedProject.DestinationDatabase.User))
-	updatedProject.DestinationDatabase.User = string(decryptedDestUserBytes)
-
-	decryptedDestPassBytes, _ := Descriptografar([]byte(updatedProject.DestinationDatabase.Password))
-	updatedProject.DestinationDatabase.Password = string(decryptedDestPassBytes)
-
-	// Atualiza o arquivo project.json
 	projectBytes, err := json.MarshalIndent(updatedProject, "", "  ")
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao serializar o projeto"})
@@ -172,37 +135,82 @@ func UpdateProject(c *gin.Context) {
 		return
 	}
 
+	decryptProjectFields(&updatedProject)
 	c.JSON(200, updatedProject)
 }
 
+// -------------------- Close Project --------------------
 func CloseProject(c *gin.Context) {
 	projectID := c.Param("id")
 	c.JSON(200, gin.H{"message": "Projeto '" + projectID + "' fechado com sucesso."})
 }
 
-func Criptografar(texto []byte) ([]byte, error) {
-	block, err := aes.NewCipher(chave)
-	if err != nil {
-		return nil, err
-	}
-	ciphertext := make([]byte, aes.BlockSize+len(texto))
-	iv := ciphertext[:aes.BlockSize]
-	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		return nil, err
-	}
-	stream := cipher.NewCFBEncrypter(block, iv)
-	stream.XORKeyStream(ciphertext[aes.BlockSize:], texto)
-	return ciphertext, nil
+// -------------------- Encrypt / Decrypt Helpers --------------------
+func encryptProjectFields(p *models.Project) {
+	p.SourceDatabase.User, _ = EncryptToBase64([]byte(p.SourceDatabase.User))
+	p.SourceDatabase.Password, _ = EncryptToBase64([]byte(p.SourceDatabase.Password))
+	p.DestinationDatabase.User, _ = EncryptToBase64([]byte(p.DestinationDatabase.User))
+	p.DestinationDatabase.Password, _ = EncryptToBase64([]byte(p.DestinationDatabase.Password))
 }
 
-func Descriptografar(ciphertext []byte) ([]byte, error) {
+func decryptProjectFields(p *models.Project) {
+	p.SourceDatabase.User = string(DecryptFromBase64(p.SourceDatabase.User))
+	p.SourceDatabase.Password = string(DecryptFromBase64(p.SourceDatabase.Password))
+	p.DestinationDatabase.User = string(DecryptFromBase64(p.DestinationDatabase.User))
+	p.DestinationDatabase.Password = string(DecryptFromBase64(p.DestinationDatabase.Password))
+}
+
+// -------------------- Criptografia AES-CFB + Base64 --------------------
+func EncryptToBase64(plain []byte) (string, error) {
+	if len(plain) == 0 {
+		return "", nil
+	}
+
 	block, err := aes.NewCipher(chave)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
+
+	ciphertext := make([]byte, aes.BlockSize+len(plain))
 	iv := ciphertext[:aes.BlockSize]
-	texto := ciphertext[aes.BlockSize:]
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		return "", err
+	}
+
+	stream := cipher.NewCFBEncrypter(block, iv)
+	stream.XORKeyStream(ciphertext[aes.BlockSize:], plain)
+
+	return base64.StdEncoding.EncodeToString(ciphertext), nil
+}
+
+func DecryptFromBase64(b64 string) []byte {
+	if b64 == "" {
+		return []byte{}
+	}
+
+	ciphertext, err := base64.StdEncoding.DecodeString(b64)
+	if err != nil {
+		log.Printf("DecodeString falhou: %v", err)
+		return []byte{}
+	}
+
+	if len(ciphertext) < aes.BlockSize {
+		log.Printf("Descriptografar: ciphertext muito curto: %d bytes", len(ciphertext))
+		return []byte{}
+	}
+
+	block, err := aes.NewCipher(chave)
+	if err != nil {
+		log.Printf("Erro ao criar cipher: %v", err)
+		return []byte{}
+	}
+
+	iv := ciphertext[:aes.BlockSize]
+	texto := make([]byte, len(ciphertext[aes.BlockSize:]))
+	copy(texto, ciphertext[aes.BlockSize:])
+
 	stream := cipher.NewCFBDecrypter(block, iv)
 	stream.XORKeyStream(texto, texto)
-	return texto, nil
+
+	return texto
 }

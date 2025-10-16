@@ -1,0 +1,47 @@
+# --------------------
+# Binários compilados
+# --------------------
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+bin/
+build/
+
+# --------------------
+# Pastas de logs
+# --------------------
+logs/
+*.log
+
+# --------------------
+# Dependências do Go
+# --------------------
+vendor/
+
+# --------------------
+# Cache do Go
+# --------------------
+*.mod.cache
+*.sum
+*.tmp
+*.swp
+*.lock
+
+# --------------------
+# IDEs e editores
+# --------------------
+.vscode/
+.idea/
+*.iml
+*.DS_Store
+
+# --------------------
+# Outros arquivos temporários
+# --------------------
+*.tmp
+*.bak
+*.swp
