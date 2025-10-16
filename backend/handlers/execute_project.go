@@ -43,6 +43,8 @@ func RunProject(c *gin.Context) {
 	}
 	log.Printf("Projeto %s carregado com sucesso", project.ProjectName)
 
+	decryptProjectFields(&project)
+
 	// Busca o dialeto apropriado
 	dialect, err := dialects.NewDialect(project.SourceDatabase.Type)
 	if err != nil {
