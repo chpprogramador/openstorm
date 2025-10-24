@@ -170,6 +170,8 @@ func ValidateJobHandler(c *gin.Context) {
 		return
 	}
 
+	decryptProjectFields(&project)
+
 	// Conecta ao banco de dados de origem
 	sourceDB, err := sql.Open(project.SourceDatabase.Type, buildDSN(project.SourceDatabase))
 	if err != nil {

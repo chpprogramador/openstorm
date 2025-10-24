@@ -57,7 +57,9 @@
     "jobs/047d5c2f-03f9-4735-9e96-3a1e2d6c0307.json",
     "jobs/c2ba33ed-4662-49f4-b351-184564cc9bc8.json",
     "jobs/637e8713-ee09-4904-8b9b-372036ed5981.json",
-    "jobs/901d5b4f-3afe-4878-af4b-3188b779783d.json"
+    "jobs/901d5b4f-3afe-4878-af4b-3188b779783d.json",
+    "jobs/d3b56bfb-7a43-4e9c-9a84-ec0ea0d0c6cb.json",
+    "jobs/0158621c-9962-48d4-b9ba-dfd44568222d.json"
   ],
   "connections": [
     {
@@ -213,10 +215,6 @@
       "target": "6055596f-d4ab-4065-b9da-d6819acb578f"
     },
     {
-      "source": "6055596f-d4ab-4065-b9da-d6819acb578f",
-      "target": "53e2adab-d6b9-452e-b773-82326135b1b0"
-    },
-    {
       "source": "53e2adab-d6b9-452e-b773-82326135b1b0",
       "target": "3b195a3c-da08-4e0a-95fe-3e625f0bf4f5"
     },
@@ -277,6 +275,18 @@
       "target": "f8fc93a7-3977-4cbc-84bd-8c8d025d6825"
     },
     {
+      "source": "d3b56bfb-7a43-4e9c-9a84-ec0ea0d0c6cb",
+      "target": "53e2adab-d6b9-452e-b773-82326135b1b0"
+    },
+    {
+      "source": "6055596f-d4ab-4065-b9da-d6819acb578f",
+      "target": "0158621c-9962-48d4-b9ba-dfd44568222d"
+    },
+    {
+      "source": "0158621c-9962-48d4-b9ba-dfd44568222d",
+      "target": "d3b56bfb-7a43-4e9c-9a84-ec0ea0d0c6cb"
+    },
+    {
       "source": "c2ba33ed-4662-49f4-b351-184564cc9bc8",
       "target": "901d5b4f-3afe-4878-af4b-3188b779783d"
     }
@@ -285,16 +295,16 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "gaUbjvFQw6PrkVK+u9UtfGt/09W4yqs=",
-    "password": "21MXXTPy0RwSNiKdAXmPABG+RyxTK1mTOMtvdkG1JR0=",
+    "user": "/e0wZktJLu73PS79UWFqmnXEJ8KVwtA=",
+    "password": "aZ8H2qYTQ4TlBiq4Zwxupn/xOHV/oorpK9AIiwnwkkU=",
     "database": "ourinhos"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "QewNo/20LNRucuJCe4wj36dJSA==",
-    "password": "yeJ6aCbkrXvDMLdNVq+16nq372Dd6Q==",
+    "user": "S999YKJdRpylGuy9UBDMymTAMA==",
+    "password": "sLkfFEaMyGXxAPIGYS4b4cIpVWv4qg==",
     "database": "vzmsaneamento"
   },
   "concurrency": 5,

@@ -1,0 +1,19 @@
+{
+  "id": "d3b56bfb-7a43-4e9c-9a84-ec0ea0d0c6cb",
+  "jobName": "Ligação Categoria",
+  "selectSql": "select \n\tlc.id,\n\tlc.qtdeconomia,\n\tlc.idcategoria,\n\tlc.idligacao,\n\tlc.idsubcategoria \nfrom public.ligacaocategoria lc\njoin (\n\tselect\n\t\t*,\n\t\tctid,\n\t\trow_number() over (partition by idclienteinquilino\n\torder by\n\t\tid) as idci,\n\t\trow_number() over (partition by idmedidor\n\torder by\n\t\tid) as idm\n\tfrom\n\t\tligacao l) l on (l.id = lc.idligacao)\n\twhere\n\tl.idci = 1\n\tand l.idm = 1",
+  "insertSql": "insert into ${SCHEMA}.ligacao_categoria\n    (id,\n\tquantidade_economias,\n\tid_categoria,\n\tid_ligacao_imovel,\n\tid_subcategoria)\n",
+  "columns": [
+    "id",
+    "qtdeconomia",
+    "idcategoria",
+    "idligacao",
+    "idsubcategoria"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 0,
+  "top": 1440
+}

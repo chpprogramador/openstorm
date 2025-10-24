@@ -1,0 +1,17 @@
+{
+  "id": "0158621c-9962-48d4-b9ba-dfd44568222d",
+  "jobName": "Sub Categoria",
+  "selectSql": "select \n\tsc.id,\n\tsc.subcategoria,\n\tnull id_ligacao_estimativa_tipo\nfrom subcategoria sc ",
+  "insertSql": "INSERT INTO ${SCHEMA}.sub_categoria\n(id, nome_sub_categoria, id_ligacao_estimativa_tipo)",
+  "columns": [
+    "id",
+    "subcategoria",
+    "id_ligacao_estimativa_tipo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 0,
+  "top": 1260
+}

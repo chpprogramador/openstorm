@@ -244,9 +244,16 @@ func (e *PDFExporter) addStatusSummary(log *PipelineLog) {
 
 	// Duração
 	duration := log.EndedAt.Sub(log.StartedAt)
+
+	hours := int(duration.Hours())
+	minutes := int(duration.Minutes()) % 60
+	seconds := int(duration.Seconds()) % 60
+
+	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
+
 	e.pdf.SetFont("Arial", "", 12)
 	e.pdf.SetXY(25, currentY+15)
-	e.pdf.CellFormat(160, 6, fmt.Sprintf("Pipeline executado em %v", duration), "", 1, "C", false, 0, "")
+	e.pdf.CellFormat(160, 6, fmt.Sprintf("Pipeline executado em %s", formattedDuration), "", 1, "C", false, 0, "")
 
 	e.pdf.SetY(currentY + 30)
 	e.pdf.Ln(5)
@@ -263,6 +270,13 @@ func (e *PDFExporter) addGeneralInfo(log *PipelineLog) {
 	// Coluna esquerda
 	e.pdf.SetXY(float64(leftX), startY)
 	duration := log.EndedAt.Sub(log.StartedAt)
+
+	hours := int(duration.Hours())
+	minutes := int(duration.Minutes()) % 60
+	seconds := int(duration.Seconds()) % 60
+
+	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
+
 	e.addInfoCard("Pipeline ID", removeAccents(log.PipelineID), 85)
 
 	e.pdf.SetXY(float64(leftX), e.pdf.GetY())
@@ -273,7 +287,7 @@ func (e *PDFExporter) addGeneralInfo(log *PipelineLog) {
 
 	// Coluna direita
 	e.pdf.SetXY(float64(rightX), startY)
-	e.addInfoCard("Duracao Total", duration.String(), 85)
+	e.addInfoCard("Duracao Total", formattedDuration, 85)
 
 	e.pdf.SetXY(float64(rightX), e.pdf.GetY())
 	e.addInfoCard("Inicio", log.StartedAt.Format("02/01/2006 15:04:05"), 85)
@@ -291,7 +305,7 @@ func (e *PDFExporter) addStatistics(log *PipelineLog) {
 	stats := e.calculateStats(log)
 
 	leftX := 20
-	rightX := 110
+	//rightX := 110
 	startY := e.pdf.GetY()
 
 	// Coluna esquerda
@@ -302,11 +316,11 @@ func (e *PDFExporter) addStatistics(log *PipelineLog) {
 	e.addInfoCard("Jobs Concluidos", fmt.Sprintf("%d", stats.jobsDone), 85)
 
 	// Coluna direita
-	e.pdf.SetXY(float64(rightX), startY)
-	e.addInfoCard("Total de Batches", fmt.Sprintf("%d", stats.totalBatches), 85)
+	// e.pdf.SetXY(float64(rightX), startY)
+	// e.addInfoCard("Total de Batches", fmt.Sprintf("%d", stats.totalBatches), 85)
 
-	e.pdf.SetXY(float64(rightX), e.pdf.GetY())
-	e.addInfoCard("Registros Processados", fmt.Sprintf("%d", stats.totalProcessed), 85)
+	// e.pdf.SetXY(float64(rightX), e.pdf.GetY())
+	// e.addInfoCard("Registros Processados", fmt.Sprintf("%d", stats.totalProcessed), 85)
 
 	e.pdf.Ln(10)
 }
@@ -357,8 +371,15 @@ func (e *PDFExporter) addJobCard(index int, job *JobLog) {
 	e.pdf.SetXY(25, startY+9)
 
 	duration := job.EndedAt.Sub(job.StartedAt)
-	details := fmt.Sprintf("Job ID: %s | Duracao: %v | Processados: %d/%d registros",
-		job.JobID[:8]+"...", duration, job.Processed, job.Total)
+
+	hours := int(duration.Hours())
+	minutes := int(duration.Minutes()) % 60
+	seconds := int(duration.Seconds()) % 60
+
+	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
+
+	details := fmt.Sprintf("Job ID: %s | Duracao: %v | Processados: %d registros",
+		job.JobID[:8]+"...", formattedDuration, job.Processed)
 	e.pdf.CellFormat(130, 4, details, "", 1, "L", false, 0, "")
 
 	e.pdf.SetXY(25, startY+13)
@@ -415,10 +436,18 @@ func (e *PDFExporter) addConclusions(log *PipelineLog) {
 	e.pdf.SetTextColor(51, 51, 51)
 	y := startY + 15
 
+	// Calcula a duração formatada
+	duration := log.EndedAt.Sub(log.StartedAt)
+
+	hours := int(duration.Hours())
+	minutes := int(duration.Minutes()) % 60
+	seconds := int(duration.Seconds()) % 60
+
+	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
+
 	points := []string{
-		fmt.Sprintf("Execucao: Concluido em %v", log.EndedAt.Sub(log.StartedAt)),
+		fmt.Sprintf("Execucao: Concluido em %v", formattedDuration),
 		fmt.Sprintf("Taxa de sucesso: %.0f%% dos jobs executados com sucesso", stats.successRate),
-		fmt.Sprintf("Processamento: %d registros processados em %d batches", stats.totalProcessed, stats.totalBatches),
 		fmt.Sprintf("Jobs configurados: %d com fail-fast, %d com fail-safe", stats.jobsWithStopOnError, stats.totalJobs-stats.jobsWithStopOnError),
 	}
 
