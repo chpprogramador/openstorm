@@ -14,7 +14,7 @@ export const routes: Routes = [
     },
     {
         path: 'variables',
-        loadComponent: () => import('./features/variables/variables.component').then(m => m.VariablesComponent)
+        loadComponent: () => import('./features/variables/variables').then(m => m.Variables)
     },
     {
         path: 'jobs',
