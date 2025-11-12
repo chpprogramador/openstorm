@@ -7,42 +7,63 @@ import { Variable } from '../models/variable.model'; // Adjusted path
 @Injectable({ providedIn: 'root' })
 export class VariableService {
   private apiUrl = `${environment.apiUrl}/projects`;
+  //private isBrowser: boolean;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    //@Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    //this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   /**
    * Lista todas as variáveis de um projeto
    */
   listVariables(projectId: string): Observable<Variable[]> {
-    return this.http.get<Variable[]>(`${this.apiUrl}/${projectId}/variables`);
+     // if (this.isBrowser) {
+       return this.http.get<Variable[]>(`${this.apiUrl}/${projectId}/variables`);
+     // }
+    // return of([]); // Return empty array during SSR
   }
 
   /**
    * Cria uma nova variável
    */
   createVariable(projectId: string, variable: Variable): Observable<Variable> {
-    return this.http.post<Variable>(`${this.apiUrl}/${projectId}/variables`, variable);
+    // if (this.isBrowser) {
+      return this.http.post<Variable>(`${this.apiUrl}/${projectId}/variables`, variable);
+    // }
+    // return throwError(() => new Error('Operation not allowed during SSR'));
   }
 
   /**
    * Busca uma variável específica
    */
   getVariable(projectId: string, variableName: string): Observable<Variable> {
-    return this.http.get<Variable>(`${this.apiUrl}/${projectId}/variables/${variableName}`);
+    //  if (this.isBrowser) {
+      return this.http.get<Variable>(`${this.apiUrl}/${projectId}/variables/${variableName}`);
+    //  }
+    //  return throwError(() => new Error('Operation not allowed during SSR'));
   }
 
   /**
    * Atualiza uma variável existente
    */
   updateVariable(projectId: string, variableName: string, variable: Variable): Observable<Variable> {
-    return this.http.put<Variable>(`${this.apiUrl}/${projectId}/variables/${variableName}`, variable);
+    //  if (this.isBrowser) {
+      return this.http.put<Variable>(`${this.apiUrl}/${projectId}/variables/${variableName}`, variable);
+    //  }
+    //  return throwError(() => new Error('Operation not allowed during SSR'));
   }
 
   /**
    * Exclui uma variável
    */
   deleteVariable(projectId: string, variableName: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${projectId}/variables/${variableName}`);
+    //  if (this.isBrowser) {
+      return this.http.delete(`${this.apiUrl}/${projectId}/variables/${variableName}`);
+    //  }
+    // return throwError(() => new Error('Operation not allowed during SSR'));
   }
 
   /**

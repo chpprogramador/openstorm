@@ -1,11 +1,12 @@
 // src/app/features/project-selection/project-selection.component.ts
-import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { ProjectService } from '../../core/services/project.service';
 import { Project } from '../../core/models/project.model';
+import { ProjectService } from '../../core/services/project.service';
+
 
 @Component({
   selector: 'app-project-selection',
@@ -442,8 +443,10 @@ import { Project } from '../../core/models/project.model';
   `]
 })
 export class ProjectSelectionComponent implements OnInit {
+
   private projectService = inject(ProjectService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   projects: Project[] = [];
   showModal = false;
@@ -457,29 +460,20 @@ export class ProjectSelectionComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    console.log('Initializing ProjectSelectionComponent');
     this.loadProjects();
   }
 
   loadProjects(): void {
-    console.log('🔄 Carregando projetos...');
-
-    // Primeiro carrega do localStorage para exibir imediatamente
-    this.projects = this.projectService.getProjects();
-    console.log('📦 Projetos do localStorage:', this.projects);
-
-    // Depois tenta atualizar da API (se useApi = true)
+    console.log('🔄 Subscribing to project updates...');
     this.projectService.projects$.subscribe({
       next: (projects) => {
-        console.log('🌐 Projetos do Observable:', projects);
-        if (projects && projects.length > 0) {
-          this.projects = projects;
-          console.log('✅ Projetos atualizados:', this.projects);
-        } else {
-          console.log('⚠️ Nenhum projeto retornado');
-        }
+        console.log('🌐 Projects updated from Observable:', projects);
+        this.projects = projects;
+        this.cdr.detectChanges();
       },
       error: (error: any) => {
-        console.error('❌ Erro ao carregar projetos:', error);
+        console.error('❌ Error loading projects:', error);
       }
     });
   }

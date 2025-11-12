@@ -1,20 +1,21 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatChipsModule } from '@angular/material/chips';
+import { Router } from '@angular/router';
 
-import { AppState } from '../../core/services/app-state.service'; // Adjusted path
 import { Variable } from '../../core/models/variable.model'; // Adjusted path
+import { AppState } from '../../core/services/app-state.service'; // Adjusted path
 import { VariableService } from '../../core/services/variable.service'; // Adjusted path
-import { DialogVariableComponent } from './dialog-variable/dialog-variable';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component'; // Adjusted path
+import { DialogVariableComponent } from './dialog-variable/dialog-variable';
 
 @Component({
   standalone: true,
@@ -42,23 +43,36 @@ export class Variables implements OnInit {
     private variableService: VariableService,
     public appState: AppState,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit() {
+    if (!this.appState.project) {
+      this.router.navigate(['/']);
+      return;
+    }
     this.loadVariables();
+    console.log('ngOnInit called');
   }
 
   loadVariables() {
+    console.log('Iniciando carregamento de variáveis');
     const projectId = this.appState.project?.id;
+
+
+
     if (!projectId) {
       this.showMessage('Nenhum projeto selecionado');
       return;
     }
 
+    console.log('Carregando variáveis para o projeto:', projectId);
+
     this.loading = true;
     this.variableService.listVariables(projectId).subscribe({
       next: (variables) => {
+        console.log('Variáveis carregadas:', variables);
         this.variables = variables || [];
         this.loading = false;
       },
@@ -73,7 +87,7 @@ export class Variables implements OnInit {
   openVariableDialog(variable?: Variable) {
     const dialogRef = this.dialog.open(DialogVariableComponent, {
       width: '500px',
-      data: { 
+      data: {
         variable: variable ? { ...variable } : null,
         isEdit: !!variable,
         existingNames: this.variables.map(v => v.name).filter(name => name !== variable?.name)

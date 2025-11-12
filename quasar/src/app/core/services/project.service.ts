@@ -1,19 +1,17 @@
 // src/app/core/services/project.service.ts
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
-import { Project } from '../models/project.model';
+import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { Project } from '../models/project.model';
+import { AppState } from './app-state.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ProjectService {
-    private platformId = inject(PLATFORM_ID);
-    private http = inject(HttpClient);
-    private isBrowser: boolean;
+    //private isBrowser: boolean;
     private apiUrl = `${environment.apiUrl}/projects`;
 
     private selectedProjectSubject = new BehaviorSubject<Project | null>(null);
@@ -25,66 +23,41 @@ export class ProjectService {
     // Flag para determinar se deve usar API ou localStorage
     private useApi = true; // TRUE - Usa API
 
-    constructor() {
-        this.isBrowser = isPlatformBrowser(this.platformId);
-        this.loadProjects();
+    constructor(
+        private http: HttpClient,
+        @Inject(PLATFORM_ID) private platformId: Object,
+        private appState: AppState,
+    ) {
+        //this.isBrowser = isPlatformBrowser(this.platformId);
+        // if (this.isBrowser) {
+            this.loadProjects();
+        // } else {
+        //     console.log('⚠️ ProjectService: Not in browser, skipping initial project load.');
+        // }
     }
 
     private loadProjects(): void {
-        // if (!this.isBrowser) {
-        //     console.log('⚠️ Não está no browser, pulando carregamento');
-        //     return;
-        // }
-
         console.log('🔧 useApi:', this.useApi);
 
         if (this.useApi) {
             console.log('📡 Buscando projetos da API:', this.apiUrl);
             this.listProjects().subscribe({
-                next: (projects) => {
-                    console.log('✅ Projetos recebidos da API:', projects);
-                    this.projectsSubject.next(projects);
+                next: () => {
+                    // The tap operator in listProjects already handles the subject update.
+                    console.log('✅ Project list updated via API.');
                 },
                 error: (error) => {
                     console.error('❌ Erro na API:', error);
-                    this.loadFromLocalStorage();
                 }
             });
-        } else {
-            console.log('💾 Carregando do localStorage');
-            this.loadFromLocalStorage();
         }
     }
 
-    private loadFromLocalStorage(): void {
-        if (!this.isBrowser) {
-            return;
-        }
-
-        const stored = localStorage.getItem('quasar_projects');
-        if (stored) {
-            const projects = JSON.parse(stored);
-            this.projectsSubject.next(projects);
-        } else {
-            // Projetos de exemplo
-            const defaultProjects: Project[] = [
-                {
-                    id: '1',
-                    name: 'Projeto Alpha',
-                    description: 'Projeto de demonstração',
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                }
-            ];
-            this.projectsSubject.next(defaultProjects);
-            this.saveToLocalStorage(defaultProjects);
-        }
-    }
 
     private saveToLocalStorage(projects: Project[]): void {
-        if (!this.isBrowser) {
-            return;
-        }
+      //   if (!this.isBrowser) {
+      //       return;
+      //  }
         localStorage.setItem('quasar_projects', JSON.stringify(projects));
     }
 
@@ -92,6 +65,9 @@ export class ProjectService {
      * Lista todos os projetos (API)
      */
     listProjects(): Observable<Project[]> {
+        // if (!this.isBrowser) {
+        //    return of([]); // Return empty array during SSR
+        // }
         console.log('🚀 Fazendo requisição GET para:', this.apiUrl);
         return this.http.get<any[]>(this.apiUrl, {
             headers: { 'Content-Type': 'application/json' }
@@ -119,7 +95,7 @@ export class ProjectService {
             }),
             catchError((error) => {
                 console.warn('⚠️ Falha ao carregar projetos da API, usando localStorage:', error);
-                this.loadFromLocalStorage();
+                //this.loadFromLocalStorage();
                 return of(this.projectsSubject.value);
             })
         );
@@ -129,6 +105,9 @@ export class ProjectService {
      * Busca um projeto por ID (API)
      */
     getProject(id: string): Observable<Project> {
+        // if (!this.isBrowser) {
+        //    return throwError(() => new Error('Operation not allowed during SSR'));
+        // }
         return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
             tap(p => {
                 // Mapeia projectName para name
@@ -170,15 +149,20 @@ export class ProjectService {
      */
     selectProject(project: Project): void {
         this.selectedProjectSubject.next(project);
-        if (this.isBrowser) {
-            localStorage.setItem('quasar_selected_project', JSON.stringify(project));
-        }
+        // if (this.isBrowser) {
+        //     localStorage.setItem('quasar_selected_project', JSON.stringify(project));
+        // }
+        this.appState.project = project;
     }
 
     /**
      * Cria um novo projeto
      */
     createProject(project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>): Observable<Project> | Project {
+        // if (!this.isBrowser && this.useApi) {
+        //    return throwError(() => new Error('Operation not allowed during SSR'));
+        // }
+
         const newProject: any = {
             projectName: project.name, // Backend espera projectName
             description: project.description,
@@ -230,6 +214,10 @@ export class ProjectService {
      * Atualiza um projeto existente
      */
     updateProject(id: string, updates: Partial<Project>): Observable<Project> | void {
+        // if (!this.isBrowser && this.useApi) {
+        //    return throwError(() => new Error('Operation not allowed during SSR'));
+        //}
+
         if (this.useApi) {
             const currentProject = this.projectsSubject.value.find(p => p.id === id);
             const updatedProject = {
@@ -286,6 +274,10 @@ export class ProjectService {
      * Exclui um projeto pelo ID
      */
     deleteProject(id: string): Observable<any> | void {
+        // if (!this.isBrowser && this.useApi) {
+        //     return throwError(() => new Error('Operation not allowed during SSR'));
+        // }
+
         if (this.useApi) {
             return this.http.delete(`${this.apiUrl}/${id}`).pipe(
                 tap(() => {
@@ -314,6 +306,9 @@ export class ProjectService {
      * Executa um projeto
      */
     runProject(id: string): Observable<any> {
+        // if (!this.isBrowser) {
+        //     return throwError(() => new Error('Operation not allowed during SSR'));
+        // }
         return this.http.post(`${this.apiUrl}/${id}/run`, {});
     }
 
@@ -321,6 +316,9 @@ export class ProjectService {
      * Fecha um projeto
      */
     closeProject(id: string): Observable<any> {
+        // if (!this.isBrowser) {
+        //     return throwError(() => new Error('Operation not allowed during SSR'));
+        // }
         return this.http.post(`${this.apiUrl}/${id}/close`, {});
     }
 
@@ -329,8 +327,8 @@ export class ProjectService {
      */
     clearSelection(): void {
         this.selectedProjectSubject.next(null);
-        if (this.isBrowser) {
+        //if (this.isBrowser) {
             localStorage.removeItem('quasar_selected_project');
-        }
+        //}
     }
 }
