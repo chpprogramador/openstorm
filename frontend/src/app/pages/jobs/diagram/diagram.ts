@@ -267,6 +267,7 @@ export class Diagram implements AfterViewInit {
     jobName: 'Novo Job',
     selectSql: '',
     insertSql: '',
+    posInsertSql: '',
     columns: [],
     recordsPerPage: 1000,
     type: 'insert',
@@ -370,10 +371,13 @@ export class Diagram implements AfterViewInit {
             next: (updatedJob) => {
               const index = this.jobs.findIndex(j => j.id === updatedJob.id);
               if (index !== -1) {
-                this.jobs[index] = updatedJob;
+                this.jobs[index] = { ...this.jobs[index], ...updatedJob };
               }
-              this.selectedJob = updatedJob;
+              this.selectedJob = this.jobs[index] ?? updatedJob;
               this.saveProject();
+              if (this.instance) {
+                setTimeout(() => this.instance.repaintEverything(), 0);
+              }
             },
             error: (error) => {
               console.error('Erro ao atualizar job:', error);

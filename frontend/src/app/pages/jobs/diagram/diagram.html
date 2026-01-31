@@ -62,7 +62,7 @@
 
   <div id="diagramContainer" class="diagram-content" [style.transform]="'scale(' + zoom + ')'">
 
-    @for (job of jobs; track job) {
+    @for (job of jobs; track job.id) {
       <div
         [id]="job.id"
         [class]="'box ' + job.status"
@@ -136,4 +136,3 @@
 
     <app-log-viewer></app-log-viewer>
   </div>
-

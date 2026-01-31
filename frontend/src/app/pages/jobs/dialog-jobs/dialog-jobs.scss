@@ -55,7 +55,8 @@
 
 /* Permite que o conteúdo flexível dentro de .editor cresça */
 .editor {
-  width: 50%;
+  width: 100%;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -68,6 +69,10 @@
   flex: 1 1 auto;
   height: 100%;
   min-height: 0;
+}
+
+.editors.three .editor {
+  width: 33.3333%;
 }
 
 .w50 {

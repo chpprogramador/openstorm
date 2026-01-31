@@ -8,6 +8,7 @@ export interface Job {
   jobName: string;
   selectSql: string;
   insertSql: string;
+  posInsertSql?: string;
   columns: string[];
   recordsPerPage: number;
   "type": string;

@@ -99,15 +99,13 @@ export class Jobs {
           job.total = status.total;
           job.processed = status.processed;
         }
-        
-        if (job.status === 'done' || job.status === 'error') {
-          this.isRunning = false;
-          console.log(`Job ${job.jobName} concluído com status: ${job.status}`);
-        } else if (job.status === 'running') {
-          this.isRunning = true;
-          console.log(`Job ${job.jobName} ainda está em execução.`);
-        }
       });
+
+      const hasRunning = jobs_.some((job) => job.status === 'running');
+      this.isRunning = hasRunning;
+      if (hasRunning) {
+        console.log('Pipeline em execução (jobs running).');
+      }
     });
 
     this.projectStatusService.listen().subscribe(projectStatuses => {

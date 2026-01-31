@@ -41,8 +41,11 @@ export class DialogJobs {
     form!: FormGroup;
     sqlSelect = '';
     sqlInsert = '';
+    sqlPosInsert = '';
     selectAtualizado = '';
     insertAtualizado = '';
+    posInsertAtualizado = '';
+    private localJob: Job;
 
   constructor(
     public dialogRef: MatDialogRef<DialogJobs>,
@@ -53,20 +56,23 @@ export class DialogJobs {
     private appState: AppState
   ) {
     console.log('DialogJobs data:', data.stopOnError);
+    this.localJob = structuredClone(this.data);
     this.form = this.fb.group({
-      id: [this.data?.id || ''],  
-      jobName: [this.data?.jobName || '', []],
-      selectSql: [this.data?.selectSql || '', []],
-      insertSql: [this.data?.insertSql || '', []],
-      recordsPerPage: [this.data?.recordsPerPage || 100, []],
-      type: [this.data?.type || 'insert', []],
-      stopOnError: [this.data?.stopOnError, []],
-      top: [this.data?.top || 0, []],
-      left: [this.data?.left || 0, []],
-      columns: [this.data?.columns || []]
+      id: [this.localJob?.id || ''],  
+      jobName: [this.localJob?.jobName || '', []],
+      selectSql: [this.localJob?.selectSql || '', []],
+      insertSql: [this.localJob?.insertSql || '', []],
+      posInsertSql: [this.localJob?.posInsertSql || '', []],
+      recordsPerPage: [this.localJob?.recordsPerPage || 100, []],
+      type: [this.localJob?.type || 'insert', []],
+      stopOnError: [this.localJob?.stopOnError, []],
+      top: [this.localJob?.top || 0, []],
+      left: [this.localJob?.left || 0, []],
+      columns: [this.localJob?.columns || []]
     });
-    this.sqlSelect = this.data?.selectSql || '';
-    this.sqlInsert = this.data?.insertSql || '';
+    this.sqlSelect = this.localJob?.selectSql || '';
+    this.sqlInsert = this.localJob?.insertSql || '';
+    this.sqlPosInsert = this.localJob?.posInsertSql || '';
 
   }
 
@@ -126,14 +132,17 @@ export class DialogJobs {
 
   onSelectAtualizado(novoSql: string) {
     this.selectAtualizado = novoSql;
-    this.data.selectSql = novoSql;
     this.form.patchValue({ selectSql: novoSql });
   }
 
   onInsertAtualizado(novoSql: string) {
     this.insertAtualizado = novoSql;
-    this.data.insertSql = novoSql;  
     this.form.patchValue({ insertSql: novoSql });
+  }
+
+  onPosInsertAtualizado(novoSql: string) {
+    this.posInsertAtualizado = novoSql;
+    this.form.patchValue({ posInsertSql: novoSql });
   }
 
 

@@ -44,25 +44,30 @@
         <input type="hidden" formControlName="columns">
     </form>
 
-    <div class="lineFull editors">
-        <div class="w50 editor" *ngIf="form.get('type')?.value === 'insert'">
-            
+    <div class="lineFull editors" [class.three]="form.get('type')?.value === 'insert'">
+        <div class="editor" *ngIf="form.get('type')?.value === 'insert'">
             <h2>insert</h2>
             <app-sql-editor
             [initialSql]="sqlInsert"
             (sqlChanged)="onInsertAtualizado($event)">
             </app-sql-editor>
-
         </div>
-        <div class="w50 editor" >
 
+        <div class="editor" *ngIf="form.get('type')?.value === 'insert'">
+            <h2>pos-insert</h2>
+            <app-sql-editor
+            [initialSql]="sqlPosInsert"
+            (sqlChanged)="onPosInsertAtualizado($event)">
+            </app-sql-editor>
+        </div>
+
+        <div class="editor">
             <h2 *ngIf="form.get('type')?.value === 'insert'">Select</h2>
             <h2 *ngIf="form.get('type')?.value != 'insert'">Query</h2>
             <app-sql-editor
             [initialSql]="sqlSelect"
             (sqlChanged)="onSelectAtualizado($event)">
             </app-sql-editor>
-
         </div>
     </div>
 
