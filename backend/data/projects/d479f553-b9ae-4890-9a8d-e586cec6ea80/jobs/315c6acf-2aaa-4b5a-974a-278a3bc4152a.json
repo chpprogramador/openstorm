@@ -7,9 +7,10 @@
     "id",
     "padraoinstalacao"
   ],
+  "primaryKeys": null,
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 1200,
+  "left": 400,
   "top": 540
 }

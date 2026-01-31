@@ -7,9 +7,10 @@
     "id",
     "tiporede"
   ],
+  "primaryKeys": null,
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 400,
+  "left": 1200,
   "top": 1080
 }

@@ -1,7 +1,7 @@
 {
   "id": "954d7bd7-23c5-4169-8ad9-1b8dc67ae3fa",
   "jobName": "Cliente",
-  "selectSql": "SELECT\n  id,\n  CASE\n    WHEN c.ativo = 'S' THEN TRUE\n    ELSE FALSE\n  END AS ativo,\n  to_char(c.datanascimento::date, 'YYYY-MM-DD') data_nascimento,\n  c.cpf documento_identificacao,\n  c.email mail,\n  c.cliente nome_completo,\n  c.nomemae nome_mae,\n  c.nomepai nome_pai,\n  c.fonemovel telefone,\n  'F' tipo_cliente,\n  NULL id_endereco\nFROM\n  public.cliente c",
+  "selectSql": "SELECT\n  id,\n  CASE\n    WHEN c.ativo = 'S' THEN TRUE\n    ELSE FALSE\n  END AS ativo,\n  to_char(NULLIF(c.datanascimento, '')::date, 'YYYY-MM-DD') AS data_nascimento,\n  c.cpf documento_identificacao,\n  c.email mail,\n  c.cliente nome_completo,\n  c.nomemae nome_mae,\n  c.nomepai nome_pai,\n  c.fonemovel telefone,\n  'F' tipo_cliente,\n  NULL id_endereco\nFROM\n  public.cliente c",
   "insertSql": "insert into ${SCHEMA}.cliente (id,ativo,data_nascimento,documento_identificacao,\temail,nome_completo,nome_mae,nome_pai,telefone,tipo_cliente,id_endereco)",
   "columns": [
     "id",
@@ -20,6 +20,6 @@
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 1200,
-  "top": 0
+  "left": 1600,
+  "top": 180
 }

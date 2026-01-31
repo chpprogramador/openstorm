@@ -131,6 +131,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 		job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
 		job.InsertSQL = jr.SubstituteVariables(job.InsertSQL)
+		job.PostInsert = jr.SubstituteVariables(job.PostInsert)
 
 		// total de registros
 		total, err := jr.Dialect.FetchTotalCount(jr.SourceDB, job)
@@ -180,6 +181,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					}
 
 					insertSQL, args := jr.Dialect.BuildInsertQuery(job, batch)
+					log.Printf("INSERT SQL (job=%s): %s", job.ID, insertSQL)
 
 					tx, err := jr.DestinationDB.Begin()
 					if err != nil {
@@ -304,11 +306,18 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					}
 				}
 
-				if len(buffer) > 0 {
-					batchChan <- buffer
-				}
-			}(w)
-		}
+					if len(buffer) > 0 {
+						batchChan <- buffer
+					}
+
+					if err := rows.Err(); err != nil {
+						log.Printf("Erro ao iterar rows no bucket %d: %v", workerID, err)
+						jobHadError.Store(true)
+						lastErr.Store(err.Error())
+						return
+					}
+				}(w)
+			}
 
 		// Fecha o canal quando todos leitores terminarem
 		go func() {
@@ -319,6 +328,12 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		writersWG.Wait()
 
 		end := time.Now()
+		finalProcessed := int(atomic.LoadInt64(&processed))
+		if !jobHadError.Load() && finalProcessed < total {
+			jobHadError.Store(true)
+			lastErr.Store(fmt.Sprintf("processados %d de %d registros", finalProcessed, total))
+		}
+
 		if jobHadError.Load() {
 			errMsg := "erro durante execução"
 			if last := lastErr.Load(); last != nil {
@@ -370,8 +385,10 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 	// Substitui variáveis no SQL
 	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
 
-	// Limpa quebras de linha para evitar problemas no PostgreSQL
-	cleanSQL := jr.CleanSQLNewlines(job.SelectSQL)
+	// Preserva quebras de linha para não afetar comentários
+	cleanSQL := strings.ReplaceAll(job.SelectSQL, "\r\n", "\n")
+	cleanSQL = strings.ReplaceAll(cleanSQL, "\r", "\n")
+	log.Printf("EXECUTION SQL (job=%s): %s", job.ID, cleanSQL)
 
 	_, err := jr.DestinationDB.Exec(cleanSQL)
 	end := time.Now()

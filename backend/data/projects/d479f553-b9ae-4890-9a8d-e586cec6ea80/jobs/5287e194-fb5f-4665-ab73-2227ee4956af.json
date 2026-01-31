@@ -7,9 +7,10 @@
     "id",
     "fonteabastecimento"
   ],
+  "primaryKeys": null,
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 0,
-  "top": 180
+  "left": 400,
+  "top": 360
 }

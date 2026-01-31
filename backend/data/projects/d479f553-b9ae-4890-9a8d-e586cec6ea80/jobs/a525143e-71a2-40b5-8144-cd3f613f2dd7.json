@@ -13,9 +13,10 @@
     "bool",
     "?column?"
   ],
+  "primaryKeys": null,
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 800,
+  "left": 1600,
   "top": 360
 }

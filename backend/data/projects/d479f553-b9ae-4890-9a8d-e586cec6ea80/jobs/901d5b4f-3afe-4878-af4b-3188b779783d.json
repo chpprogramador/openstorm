@@ -1,8 +1,8 @@
 {
   "id": "901d5b4f-3afe-4878-af4b-3188b779783d",
   "jobName": "Ligação Medidor",
-  "selectSql": "select \n\ti.id,\n\ti.leiturainstalacao leitura_instalacao,\n\ti.leituraretirada leitura_retirada,\n\tcase when i.ativo = 'S' then true else false end medidor_ativo,\n\ti.idligacao id_ligacao_imovel,\n\ti.idmedidor  id_medidor,\n\ti.idperiodo id_periodo,\n\ti.idperiodoleitant  id_periodo_leitura_anterior,\n\ti.idperiodoutilresiduo  id_periodo_utilizacao_residuo,\n\ti.dtretirada data_hora_troca_medidor,\n\ti.dtinstalacao data_instalacao,\n\tnull lacre_utilizado,\n\ti.volumeresidual  residual,\n\tnull id_servico_ordem_detalhe,\n\tfalse realizado_supressao,\n\t1 id_agente_comercial_instalacao\nfrom instalacaomedidor i \njoin \n(\n\tselect\n\t\t*,\n\t\tctid,\n\t\trow_number() over (partition by idclienteinquilino order by id) as idci,\n\t\trow_number() over (partition by idmedidor order by id) as idm\n\tfrom\n\t\tligacao ) l on (i.idligacao = l.id)\nwhere\n\tl.idci = 1\n\tand l.idm = 1",
-  "insertSql": "INSERT INTO ${SCHEMA}.ligacao_medidor\n(id,\nleitura_instalacao,\nleitura_retirada,\nmedidor_ativo,\nid_ligacao_imovel,\nid_medidor,\nid_periodo,\nid_periodo_leitura_anterior,\nid_periodo_utilizacao_residuo,\ndata_hora_troca_medidor,\ndata_instalacao,\nlacre_utilizado,\nresidual,\nid_servico_ordem_detalhe,\nrealizado_supressao,\nid_agente_comercial_instalacao)",
+  "selectSql": "select \n\ti.id,\n\ti.leiturainstalacao leitura_instalacao,\n\ti.leituraretirada leitura_retirada,\n\tcase when i.ativo = 'S' then true else false end medidor_ativo,\n\ti.idligacao id_ligacao_imovel,\n\ti.idmedidor  id_medidor,\n\ti.idperiodo id_periodo,\n\ti.idperiodoutilresiduo  id_periodo_utilizacao_residuo,\n\ti.dtretirada data_hora_troca_medidor,\n\ti.dtinstalacao data_instalacao,\n\tnull lacre_utilizado,\n\ti.volumeresidual  residual,\n\tnull id_servico_ordem_detalhe,\n\tfalse realizado_supressao,\n\tu.idleiturista  id_agente_comercial_instalacao\nfrom instalacaomedidor i \njoin \n(\n\tselect\n\t\t*,\n\t\tctid,\n\t\trow_number() over (partition by idmedidor order by id) as idm\n\tfrom\n\t\tligacao ) l on (i.idligacao = l.id)\njoin (\n\tselect \n\t\tidequipe, \n\t\tmax(idleiturista) idleiturista\n\tfrom usuario u\n\twhere idequipe is not null\n\tgroup by idequipe\n) u on (u.idequipe = i.idequipe)\nwhere\n\tl.idm = 1",
+  "insertSql": "INSERT INTO ${SCHEMA}.ligacao_medidor\n(id,\nleitura_instalacao,\nleitura_retirada,\nmedidor_ativo,\nid_ligacao_imovel,\nid_medidor,\nid_periodo,\nid_periodo_utilizacao_residuo,\ndata_hora_troca_medidor,\ndata_instalacao,\nlacre_utilizado,\nresidual,\nid_servico_ordem_detalhe,\nrealizado_supressao,\nid_agente_comercial_instalacao)",
   "columns": [
     "id",
     "leitura_instalacao",
@@ -11,7 +11,6 @@
     "id_ligacao_imovel",
     "id_medidor",
     "id_periodo",
-    "id_periodo_leitura_anterior",
     "id_periodo_utilizacao_residuo",
     "data_hora_troca_medidor",
     "data_instalacao",
@@ -25,6 +24,6 @@
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 800,
-  "top": 1980
+  "left": 0,
+  "top": 2160
 }

@@ -7,9 +7,10 @@
     "id",
     "marcamedidor"
   ],
+  "primaryKeys": null,
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 400,
-  "top": 540
+  "left": 0,
+  "top": 720
 }

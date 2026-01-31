@@ -4,9 +4,10 @@
   "selectSql": "INSERT INTO ${SCHEMA}.cobranca_tipo (id, nome_cobranca_tipo) VALUES(1, 'Pagamento Convencional');\r\nINSERT INTO ${SCHEMA}.cobranca_tipo (id, nome_cobranca_tipo) VALUES(2, 'Debito Automático');",
   "insertSql": "",
   "columns": [],
+  "primaryKeys": null,
   "recordsPerPage": 1000,
   "type": "execution",
   "stopOnError": true,
-  "left": 1600,
+  "left": 800,
   "top": 180
 }

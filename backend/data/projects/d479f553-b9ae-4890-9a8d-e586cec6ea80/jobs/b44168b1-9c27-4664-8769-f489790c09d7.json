@@ -4,9 +4,10 @@
   "selectSql": "INSERT INTO ${SCHEMA}.leitura_tipo (id, nome_leitura_tipo, sigla) VALUES(1, 'Simultânea', 'S');",
   "insertSql": "",
   "columns": [],
+  "primaryKeys": null,
   "recordsPerPage": 1000,
   "type": "execution",
   "stopOnError": true,
-  "left": 400,
+  "left": 1200,
   "top": 360
 }

@@ -4,9 +4,10 @@
   "selectSql": "INSERT INTO ${SCHEMA}.cobranca_fase (id, nome_fase) VALUES\r\n(1, 'NOTIFICADO'),\r\n(2, 'CORTADO'),\r\n(99, 'NORMAL'),\r\n(3, 'EM PROC. CORTE'),\r\n(97, 'EM COBRANÇA'),\r\n(98, 'EM NOTIFICAÇÃO'),\r\n(100, 'OUTRO');",
   "insertSql": "",
   "columns": [],
+  "primaryKeys": null,
   "recordsPerPage": 1000,
   "type": "execution",
   "stopOnError": true,
-  "left": 1600,
-  "top": 0
+  "left": 1200,
+  "top": 180
 }

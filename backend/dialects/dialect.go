@@ -109,13 +109,11 @@ func (d PostgresDialect) BuildInsertQuery(job models.Job, records []map[string]i
 	// Constrói query com ON CONFLICT para evitar duplicatas
 	// Assume que a primeira coluna é a chave primária
 	if len(columns) > 0 {
-		pkColumn := columns[0]
-		query := fmt.Sprintf(`%s VALUES %s ON CONFLICT (%s) DO NOTHING`,
+		query := fmt.Sprintf(`%s VALUES %s`,
 			job.InsertSQL,
 			strings.Join(valueStrings, ", "),
-			pkColumn,
 		)
-		return query, nil
+		return appendPostInsert(query, job.PostInsert), nil
 	}
 
 	// Fallback para INSERT simples se não houver colunas
@@ -124,7 +122,7 @@ func (d PostgresDialect) BuildInsertQuery(job models.Job, records []map[string]i
 		strings.Join(valueStrings, ", "),
 	)
 
-	return query, nil
+	return appendPostInsert(query, job.PostInsert), nil
 }
 
 func escapeValue(value interface{}) string {
@@ -153,4 +151,17 @@ func escapeValue(value interface{}) string {
 	default:
 		return fmt.Sprintf("%v", v)
 	}
+}
+
+func appendPostInsert(baseSQL, postInsert string) string {
+	post := strings.TrimSpace(postInsert)
+	if post == "" {
+		return baseSQL
+	}
+	base := strings.TrimRight(baseSQL, " \t\r\n;")
+	post = strings.TrimLeft(post, "; \t\r\n")
+
+	merged := base + "\n" + post
+	merged = strings.TrimRight(merged, " \t\r\n;")
+	return merged + ";"
 }
