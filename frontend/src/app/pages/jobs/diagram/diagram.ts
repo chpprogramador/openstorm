@@ -60,7 +60,7 @@ export class Diagram implements AfterViewInit {
   zoom = 1;
   minZoom = 0.3;
   maxZoom = 1.6;
-  zoomStep = 0.1;
+  zoomStep = 0.01;
 
   selectedJob: JobExtended | null = null;
   isLoading = false;

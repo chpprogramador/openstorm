@@ -9,8 +9,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { forkJoin } from 'rxjs';
 import { ErrorViewerComponent } from '../../components/error-viewer/error-viewer.component';
-import { ErrorService, ErrorSummary, PipelineStats } from '../../services/error.service';
+import { ErrorService, ErrorSummary, PipelineLog, PipelineStats } from '../../services/error.service';
 
 @Component({
   selector: 'app-errors',
@@ -33,11 +34,11 @@ import { ErrorService, ErrorSummary, PipelineStats } from '../../services/error.
       <mat-card class="page-header">
         <mat-card-header>
           <mat-card-title>
-            <mat-icon color="warn">bug_report</mat-icon>
-            Visualizador de Erros
+            <mat-icon color="warn">history</mat-icon>
+            Histórico & Erros
           </mat-card-title>
           <mat-card-subtitle>
-            Analise e diagnostique erros de execução de pipelines
+            Timeline de execuções com estatísticas e detalhes de erro
           </mat-card-subtitle>
         </mat-card-header>
       </mat-card>
@@ -80,6 +81,25 @@ import { ErrorService, ErrorSummary, PipelineStats } from '../../services/error.
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
+          <div class="stats-summary">
+            <div class="summary-item">
+              <span class="summary-label">Pipeline</span>
+              <span class="summary-value">{{ pipelineStats.project || pipelineStats.pipeline_id }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Início</span>
+              <span class="summary-value">{{ formatDateTime(pipelineStats.started_at) }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Fim</span>
+              <span class="summary-value">{{ formatDateTime(pipelineStats.ended_at) }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Duração</span>
+              <span class="summary-value">{{ pipelineStats.duration }}</span>
+            </div>
+          </div>
+
           <div class="stats-grid">
             <div class="stat-item">
               <div class="stat-value">{{ pipelineStats.total_jobs }}</div>
@@ -125,6 +145,71 @@ import { ErrorService, ErrorSummary, PipelineStats } from '../../services/error.
         </mat-card-content>
       </mat-card>
 
+      <!-- Timeline -->
+      <mat-card class="timeline-card" *ngIf="pipelineLog && !isLoading">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>timeline</mat-icon>
+            Timeline de Execuções
+          </mat-card-title>
+          <mat-card-subtitle>
+            {{ pipelineLog.jobs.length || 0 }} jobs nesta execução
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="timeline">
+            <div class="timeline-item" *ngFor="let job of pipelineLog.jobs; let i = index">
+                <div class="timeline-rail">
+                <div class="timeline-node" [ngClass]="getStatusClass(job.status)"></div>
+                <div class="timeline-line" *ngIf="i < (pipelineLog.jobs.length - 1)"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <div class="job-title">
+                    <mat-icon [ngClass]="getStatusClass(job.status)">
+                      {{ getStatusIcon(job.status) }}
+                    </mat-icon>
+                    <span>{{ job.job_name }}</span>
+                  </div>
+                  <div class="job-meta">
+                    <span class="meta-chip" [ngClass]="getStatusClass(job.status)">
+                      {{ getStatusLabel(job.status) }}
+                    </span>
+                    <span class="meta-chip neutral">
+                      {{ job.processed }} / {{ job.total }}
+                    </span>
+                    <span class="meta-chip neutral">
+                      {{ getDuration(job.started_at, job.ended_at) }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="timeline-body">
+                  <div class="time-range">
+                    <span>Início: {{ formatDateTime(job.started_at) }}</span>
+                    <span>Fim: {{ formatDateTime(job.ended_at) }}</span>
+                  </div>
+
+                  <div class="error-block" *ngIf="job.status === 'error'">
+                    <div class="error-title">
+                      <mat-icon color="warn">error_outline</mat-icon>
+                      <span>Erro</span>
+                    </div>
+                    <div class="error-message">{{ job.error }}</div>
+                    <div class="error-details" *ngIf="job.error_details || job.error_type || job.error_code">
+                      <div *ngIf="job.error_type"><strong>Tipo:</strong> {{ job.error_type }}</div>
+                      <div *ngIf="job.error_code"><strong>Código:</strong> {{ job.error_code }}</div>
+                      <div *ngIf="job.error_details?.['suggestion']"><strong>Sugestão:</strong> {{ job.error_details?.['suggestion'] }}</div>
+                      <div *ngIf="job.error_details?.['original_error']"><strong>Detalhe:</strong> {{ job.error_details?.['original_error'] }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
       <!-- Error Viewer -->
       <app-error-viewer 
         *ngIf="errorSummary && !isLoading"
@@ -151,6 +236,7 @@ export class ErrorsComponent implements OnInit {
   availablePipelines: string[] = [];
   errorSummary: ErrorSummary | null = null;
   pipelineStats: PipelineStats | null = null;
+  pipelineLog: PipelineLog | null = null;
   isLoading: boolean = false;
 
   constructor(
@@ -185,40 +271,28 @@ export class ErrorsComponent implements OnInit {
     this.selectedPipelineId = pipelineId;
     this.errorSummary = null;
     this.pipelineStats = null;
+    this.pipelineLog = null;
   }
 
   loadPipelineData() {
     if (!this.selectedPipelineId) return;
 
     this.isLoading = true;
-    
-    // Carrega estatísticas e erros em paralelo
-    const statsRequest = this.errorService.getPipelineStats(this.selectedPipelineId);
-    const errorsRequest = this.errorService.getErrorSummary(this.selectedPipelineId);
 
-    // Carrega estatísticas
-    statsRequest.subscribe({
-      next: (stats) => {
+    forkJoin({
+      stats: this.errorService.getPipelineStats(this.selectedPipelineId),
+      errors: this.errorService.getErrorSummary(this.selectedPipelineId),
+      log: this.errorService.getPipelineLog(this.selectedPipelineId)
+    }).subscribe({
+      next: ({ stats, errors, log }) => {
         this.pipelineStats = stats;
-      },
-      error: (error) => {
-        console.error('Erro ao carregar estatísticas:', error);
-        this.snackBar.open('Erro ao carregar estatísticas do pipeline', 'Fechar', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
-
-    // Carrega resumo de erros
-    errorsRequest.subscribe({
-      next: (errorSummary) => {
-        this.errorSummary = errorSummary;
+        this.errorSummary = errors;
+        this.pipelineLog = log;
         this.isLoading = false;
-        
-        if (errorSummary.total_errors > 0) {
+
+        if (errors.total_errors > 0) {
           this.snackBar.open(
-            `Pipeline carregado com ${errorSummary.total_errors} erro(s) encontrado(s)`, 
+            `Pipeline carregado com ${errors.total_errors} erro(s) encontrado(s)`, 
             'Fechar', 
             { duration: 3000 }
           );
@@ -230,8 +304,8 @@ export class ErrorsComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Erro ao carregar resumo de erros:', error);
-        this.snackBar.open('Erro ao carregar resumo de erros', 'Fechar', {
+        console.error('Erro ao carregar dados do pipeline:', error);
+        this.snackBar.open('Erro ao carregar dados do pipeline', 'Fechar', {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
@@ -258,5 +332,31 @@ export class ErrorsComponent implements OnInit {
       'pending': 'Pendente'
     };
     return labels[status] || 'Desconhecido';
+  }
+
+  getStatusIcon(status: string): string {
+    const icons: { [key: string]: string } = {
+      'done': 'check_circle',
+      'error': 'error',
+      'running': 'play_circle',
+      'pending': 'schedule'
+    };
+    return icons[status] || 'help';
+  }
+
+  formatDateTime(dateString: string): string {
+    return this.errorService.formatDateTime(dateString);
+  }
+
+  getDuration(startedAt: string, endedAt: string): string {
+    if (!startedAt || !endedAt) return '';
+    const start = new Date(startedAt).getTime();
+    const end = new Date(endedAt).getTime();
+    if (Number.isNaN(start) || Number.isNaN(end)) return '';
+    const diffMs = Math.max(0, end - start);
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}m ${seconds}s`;
   }
 }

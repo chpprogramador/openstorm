@@ -114,6 +114,49 @@ html, body {
   transition: all 0.3s ease;
 }
 
+.mat-mdc-card {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.mat-mdc-card-title {
+  color: var(--text-primary);
+}
+
+.mat-mdc-card-subtitle {
+  color: var(--text-muted);
+}
+
+body:not(.light-theme) .mat-mdc-expansion-panel {
+  background: rgba(15, 23, 42, 0.65) !important;
+  border-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+body:not(.light-theme) .mat-mdc-expansion-panel-header {
+  background: rgba(15, 23, 42, 0.85) !important;
+  color: var(--text-primary) !important;
+}
+
+body:not(.light-theme) .mat-mdc-expansion-panel-body {
+  background: rgba(2, 6, 23, 0.6) !important;
+  color: var(--text-secondary) !important;
+}
+
+body:not(.light-theme) .mat-mdc-expansion-panel-header-title,
+body:not(.light-theme) .mat-mdc-expansion-panel-header-description {
+  color: var(--text-primary) !important;
+}
+
+body:not(.light-theme) .mat-mdc-expansion-panel {
+  --mat-expansion-container-background-color: rgba(15, 23, 42, 0.65);
+  --mat-expansion-container-text-color: var(--text-primary);
+}
+
+body:not(.light-theme) .mat-expansion-indicator::after {
+  color: var(--text-secondary) !important;
+}
+
 // Estilos para tema dark
 .dark-theme,
 body:not(.light-theme) {

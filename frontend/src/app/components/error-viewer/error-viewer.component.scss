@@ -1,29 +1,59 @@
 .error-viewer-container {
-  padding: 16px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 16px 0px;
+  width: 100%;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.error-viewer-container .mat-mdc-card {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .error-summary-card {
   margin-bottom: 16px;
   
   .mat-mdc-card-header {
-    background-color: #f5f5f5;
+    background-color: var(--bg-tertiary);
     border-radius: 4px 4px 0 0;
     
     .mat-mdc-card-title {
       display: flex;
       align-items: center;
       gap: 8px;
-      color: #d32f2f;
+      color: var(--error-color);
       font-weight: 600;
     }
     
     .mat-mdc-card-subtitle {
-      color: #666;
+      color: var(--text-muted);
       font-weight: 500;
     }
   }
+}
+
+.error-viewer-container .mat-mdc-expansion-panel {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.error-viewer-container .mat-mdc-expansion-panel-header {
+  color: var(--text-primary);
+}
+
+.error-viewer-container .mat-mdc-expansion-panel-body {
+  color: var(--text-secondary);
+}
+
+.error-viewer-container .mat-mdc-expansion-panel-header-title,
+.error-viewer-container .mat-mdc-expansion-panel-header-description {
+  color: var(--text-secondary);
+}
+
+.error-viewer-container .mat-expansion-indicator::after {
+  color: var(--text-secondary);
 }
 
 .error-types-section {
@@ -31,7 +61,7 @@
   
   h4 {
     margin: 0 0 8px 0;
-    color: #333;
+    color: var(--text-primary);
     font-weight: 600;
   }
   
@@ -45,38 +75,42 @@
 }
 
 .error-chip-duplicate {
-  background-color: #ffebee !important;
-  color: #c62828 !important;
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: var(--error-color) !important;
 }
 
 .error-chip-foreign-key {
-  background-color: #fff3e0 !important;
-  color: #ef6c00 !important;
+  background-color: rgba(245, 158, 11, 0.2) !important;
+  color: #f59e0b !important;
 }
 
 .error-chip-connection {
-  background-color: #e8f5e8 !important;
-  color: #2e7d32 !important;
+  background-color: rgba(16, 185, 129, 0.2) !important;
+  color: var(--success-color) !important;
 }
 
 .error-chip-syntax {
-  background-color: #f3e5f5 !important;
-  color: #7b1fa2 !important;
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  color: var(--primary-color) !important;
 }
 
 .error-chip-permission {
-  background-color: #e3f2fd !important;
-  color: #1565c0 !important;
+  background-color: rgba(14, 165, 233, 0.2) !important;
+  color: #0ea5e9 !important;
 }
 
 .error-chip-table {
-  background-color: #fce4ec !important;
-  color: #ad1457 !important;
+  background-color: rgba(236, 72, 153, 0.2) !important;
+  color: #ec4899 !important;
 }
 
 .error-chip-unknown {
-  background-color: #f5f5f5 !important;
-  color: #424242 !important;
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+}
+
+:host ::ng-deep .mat-mdc-standard-chip:not(.mdc-evolution-chip--disabled) .mdc-evolution-chip__text-label {
+  color: inherit;
 }
 
 .job-errors-section,
@@ -88,14 +122,15 @@
     align-items: center;
     gap: 8px;
     margin: 0 0 16px 0;
-    color: #333;
+    color: var(--text-primary);
     font-weight: 600;
   }
 }
 
 .mat-mdc-expansion-panel {
   margin-bottom: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
   
   .mat-mdc-expansion-panel-header {
     padding: 16px;
@@ -105,6 +140,7 @@
       align-items: center;
       gap: 8px;
       font-weight: 500;
+      color: var(--text-primary);
     }
     
     .mat-mdc-panel-description {
@@ -115,13 +151,14 @@
       
       .error-time {
         font-size: 0.875rem;
-        color: #666;
+        color: var(--text-muted);
       }
     }
   }
   
   .mat-mdc-expansion-panel-body {
     padding: 16px;
+    color: var(--text-secondary);
   }
 }
 
@@ -130,20 +167,20 @@
     margin-bottom: 16px;
     
     strong {
-      color: #333;
+      color: var(--text-primary);
       font-weight: 600;
     }
     
     .error-text {
-      background-color: #f5f5f5;
-      border: 1px solid #e0e0e0;
+      background-color: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
       border-radius: 4px;
       padding: 12px;
       margin: 8px 0;
       font-family: 'Courier New', monospace;
       font-size: 0.875rem;
       line-height: 1.4;
-      color: #d32f2f;
+      color: #fecaca;
       white-space: pre-wrap;
       word-break: break-word;
       max-height: 200px;
@@ -158,18 +195,20 @@
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      background-color: #e3f2fd;
-      border: 1px solid #bbdefb;
+      background-color: var(--bg-tip);
+      border: 1px solid var(--border-color);
       border-radius: 4px;
       padding: 12px;
+      color: var(--text-primary);
       
       mat-icon {
         margin-top: 2px;
         flex-shrink: 0;
+        color: var(--primary-color);
       }
       
       strong {
-        color: #1565c0;
+        color: var(--text-primary);
         font-weight: 600;
       }
     }
@@ -186,28 +225,81 @@
       gap: 4px;
       
       strong {
-        color: #333;
+        color: var(--text-primary);
         font-weight: 600;
         font-size: 0.875rem;
       }
       
       span, pre {
-        color: #666;
+        color: var(--text-secondary);
         font-size: 0.875rem;
         font-family: 'Courier New', monospace;
-        background-color: #f9f9f9;
+        background-color: rgba(15, 23, 42, 0.5);
         padding: 4px 8px;
         border-radius: 3px;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--border-color);
       }
     }
   }
 }
 
+// Ajustes de contraste específicos para dark theme
+:host-context(body:not(.light-theme)) .error-summary-card .mat-mdc-card-header {
+  background-color: rgba(15, 23, 42, 0.7);
+}
+
+:host-context(body:not(.light-theme)) .error-viewer-container {
+  color: var(--text-primary);
+}
+
+:host-context(body:not(.light-theme)) ::ng-deep .mat-mdc-expansion-panel {
+  background: rgba(15, 23, 42, 0.65);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
+:host-context(body:not(.light-theme)) ::ng-deep .mat-mdc-expansion-panel-header {
+  background: rgba(15, 23, 42, 0.85);
+}
+
+:host-context(body:not(.light-theme)) ::ng-deep .mat-mdc-expansion-panel-body {
+  background: rgba(2, 6, 23, 0.6);
+}
+
+:host-context(body:not(.light-theme)) .error-chip-foreign-key,
+:host-context(body:not(.light-theme)) .error-chip-duplicate,
+:host-context(body:not(.light-theme)) .error-chip-connection,
+:host-context(body:not(.light-theme)) .error-chip-syntax,
+:host-context(body:not(.light-theme)) .error-chip-permission,
+:host-context(body:not(.light-theme)) .error-chip-table,
+:host-context(body:not(.light-theme)) .error-chip-unknown {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+:host-context(body:not(.light-theme)) .error-details .error-message .error-text {
+  background-color: rgba(2, 6, 23, 0.75);
+  color: #fecaca;
+}
+
+:host-context(body:not(.light-theme)) .error-details .error-info .error-suggestion {
+  background-color: rgba(30, 58, 138, 0.2);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: var(--text-primary);
+}
+
+:host-context(body:not(.light-theme)) .error-metadata span,
+:host-context(body:not(.light-theme)) .error-metadata pre {
+  background-color: rgba(2, 6, 23, 0.6);
+}
+
+:host-context(body:not(.light-theme)) ::ng-deep .mat-mdc-expansion-panel-header-title,
+:host-context(body:not(.light-theme)) ::ng-deep .mat-mdc-expansion-panel-header-description {
+  color: var(--text-primary);
+}
+
 .no-errors-message {
   text-align: center;
   padding: 48px 16px;
-  color: #4caf50;
+  color: var(--success-color);
   
   mat-icon {
     font-size: 48px;
@@ -218,13 +310,13 @@
   
   h3 {
     margin: 0 0 8px 0;
-    color: #2e7d32;
+    color: var(--success-color);
     font-weight: 600;
   }
   
   p {
     margin: 0;
-    color: #666;
+    color: var(--text-muted);
     font-size: 1rem;
   }
 }

@@ -2,6 +2,7 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
+    Input,
     OnDestroy,
     OnInit,
     ViewChild
@@ -18,8 +19,8 @@ import { LogEntry, LogStatusService } from '../services/log-status.service';
   imports: [MatIconModule, MatButtonModule, MatTooltipModule],
   styleUrls: ['./app-log-viewer.component.scss'],
   template: `
-    <div class="log-viewer-container">
-      <div class="log-header">
+    <div class="log-viewer-container" [class.embedded]="embedded">
+      <div class="log-header" *ngIf="showHeader">
         <mat-icon>terminal</mat-icon>
         <span>Logs em Tempo Real</span>
         <button mat-icon-button (click)="clearLogs()" matTooltip="Limpar logs">
@@ -33,6 +34,8 @@ import { LogEntry, LogStatusService } from '../services/log-status.service';
   `
 })
 export class LogViewerComponent implements OnInit, OnDestroy {
+  @Input() showHeader = true;
+  @Input() embedded = false;
   logText = '';
   private sub!: Subscription;
 

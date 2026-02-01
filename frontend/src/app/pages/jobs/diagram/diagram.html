@@ -54,85 +54,98 @@
   </div>
 </div>
 
-<div  class="diagram-container" #scrollContainer (mousedown)="onMouseDown($event)"
-  (mousemove)="onMouseMove($event)"
-  (mouseup)="onMouseUp()"
-  (mouseleave)="onMouseUp()"
-  >
+<div class="diagram-layout" [class.with-logs]="showLogs">
+  <div  class="diagram-container" #scrollContainer (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseUp()"
+    >
 
-  <div id="diagramContainer" class="diagram-content" [style.transform]="'scale(' + zoom + ')'">
+    <div id="diagramContainer" class="diagram-content" [style.transform]="'scale(' + zoom + ')'">
 
-    @for (job of jobs; track job.id) {
-      <div
-        [id]="job.id"
-        [class]="'box ' + job.status"
-        [style.left.px]="job.left"
-        [style.top.px]="job.top"
-        #jobEl
-        (contextmenu)="onRightClick($event, job)"
-        [cdkContextMenuTriggerFor]="contextMenu"
-      >
-        <div class="status">
-          @if (job.status === 'running') {
-            <mat-icon class="running">play_circle_filled</mat-icon>
-          }
-          @if (job.status === 'done') {
-            <mat-icon class="done">check_circle</mat-icon>
-          }
+      @for (job of jobs; track job.id) {
+        <div
+          [id]="job.id"
+          [class]="'box ' + job.status"
+          [style.left.px]="job.left"
+          [style.top.px]="job.top"
+          #jobEl
+          (contextmenu)="onRightClick($event, job)"
+          [cdkContextMenuTriggerFor]="contextMenu"
+        >
+          <div class="status">
+            @if (job.status === 'running') {
+              <mat-icon class="running">play_circle_filled</mat-icon>
+            }
+            @if (job.status === 'done') {
+              <mat-icon class="done">check_circle</mat-icon>
+            }
           @if (job.status === 'error') {
-            <mat-icon class="error">error_outline</mat-icon>
+            <mat-icon
+              class="error"
+              [matTooltip]="job.error || ''"
+              [matTooltipDisabled]="!job.error"
+              matTooltipPosition="above"
+            >error_outline</mat-icon>
           }
-          <!-- @if (job.status === 'pending') {
-            <mat-icon class="pending">hourglass_empty</mat-icon>
-          } -->
-        </div>
-        
-        <div class="progress">
-          @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
-          {{ job.progress | number:'1.2-2'}}% | 
+            <!-- @if (job.status === 'pending') {
+              <mat-icon class="pending">hourglass_empty</mat-icon>
+            } -->
+          </div>
+          
+          <div class="progress">
+            @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
+            {{ job.progress | number:'1.2-2'}}% | 
+            }
+            {{ tempoTotal(job.startedAt!, job.endedAt!)  }}
+            @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
+            <mat-progress-bar
+                [mode]="'determinate'"
+                [value]="job.progress"
+                color="warn"
+                >
+            </mat-progress-bar>
+            {{ job.processed }} / {{ job.total }}
           }
-          {{ tempoTotal(job.startedAt!, job.endedAt!)  }}
-          @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
-          <mat-progress-bar
-              [mode]="'determinate'"
-              [value]="job.progress"
-              color="warn"
-              >
-          </mat-progress-bar>
-          {{ job.processed }} / {{ job.total }}
-        }
+          </div>
+          
+          <div class="icons">
+            <mat-icon>bookmark_border_outline</mat-icon> SQL {{ job.type.toUpperCase() }}
+          </div>
+          <div class="handle">{{ job.jobName }}</div>
+          <div class="icons">
+            <mat-icon>notes_outline</mat-icon> {{ job.recordsPerPage }}
+            <span>|</span>
+            <mat-icon>layers_outline</mat-icon> {{ project?.concurrency }}
+          </div>
         </div>
-        
-        <div class="icons">
-          <mat-icon>bookmark_border_outline</mat-icon> SQL {{ job.type.toUpperCase() }}
+      }
+
+      <ng-template #contextMenu>
+        <div class="context-menu" cdkMenu cdkMenuPanel>
+
+          <button class="context-menu-item" cdkMenuItem (click)="openEditDialog(selectedJob)"><mat-icon>edit_outline</mat-icon> Editar</button>
+
+          <button class="context-menu-item" cdkMenuItem (click)="removeJob(selectedJob)"><mat-icon>delete_outline</mat-icon> Excluir</button>
+
         </div>
-        <div class="handle">{{ job.jobName }}</div>
-        <div class="icons">
-          <mat-icon>notes_outline</mat-icon> {{ job.recordsPerPage }}
-          <span>|</span>
-          <mat-icon>layers_outline</mat-icon> {{ project?.concurrency }}
-        </div>
+      </ng-template>
+
+    </div>
+  </div>
+
+  <div class="log-box" [ngStyle]="{'display': showLogs ? 'flex' : 'none'}">
+    <div class="log-header">
+      <div class="log-title">
+        <mat-icon>terminal</mat-icon>
+        <span>Log Viewer</span>
       </div>
-    }
-
-    <ng-template #contextMenu>
-      <div class="context-menu" cdkMenu cdkMenuPanel>
-
-        <button class="context-menu-item" cdkMenuItem (click)="openEditDialog(selectedJob)"><mat-icon>edit_outline</mat-icon> Editar</button>
-
-        <button class="context-menu-item" cdkMenuItem (click)="removeJob(selectedJob)"><mat-icon>delete_outline</mat-icon> Excluir</button>
-
-      </div>
-    </ng-template>
-
+      <button class="log-close" type="button" (click)="showHideLogs()" aria-label="Fechar logs">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="log-body">
+      <app-log-viewer [showHeader]="false" [embedded]="true"></app-log-viewer>
+    </div>
   </div>
 </div>
-
-
-
-  <div class="log-box" [ngStyle]="{'display': showLogs ? 'block' : 'none'}">
-      <mat-icon (click)="showHideLogs()">close</mat-icon>
-      <h3>Log Viewer</h3>
-
-    <app-log-viewer></app-log-viewer>
-  </div>
