@@ -11,10 +11,15 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatOptionModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -23,6 +28,7 @@ import { LogViewerComponent } from "../../../components/app-log-viewer.component
 import { JobExtended } from '../../../services/job-state.service';
 import { Job, JobService } from '../../../services/job.service';
 import { Project, ProjectService } from '../../../services/project.service';
+import { VisualElement, VisualElementService } from '../../../services/visual-element.service';
 import { ConfirmDialogComponent } from '../../dialog-confirm/dialog-confirm';
 import { DialogJobs } from '../dialog-jobs/dialog-jobs';
 
@@ -32,11 +38,16 @@ import { DialogJobs } from '../dialog-jobs/dialog-jobs';
   imports: [
     MatIconModule,
     MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatOptionModule,
+    MatSelectModule,
     CdkContextMenuTrigger,
     CdkMenuModule,
     MatTooltipModule,
     MatProgressBarModule,
     CommonModule,
+    FormsModule,
     LogViewerComponent
 ],
   templateUrl: './diagram.html',
@@ -60,7 +71,7 @@ export class Diagram implements AfterViewInit {
   zoom = 1;
   minZoom = 0.3;
   maxZoom = 1.6;
-  zoomStep = 0.01;
+  zoomStep = 0.02;
 
   selectedJob: JobExtended | null = null;
   isLoading = false;
@@ -70,12 +81,47 @@ export class Diagram implements AfterViewInit {
   gridX = 350;
   gridY = 100;
   showLogs = false;
+  visualElements: VisualElement[] = [];
+  selectedVisualElement: VisualElement | null = null;
+  private draggingElementId: string | null = null;
+  private dragStartX = 0;
+  private dragStartY = 0;
+  private dragOriginX = 0;
+  private dragOriginY = 0;
+  private dragOriginX2 = 0;
+  private dragOriginY2 = 0;
+  private elementSaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private lastDragWasElement = false;
+  private resizingElementId: string | null = null;
+  private resizeHandle: 'nw' | 'ne' | 'sw' | 'se' | null = null;
+  private resizeStartX = 0;
+  private resizeStartY = 0;
+  private resizeOriginX = 0;
+  private resizeOriginY = 0;
+  private resizeOriginW = 0;
+  private resizeOriginH = 0;
+  fontOptions: string[] = [
+    'Inter, sans-serif',
+    'Roboto, sans-serif',
+    'Arial, sans-serif',
+    'Helvetica, Arial, sans-serif',
+    'Verdana, sans-serif',
+    'Tahoma, sans-serif',
+    'Trebuchet MS, sans-serif',
+    'Georgia, serif',
+    'Times New Roman, serif',
+    'Garamond, serif',
+    'Courier New, monospace',
+    'Consolas, monospace',
+    'Monaco, monospace'
+  ];
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
     private jobService: JobService,
     private projectService: ProjectService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private visualElementService: VisualElementService
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -118,6 +164,20 @@ export class Diagram implements AfterViewInit {
   },
   { passive: false }
 );
+
+  const projectId = this.project?.id;
+    if (projectId) {
+      this.visualElementService.list(projectId).subscribe({
+      next: (elements) => {
+        const list = Array.isArray(elements) ? elements : [];
+        list.forEach(el => this.normalizeElement(el));
+        this.visualElements = list;
+      },
+      error: (error) => {
+        console.error('Erro ao listar elementos visuais:', error);
+      }
+    });
+  }
 }
 
 
@@ -360,13 +420,11 @@ export class Diagram implements AfterViewInit {
       data: job
     });
 
-
     dialogRef.afterClosed().subscribe((result) => {
       console.log('Dialog closed with result:', result);
       if (result) {
         console.log('Job salvo:', result);
         if (result.id) {
-
           this.jobService.updateJob(this.project?.id || '', result.id, result).subscribe({
             next: (updatedJob) => {
               const index = this.jobs.findIndex(j => j.id === updatedJob.id);
@@ -383,10 +441,413 @@ export class Diagram implements AfterViewInit {
               console.error('Erro ao atualizar job:', error);
             }
           });
-
         }
       }
     });
+  }
+
+  addVisualElement(type: VisualElement['type']) {
+    if (!this.project?.id) return;
+    this.isSaving = true;
+    const base: VisualElement = {
+      type,
+      x: 120,
+      y: 120,
+      width: 200,
+      height: 120,
+      fillColor: 'rgba(15, 23, 42, 0.65)',
+      borderColor: 'rgba(148, 163, 184, 0.6)',
+      borderWidth: 2,
+      text: type === 'text' ? 'Texto' : '',
+      textColor: '#e2e8f0',
+      fontSize: 12,
+      fontFamily: 'Inter',
+      textAlign: 'center',
+      cornerRadius: 8
+    };
+
+    if (type === 'circle') {
+      base.width = 140;
+      base.height = 140;
+      base.cornerRadius = 9999;
+    }
+
+    if (type === 'line') {
+      base.x = 120;
+      base.y = 120;
+      base.x2 = 320;
+      base.y2 = 120;
+      base.borderColor = '#94a3b8';
+      base.borderWidth = 2;
+    }
+
+    const payload = this.toPayload(base);
+    this.visualElementService.create(this.project.id, payload).subscribe({
+      next: (created) => {
+        const normalized = this.normalizeElement(created);
+        this.visualElements = [...this.visualElements, normalized];
+        this.selectedVisualElement = normalized;
+        this.isSaved();
+      },
+      error: (error) => {
+        console.error('Erro ao criar elemento visual:', error);
+        this.isSaved();
+      }
+    });
+  }
+
+  onElementMouseDown(event: MouseEvent, element: VisualElement) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.selectedVisualElement = element;
+    this.lastDragWasElement = true;
+    this.draggingElementId = this.getElementId(element) || null;
+    this.dragStartX = event.clientX;
+    this.dragStartY = event.clientY;
+    this.dragOriginX = element.x;
+    this.dragOriginY = element.y;
+    this.dragOriginX2 = element.x2 || 0;
+    this.dragOriginY2 = element.y2 || 0;
+
+    const onMove = (moveEvent: MouseEvent) => {
+      if (!this.draggingElementId) return;
+      const dx = moveEvent.clientX - this.dragStartX;
+      const dy = moveEvent.clientY - this.dragStartY;
+      const target = this.visualElements.find(e => e.id === this.draggingElementId);
+      if (!target) return;
+      const scale = this.zoom || 1;
+      target.x = this.dragOriginX + dx / scale;
+      target.y = this.dragOriginY + dy / scale;
+      if (target.type === 'line' && target.x2 !== undefined && target.y2 !== undefined) {
+        target.x2 = this.dragOriginX2 + dx / scale;
+        target.y2 = this.dragOriginY2 + dy / scale;
+      }
+      this.normalizeElement(target);
+    };
+
+    const onUp = () => {
+      if (this.draggingElementId) {
+        const updated = this.visualElements.find(e => e.id === this.draggingElementId);
+        const elementId = updated ? this.getElementId(updated) : undefined;
+        if (updated && elementId && this.project?.id) {
+          this.normalizeElement(updated);
+          const payload = this.toPayload(updated);
+          this.isSaving = true;
+          this.visualElementService.update(this.project.id, elementId, payload).subscribe({
+            next: () => {
+              this.isSaved();
+            },
+            error: (error) => {
+              console.error('Erro ao atualizar elemento visual:', error);
+              this.isSaved();
+            }
+          });
+        }
+      }
+      this.draggingElementId = null;
+      this.lastDragWasElement = false;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
+
+  onResizeMouseDown(event: MouseEvent, element: VisualElement, handle: 'nw' | 'ne' | 'sw' | 'se') {
+    event.stopPropagation();
+    event.preventDefault();
+    this.selectedVisualElement = element;
+    this.lastDragWasElement = true;
+    this.resizingElementId = this.getElementId(element) || null;
+    this.resizeHandle = handle;
+    this.resizeStartX = event.clientX;
+    this.resizeStartY = event.clientY;
+    this.resizeOriginX = element.x;
+    this.resizeOriginY = element.y;
+    this.resizeOriginW = this.getElementWidth(element);
+    this.resizeOriginH = this.getElementHeight(element);
+
+    const onMove = (moveEvent: MouseEvent) => {
+      if (!this.resizingElementId || !this.resizeHandle) return;
+      const target = this.visualElements.find(e => this.getElementId(e) === this.resizingElementId);
+      if (!target) return;
+      const scale = this.zoom || 1;
+      const dx = (moveEvent.clientX - this.resizeStartX) / scale;
+      const dy = (moveEvent.clientY - this.resizeStartY) / scale;
+
+      let newX = this.resizeOriginX;
+      let newY = this.resizeOriginY;
+      let newW = this.resizeOriginW;
+      let newH = this.resizeOriginH;
+
+      if (this.resizeHandle === 'nw') {
+        newX = this.resizeOriginX + dx;
+        newY = this.resizeOriginY + dy;
+        newW = this.resizeOriginW - dx;
+        newH = this.resizeOriginH - dy;
+      } else if (this.resizeHandle === 'ne') {
+        newY = this.resizeOriginY + dy;
+        newW = this.resizeOriginW + dx;
+        newH = this.resizeOriginH - dy;
+      } else if (this.resizeHandle === 'sw') {
+        newX = this.resizeOriginX + dx;
+        newW = this.resizeOriginW - dx;
+        newH = this.resizeOriginH + dy;
+      } else if (this.resizeHandle === 'se') {
+        newW = this.resizeOriginW + dx;
+        newH = this.resizeOriginH + dy;
+      }
+
+      const minSize = 40;
+      newW = Math.max(minSize, newW);
+      newH = Math.max(minSize, newH);
+
+      if (target.type === 'circle') {
+        const size = Math.max(newW, newH);
+        newW = size;
+        newH = size;
+      }
+
+      target.x = newX;
+      target.y = newY;
+      target.width = newW;
+      target.height = newH;
+      this.normalizeElement(target);
+    };
+
+    const onUp = () => {
+      if (this.resizingElementId) {
+        const updated = this.visualElements.find(e => this.getElementId(e) === this.resizingElementId);
+        const elementId = updated ? this.getElementId(updated) : undefined;
+        if (updated && elementId && this.project?.id) {
+          this.normalizeElement(updated);
+          const payload = this.toPayload(updated);
+          this.isSaving = true;
+          this.visualElementService.update(this.project.id, elementId, payload).subscribe({
+            next: () => {
+              this.isSaved();
+            },
+            error: (error) => {
+              console.error('Erro ao atualizar elemento visual:', error);
+              this.isSaved();
+            }
+          });
+        }
+      }
+      this.resizingElementId = null;
+      this.resizeHandle = null;
+      this.lastDragWasElement = false;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
+
+  selectElement(element: VisualElement, event: MouseEvent) {
+    event.stopPropagation();
+    this.selectedVisualElement = element;
+  }
+
+  clearSelection() {
+    this.selectedVisualElement = null;
+  }
+
+  onDiagramBackgroundClick(event: MouseEvent) {
+    if (this.lastDragWasElement) return;
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+    if (target.closest('.visual-panel, .visual-element, .box, .mat-mdc-form-field, .visual-lines')) {
+      return;
+    }
+    this.clearSelection();
+  }
+
+  onElementChange(element: VisualElement) {
+    this.normalizeElement(element);
+    this.scheduleElementSave(element);
+  }
+
+  scheduleElementSave(element: VisualElement) {
+    const elementId = this.getElementId(element);
+    if (!elementId || !this.project?.id) return;
+    const existing = this.elementSaveTimers.get(elementId);
+    if (existing) {
+      clearTimeout(existing);
+    }
+    const timer = setTimeout(() => {
+      const payload = this.toPayload(element);
+      this.isSaving = true;
+      this.visualElementService.update(this.project!.id, elementId, payload).subscribe({
+        next: () => {
+          this.isSaved();
+        },
+        error: (error) => {
+          console.error('Erro ao atualizar elemento visual:', error);
+          this.isSaved();
+        }
+      });
+    }, 300);
+    this.elementSaveTimers.set(elementId, timer);
+  }
+
+  normalizeElement(element: VisualElement): VisualElement {
+    if (!element.id && element.elementId) {
+      element.id = element.elementId;
+    }
+    element.x = this.toNumber(element.x, 0);
+    element.y = this.toNumber(element.y, 0);
+    if (element.width !== undefined) element.width = this.toNumber(element.width, 160);
+    if (element.height !== undefined) element.height = this.toNumber(element.height, 100);
+    if (element.x2 !== undefined) element.x2 = this.toNumber(element.x2, element.x + 200);
+    if (element.y2 !== undefined) element.y2 = this.toNumber(element.y2, element.y);
+    if (element.borderWidth !== undefined) element.borderWidth = this.toNumber(element.borderWidth, 1);
+    if (element.fontSize !== undefined) element.fontSize = this.toNumber(element.fontSize, 12);
+    if (element.cornerRadius !== undefined) element.cornerRadius = this.toNumber(element.cornerRadius, 0);
+
+    if (element.type === 'circle') {
+      const size = element.width || element.height || 120;
+      element.width = size;
+      element.height = size;
+      element.cornerRadius = 9999;
+    }
+
+    if (element.type === 'line') {
+      if (element.x2 === undefined) element.x2 = element.x + 200;
+      if (element.y2 === undefined) element.y2 = element.y;
+    }
+    return element;
+  }
+
+  private toNumber(value: unknown, fallback: number): number {
+    const parsed = typeof value === 'string' ? Number(value) : (value as number);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  deleteVisualElement(element: VisualElement) {
+    const elementId = this.getElementId(element);
+    if (!this.project?.id || !elementId) return;
+    this.isSaving = true;
+    this.visualElementService.remove(this.project.id, elementId).subscribe({
+      next: () => {
+        this.visualElements = this.visualElements.filter(e => this.getElementId(e) !== elementId);
+        if (this.selectedVisualElement && this.getElementId(this.selectedVisualElement) === elementId) {
+          this.selectedVisualElement = null;
+        }
+        this.isSaved();
+      },
+      error: (error) => {
+        console.error('Erro ao remover elemento visual:', error);
+        this.isSaved();
+      }
+    });
+  }
+
+  getElementId(element: VisualElement): string | undefined {
+    return element.id || element.elementId;
+  }
+
+  private toPayload(element: VisualElement): VisualElement {
+    const base = {
+      type: element.type,
+      x: this.toInt(element.x, 0),
+      y: this.toInt(element.y, 0)
+    };
+
+    if (element.type === 'line') {
+      return {
+        ...base,
+        x2: this.toInt(element.x2 ?? element.x + 200, base.x + 200),
+        y2: this.toInt(element.y2 ?? element.y, base.y),
+        borderColor: element.borderColor ?? '#94a3b8',
+        borderWidth: this.toNonNegativeInt(element.borderWidth ?? 2, 2)
+      };
+    }
+
+    const width = this.toNonNegativeInt(element.width ?? 160, 160);
+    const height = this.toNonNegativeInt(element.height ?? 100, 100);
+
+    return {
+      ...base,
+      width,
+      height,
+      fillColor: element.fillColor ?? 'transparent',
+      borderColor: element.borderColor ?? 'transparent',
+      borderWidth: this.toNonNegativeInt(element.borderWidth ?? 1, 1),
+      text: element.text ?? '',
+      textColor: element.textColor ?? '#e2e8f0',
+      fontSize: this.toNonNegativeInt(element.fontSize ?? 12, 12),
+      fontFamily: element.fontFamily ?? 'Inter',
+      textAlign: element.textAlign ?? 'center',
+      cornerRadius: this.toNonNegativeInt(element.cornerRadius ?? 0, 0)
+    };
+  }
+
+  private toNonNegativeInt(value: unknown, fallback: number): number {
+    const parsed = typeof value === 'string' ? Number(value) : (value as number);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.max(0, Math.round(parsed));
+  }
+
+  private toInt(value: unknown, fallback: number): number {
+    const parsed = typeof value === 'string' ? Number(value) : (value as number);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.round(parsed);
+  }
+
+  getElementWidth(element: VisualElement): number {
+    if (element.type === 'circle') {
+      return element.width || element.height || 120;
+    }
+    return element.width || 160;
+  }
+
+  getElementHeight(element: VisualElement): number {
+    if (element.type === 'circle') {
+      return element.height || element.width || 120;
+    }
+    return element.height || 100;
+  }
+
+  getElementBorderRadius(element: VisualElement): string {
+    return element.type === 'circle' ? '50%' : `${element.cornerRadius || 0}px`;
+  }
+
+  getElementJustifyContent(element: VisualElement): string {
+    const { horizontal } = this.parseTextAlign(element.textAlign);
+    if (horizontal === 'left') return 'flex-start';
+    if (horizontal === 'right') return 'flex-end';
+    return 'center';
+  }
+
+  getElementAlignItems(element: VisualElement): string {
+    const { vertical } = this.parseTextAlign(element.textAlign);
+    if (vertical === 'top') return 'flex-start';
+    if (vertical === 'bottom') return 'flex-end';
+    return 'center';
+  }
+
+  getElementTextAlign(element: VisualElement): string {
+    const { horizontal } = this.parseTextAlign(element.textAlign);
+    return horizontal;
+  }
+
+  private parseTextAlign(value?: string): { vertical: 'top' | 'center' | 'bottom'; horizontal: 'left' | 'center' | 'right' } {
+    const align = this.normalizeTextAlign(value);
+    if (align === 'center') return { vertical: 'center', horizontal: 'center' };
+    const [verticalRaw, horizontalRaw] = align.split('-');
+    const vertical = (verticalRaw as 'top' | 'center' | 'bottom') || 'center';
+    const horizontal = (horizontalRaw as 'left' | 'center' | 'right') || 'center';
+    return { vertical, horizontal };
+  }
+
+  private normalizeTextAlign(value?: string): string {
+    if (!value) return 'center';
+    if (value === 'left') return 'center-left';
+    if (value === 'right') return 'center-right';
+    return value;
   }
 
   runProject() {

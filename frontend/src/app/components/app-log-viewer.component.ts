@@ -7,6 +7,7 @@ import {
     OnInit,
     ViewChild
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -16,7 +17,7 @@ import { LogEntry, LogStatusService } from '../services/log-status.service';
 @Component({
   selector: 'app-log-viewer',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatTooltipModule],
   styleUrls: ['./app-log-viewer.component.scss'],
   template: `
     <div class="log-viewer-container" [class.embedded]="embedded">

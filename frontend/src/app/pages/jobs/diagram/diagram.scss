@@ -39,11 +39,190 @@
   transition: all 0.3s ease;
   overflow-y: auto;
   overflow-x: auto;
+  background-clip: padding-box;
 }
 
 .diagram-content {
   transform-origin: top left;
   transition: transform 0.1s ease;
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.visual-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  z-index: 2;
+  overflow: visible;
+}
+
+.visual-lines line {
+  pointer-events: stroke;
+  cursor: move;
+}
+
+.visual-lines line.is-selected {
+  stroke: #60a5fa;
+  stroke-width: 3;
+}
+
+.visual-element {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  border-style: solid;
+  cursor: move;
+  z-index: 1;
+  user-select: none;
+}
+
+.visual-element.is-circle {
+  border-radius: 50%;
+}
+
+.visual-element.is-text {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.visual-element.is-selected {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.6);
+}
+
+.resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #60a5fa;
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.6);
+  cursor: nwse-resize;
+}
+
+.resize-handle.nw {
+  top: -6px;
+  left: -6px;
+  cursor: nwse-resize;
+}
+
+.resize-handle.ne {
+  top: -6px;
+  right: -6px;
+  cursor: nesw-resize;
+}
+
+.resize-handle.sw {
+  bottom: -6px;
+  left: -6px;
+  cursor: nesw-resize;
+}
+
+.resize-handle.se {
+  bottom: -6px;
+  right: -6px;
+  cursor: nwse-resize;
+}
+
+.visual-text {
+  pointer-events: none;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  white-space: pre-wrap;
+}
+
+.visual-delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  border: none;
+  background: rgba(15, 23, 42, 0.65) !important;
+  color: #e2e8f0;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: 14px;
+  line-height: 1;
+  z-index: 3;
+}
+
+.visual-element:hover .visual-delete {
+  opacity: 1;
+}
+
+.visual-delete:active {
+  transform: scale(0.98);
+}
+
+.visual-panel {
+  position: fixed;
+  top: 140px;
+  right: 24px;
+  width: 300px;
+  max-height: calc(100vh - 180px);
+  overflow: auto;
+  background: #111827;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 16px 32px var(--shadow-primary);
+  padding: 12px;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.visual-panel .mat-mdc-form-field {
+  background: transparent;
+}
+
+.visual-panel .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.visual-panel .panel-close {
+  border: none;
+  background: transparent !important;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.visual-panel .panel-section,
+.visual-panel .panel-row {
+  display: grid;
+  gap: 8px;
+}
+
+.visual-panel .panel-row {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.visual-panel .panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.visual-panel mat-form-field {
+  width: 100%;
 }
 
 .box {
@@ -51,6 +230,7 @@
   width: 300px;
   height: 100px;
   background-color: var(--bg-box) !important;
+  z-index: 2;
   border: none !important;
   border-radius: 5px;
   cursor: move;
@@ -100,6 +280,18 @@
   }
 
   
+}
+
+// JsPlumb connectors above elements and jobs
+::ng-deep .jtk-connector,
+::ng-deep .jtk-endpoint,
+::ng-deep .jtk-overlay {
+  z-index: 6 !important;
+  pointer-events: none;
+}
+
+::ng-deep .jtk-connector {
+  stroke-width: 3 !important;
 }
 
 
