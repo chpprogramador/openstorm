@@ -35,6 +35,13 @@ func main() {
 	router.PUT("/projects/:id/variables/:variableName", handlers.UpdateVariable)
 	router.DELETE("/projects/:id/variables/:variableName", handlers.DeleteVariable)
 
+	// Elementos visuais
+	router.GET("/projects/:id/visual-elements", handlers.ListVisualElements)
+	router.POST("/projects/:id/visual-elements", handlers.CreateVisualElement)
+	router.GET("/projects/:id/visual-elements/:elementId", handlers.GetVisualElement)
+	router.PUT("/projects/:id/visual-elements/:elementId", handlers.UpdateVisualElement)
+	router.DELETE("/projects/:id/visual-elements/:elementId", handlers.DeleteVisualElement)
+
 	// Executar projeto
 	router.POST("/projects/:id/run", handlers.RunProject)
 

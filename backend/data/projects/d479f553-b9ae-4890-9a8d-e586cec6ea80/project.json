@@ -325,16 +325,16 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "Uq+4Iif/Pl7VQ6lpqNq4FJt5yxhIvBc=",
-    "password": "Oyi8I36oNwBGMI+TLoh0OHro4p9oHN9B3srgTLf5u1Y=",
+    "user": "3gX76+leHng1uLPGo4qr/1NsPnNlaCI=",
+    "password": "Z95KSnd6UQiA0lbHzAhXl+wMoIruoWvYnD0diH0cOPc=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "LeQfiuSluo0EregdNIwzWuF2zA==",
-    "password": "CwibZDc3InLnR/olox4PagteXHRStA==",
+    "user": "PvhMReV5bftVitX2xWMo1G3ncg==",
+    "password": "C3zdCsLzD+clYPKMTgKzdeqMxsP0YQ==",
     "database": "vzmsaneamento"
   },
   "concurrency": 5,
@@ -350,6 +350,25 @@
       "value": "true",
       "description": "",
       "type": "boolean"
+    }
+  ],
+  "visualElements": [
+    {
+      "id": "46458242-1830-42e2-8dc1-ddbae18b16a5",
+      "type": "rect",
+      "x": -29,
+      "y": 2422,
+      "width": 1743,
+      "height": 297,
+      "fillColor": "#000000",
+      "borderColor": "#ffffff",
+      "borderWidth": 2,
+      "text": "Arrecadação e Cobrança",
+      "textColor": "#e2e8f0",
+      "textAlign": "top-left",
+      "fontSize": 30,
+      "fontFamily": "Helvetica, Arial, sans-serif",
+      "cornerRadius": 8
     }
   ]
 }
