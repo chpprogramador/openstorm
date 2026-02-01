@@ -61,7 +61,11 @@
     "jobs/d3b56bfb-7a43-4e9c-9a84-ec0ea0d0c6cb.json",
     "jobs/0158621c-9962-48d4-b9ba-dfd44568222d.json",
     "jobs/a8a3ff7f-821b-4eb4-b26e-3ffe5113944d.json",
-    "jobs/0cb9b139-6d40-43cf-8121-306e0f8bf849.json"
+    "jobs/0cb9b139-6d40-43cf-8121-306e0f8bf849.json",
+    "jobs/9efecf06-5dad-40bb-925d-c5e0fd917af7.json",
+    "jobs/e3d53cd4-e1d8-4fab-9679-4146a5104782.json",
+    "jobs/b58f47a7-b63d-4735-9293-1931fcfd6984.json",
+    "jobs/1de35fdc-8dbe-4033-aad4-6636a302a3ff.json"
   ],
   "connections": [
     {
@@ -298,6 +302,22 @@
     },
     {
       "source": "901d5b4f-3afe-4878-af4b-3188b779783d",
+      "target": "e3d53cd4-e1d8-4fab-9679-4146a5104782"
+    },
+    {
+      "source": "e3d53cd4-e1d8-4fab-9679-4146a5104782",
+      "target": "b58f47a7-b63d-4735-9293-1931fcfd6984"
+    },
+    {
+      "source": "b58f47a7-b63d-4735-9293-1931fcfd6984",
+      "target": "1de35fdc-8dbe-4033-aad4-6636a302a3ff"
+    },
+    {
+      "source": "1de35fdc-8dbe-4033-aad4-6636a302a3ff",
+      "target": "9efecf06-5dad-40bb-925d-c5e0fd917af7"
+    },
+    {
+      "source": "9efecf06-5dad-40bb-925d-c5e0fd917af7",
       "target": "a8a3ff7f-821b-4eb4-b26e-3ffe5113944d"
     }
   ],
@@ -305,16 +325,16 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "eBc8Ll9Kt+nhOfxRMx3X6YHKUcm5qN0=",
-    "password": "7TU22g8hdgPgnDsPT+8HtVurDri8edOQlDwKO3ZZo40=",
+    "user": "Uq+4Iif/Pl7VQ6lpqNq4FJt5yxhIvBc=",
+    "password": "Oyi8I36oNwBGMI+TLoh0OHro4p9oHN9B3srgTLf5u1Y=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "+yf/uIItLoehgSU1c0/tQwkhnQ==",
-    "password": "kWAMUHQeQlveTdF00V6MSdUlcpZqyQ==",
+    "user": "LeQfiuSluo0EregdNIwzWuF2zA==",
+    "password": "CwibZDc3InLnR/olox4PagteXHRStA==",
     "database": "vzmsaneamento"
   },
   "concurrency": 5,

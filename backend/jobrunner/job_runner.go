@@ -166,6 +166,18 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		var processed int64
 		var jobHadError atomic.Bool
 		var lastErr atomic.Value
+		reportJobError := func(errMsg string) {
+			status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+				js.Error = errMsg
+				if job.StopOnError {
+					js.Status = "error"
+					now := time.Now()
+					js.EndedAt = &now
+				}
+				status.NotifySubscribers()
+			})
+			status.AppendLog(fmt.Sprintf("%s - Job: %s falhou: %s", jr.PipelineLog.Project, job.JobName, errMsg))
+		}
 
 		for w := 0; w < concurrency; w++ {
 			writersWG.Add(1)
@@ -187,6 +199,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					if err != nil {
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
+						reportJobError(err.Error())
 						batchLog.Status = "error"
 						batchLog.Error = err.Error()
 						batchLog.EndedAt = time.Now()
@@ -199,6 +212,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 						tx.Rollback()
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
+						reportJobError(err.Error())
 
 						analyzer := &logger.ErrorAnalyzer{}
 						errorType, errorCode, _ := analyzer.AnalyzeError(err)
@@ -216,6 +230,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					if err := tx.Commit(); err != nil {
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
+						reportJobError(err.Error())
 						batchLog.Status = "error"
 						batchLog.Error = err.Error()
 						batchLog.EndedAt = time.Now()
@@ -274,6 +289,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					log.Printf("Erro na query do bucket %d: %v", workerID, err)
 					jobHadError.Store(true)
 					lastErr.Store(err.Error())
+					reportJobError(err.Error())
 					return
 				}
 				defer rows.Close()
@@ -291,6 +307,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					if err := rows.Scan(ptrs...); err != nil {
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
+						reportJobError(err.Error())
 						return
 					}
 
@@ -314,6 +331,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 						log.Printf("Erro ao iterar rows no bucket %d: %v", workerID, err)
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
+						reportJobError(err.Error())
 						return
 					}
 				}(w)
