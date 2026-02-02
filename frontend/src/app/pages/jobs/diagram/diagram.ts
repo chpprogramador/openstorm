@@ -79,7 +79,7 @@ export class Diagram implements AfterViewInit {
   zoom = 1;
   minZoom = 0.3;
   maxZoom = 1.6;
-  zoomStep = 0.02;
+  zoomStep = 0.05;
 
   selectedJob: JobExtended | null = null;
   isLoading = false;
@@ -666,6 +666,66 @@ export class Diagram implements AfterViewInit {
     window.addEventListener('mouseup', onUp);
   }
 
+  onLineHandleMouseDown(event: MouseEvent, element: VisualElement, handle: 'start' | 'end') {
+    event.stopPropagation();
+    event.preventDefault();
+    this.selectedVisualElement = element;
+    this.lastDragWasElement = true;
+    this.draggingElementId = this.getElementId(element) || null;
+    this.dragStartX = event.clientX;
+    this.dragStartY = event.clientY;
+    this.dragOriginX = element.x;
+    this.dragOriginY = element.y;
+    this.dragOriginX2 = element.x2 || 0;
+    this.dragOriginY2 = element.y2 || 0;
+
+    const onMove = (moveEvent: MouseEvent) => {
+      if (!this.draggingElementId) return;
+      const target = this.visualElements.find(e => this.getElementId(e) === this.draggingElementId);
+      if (!target) return;
+      const scale = this.zoom || 1;
+      const dx = (moveEvent.clientX - this.dragStartX) / scale;
+      const dy = (moveEvent.clientY - this.dragStartY) / scale;
+
+      if (handle === 'start') {
+        target.x = this.dragOriginX + dx;
+        target.y = this.dragOriginY + dy;
+      } else {
+        target.x2 = this.dragOriginX2 + dx;
+        target.y2 = this.dragOriginY2 + dy;
+      }
+      this.normalizeElement(target);
+    };
+
+    const onUp = () => {
+      if (this.draggingElementId) {
+        const updated = this.visualElements.find(e => this.getElementId(e) === this.draggingElementId);
+        const elementId = updated ? this.getElementId(updated) : undefined;
+        if (updated && elementId && this.project?.id) {
+          this.normalizeElement(updated);
+          const payload = this.toPayload(updated);
+          this.isSaving = true;
+          this.visualElementService.update(this.project.id, elementId, payload).subscribe({
+            next: () => {
+              this.isSaved();
+            },
+            error: (error) => {
+              console.error('Erro ao atualizar elemento visual:', error);
+              this.isSaved();
+            }
+          });
+        }
+      }
+      this.draggingElementId = null;
+      this.lastDragWasElement = false;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
+
   selectElement(element: VisualElement, event: MouseEvent) {
     event.stopPropagation();
     this.selectedVisualElement = element;
@@ -926,8 +986,8 @@ export class Diagram implements AfterViewInit {
   onMouseMove(e: MouseEvent): void {
     if (!this.isPanning) return;
     e.preventDefault();
-    const dx = (e.clientX - this.panStartX) / (this.zoom || 1);
-    const dy = (e.clientY - this.panStartY) / (this.zoom || 1);
+    const dx = e.clientX - this.panStartX;
+    const dy = e.clientY - this.panStartY;
     this.viewOffsetX = this.panOriginX + dx;
     this.viewOffsetY = this.panOriginY + dy;
   }

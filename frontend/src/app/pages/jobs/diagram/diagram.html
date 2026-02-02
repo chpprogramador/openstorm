@@ -23,15 +23,13 @@
 
   <div class="toolbar-section actions-section">
     @if(isRunning == false) {
-      <button mat-flat-button class="action-btn run-btn" (click)="runProject()">
+      <button mat-icon-button class="action-btn icon-btn run-btn" (click)="runProject()">
         <mat-icon>play_arrow</mat-icon>
-        <span>Executar Pipeline</span>
       </button>
     }
     @if(isRunning == true) {
-      <button mat-flat-button class="action-btn stop-btn" (click)="stopProject()">
+      <button mat-icon-button class="action-btn icon-btn stop-btn" (click)="stopProject()">
         <mat-icon>stop</mat-icon>
-        <span>Parar Execução</span>
       </button>
     }
 
@@ -97,6 +95,24 @@
           (mousedown)="onElementMouseDown($event, el)"
           (click)="selectElement(el, $event)"
         ></line>
+        <circle
+          *ngFor="let el of visualElements"
+          [attr.cx]="el.x"
+          [attr.cy]="el.y"
+          r="6"
+          class="line-handle"
+          [style.display]="el.type === 'line' && selectedVisualElement?.id === el.id ? 'block' : 'none'"
+          (mousedown)="onLineHandleMouseDown($event, el, 'start')"
+        ></circle>
+        <circle
+          *ngFor="let el of visualElements"
+          [attr.cx]="el.x2"
+          [attr.cy]="el.y2"
+          r="6"
+          class="line-handle"
+          [style.display]="el.type === 'line' && selectedVisualElement?.id === el.id ? 'block' : 'none'"
+          (mousedown)="onLineHandleMouseDown($event, el, 'end')"
+        ></circle>
       </svg>
 
       <div
