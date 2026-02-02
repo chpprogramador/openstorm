@@ -33,34 +33,64 @@
       </button>
     }
 
-    <button mat-stroked-button class="action-btn add-btn" (click)="addNewJob()">
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addNewJob()"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'job' })"
+    >
       <mat-icon>add_box</mat-icon>
       <span>Novo Job SQL</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('rect')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'rect' })"
+    >
+      <mat-icon>crop_square</mat-icon>
+      <span>Retângulo</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('circle')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'circle' })"
+    >
+      <mat-icon>circle</mat-icon>
+      <span>Círculo</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('line')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'line' })"
+    >
+      <mat-icon>horizontal_rule</mat-icon>
+      <span>Linha</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('text')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'text' })"
+    >
+      <mat-icon>text_fields</mat-icon>
+      <span>Texto</span>
     </button>
 
     <button mat-stroked-button class="action-btn logs-btn" (click)="showHideLogs()">
       <mat-icon>terminal</mat-icon>
       <span>Logs</span>
-    </button>
-
-    <button mat-stroked-button class="action-btn add-btn" (click)="addVisualElement('rect')">
-      <mat-icon>crop_square</mat-icon>
-      <span>Retângulo</span>
-    </button>
-
-    <button mat-stroked-button class="action-btn add-btn" (click)="addVisualElement('circle')">
-      <mat-icon>circle</mat-icon>
-      <span>Círculo</span>
-    </button>
-
-    <button mat-stroked-button class="action-btn add-btn" (click)="addVisualElement('line')">
-      <mat-icon>horizontal_rule</mat-icon>
-      <span>Linha</span>
-    </button>
-
-    <button mat-stroked-button class="action-btn add-btn" (click)="addVisualElement('text')">
-      <mat-icon>text_fields</mat-icon>
-      <span>Texto</span>
     </button>
 
     <button mat-stroked-button class="action-btn zoom" (click)="removeZoom()">
@@ -73,10 +103,16 @@
 </div>
 
 <div class="diagram-layout" [class.with-logs]="showLogs">
-  <div  class="diagram-container" #scrollContainer (mousedown)="onMouseDown($event)" (click)="onDiagramBackgroundClick($event)"
+  <div
+    class="diagram-container"
+    #scrollContainer
+    (mousedown)="onMouseDown($event)"
+    (click)="onDiagramBackgroundClick($event)"
     (mousemove)="onMouseMove($event)"
     (mouseup)="onMouseUp()"
     (mouseleave)="onMouseUp()"
+    (dragover)="onDiagramDragOver($event)"
+    (drop)="onDiagramDrop($event)"
     >
 
     <div id="diagramContainer" class="diagram-content" [style.transform]="getDiagramTransform()">

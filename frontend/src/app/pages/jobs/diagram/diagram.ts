@@ -340,48 +340,49 @@ export class Diagram implements AfterViewInit {
   }
 
   addNewJob(): void {
-  this.isSaving = true;
-
-  const newJob: Job = {
-    id: uuidv4(),
-    jobName: 'Novo Job',
-    selectSql: '',
-    insertSql: '',
-    posInsertSql: '',
-    columns: [],
-    recordsPerPage: 1000,
-    type: 'insert',
-    stopOnError: true,
-    top: 10,
-    left: 10,
-  };
-
-  this.jobs.push(newJob);
-
-  if (this.project) {
-    this.project.jobs = this.jobs.map(job => `jobs/${job.id}.json`);
+    this.addNewJobAt(10, 10);
   }
 
-  // aguarda Angular renderizar o novo job no DOM
-  setTimeout(() => {
-    this.addJobToJsPlumb(newJob);
-  }, 0);
+  addNewJobAt(x: number, y: number): void {
+    this.isSaving = true;
 
-  this.jobService.addJob(this.project?.id || '', newJob).subscribe({
-    next: (job) => {
-      this.projectService.updateProject(this.project!).subscribe({
-        next: (updatedProject) => {
-          console.log('Projeto atualizado com novo job:', updatedProject);
-          this.isSaved();
-        },
-        error: (error) => {
-          console.error('Erro ao atualizar projeto com novo job:', error);
-          this.isSaved();
-        }
-      });
+    const newJob: Job = {
+      id: uuidv4(),
+      jobName: 'Novo Job',
+      selectSql: '',
+      insertSql: '',
+      posInsertSql: '',
+      columns: [],
+      recordsPerPage: 1000,
+      type: 'insert',
+      stopOnError: true,
+      top: y,
+      left: x,
+    };
+
+    this.jobs.push(newJob);
+
+    if (this.project) {
+      this.project.jobs = this.jobs.map(job => `jobs/${job.id}.json`);
     }
-  });
-}
+
+    this.scheduleJobPlumbAttach(newJob.id);
+
+    this.jobService.addJob(this.project?.id || '', newJob).subscribe({
+      next: () => {
+        this.projectService.updateProject(this.project!).subscribe({
+          next: (updatedProject) => {
+            console.log('Projeto atualizado com novo job:', updatedProject);
+            this.isSaved();
+          },
+          error: (error) => {
+            console.error('Erro ao atualizar projeto com novo job:', error);
+            this.isSaved();
+          }
+        });
+      }
+    });
+  }
 
 
   onRightClick(event: MouseEvent, job: Job) {
@@ -467,12 +468,16 @@ export class Diagram implements AfterViewInit {
   }
 
   addVisualElement(type: VisualElement['type']) {
+    this.addVisualElementAt(type, 120, 120);
+  }
+
+  addVisualElementAt(type: VisualElement['type'], x: number, y: number) {
     if (!this.project?.id) return;
     this.isSaving = true;
     const base: VisualElement = {
       type,
-      x: 120,
-      y: 120,
+      x,
+      y,
       width: 200,
       height: 120,
       fillColor: 'rgba(15, 23, 42, 0.65)',
@@ -493,10 +498,8 @@ export class Diagram implements AfterViewInit {
     }
 
     if (type === 'line') {
-      base.x = 120;
-      base.y = 120;
-      base.x2 = 320;
-      base.y2 = 120;
+      base.x2 = x + 200;
+      base.y2 = y;
       base.borderColor = '#94a3b8';
       base.borderWidth = 2;
     }
@@ -514,6 +517,55 @@ export class Diagram implements AfterViewInit {
         this.isSaved();
       }
     });
+  }
+
+  private scheduleJobPlumbAttach(jobId: string, attempt = 0) {
+    if (!this.instance) return;
+    const el = document.getElementById(jobId);
+    if (el) {
+      this.addJobToJsPlumb({ id: jobId } as Job);
+      return;
+    }
+    if (attempt >= 10) return;
+    setTimeout(() => this.scheduleJobPlumbAttach(jobId, attempt + 1), 50);
+  }
+
+  onToolbarDragStart(event: DragEvent, payload: { kind: 'job' } | { kind: 'visual'; type: VisualElement['type'] }) {
+    if (!event.dataTransfer) return;
+    event.dataTransfer.setData('application/json', JSON.stringify(payload));
+    event.dataTransfer.effectAllowed = 'copy';
+  }
+
+  onDiagramDragOver(event: DragEvent) {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  onDiagramDrop(event: DragEvent) {
+    event.preventDefault();
+    if (!event.dataTransfer || !this.scrollContainer) return;
+    const raw = event.dataTransfer.getData('application/json');
+    if (!raw) return;
+
+    let payload: { kind: 'job' } | { kind: 'visual'; type: VisualElement['type'] };
+    try {
+      payload = JSON.parse(raw);
+    } catch {
+      return;
+    }
+
+    const rect = this.scrollContainer.nativeElement.getBoundingClientRect();
+    const scale = this.zoom || 1;
+    const x = (event.clientX - rect.left - this.viewOffsetX) / scale;
+    const y = (event.clientY - rect.top - this.viewOffsetY) / scale;
+
+    if (payload.kind === 'job') {
+      this.addNewJobAt(Math.round(x), Math.round(y));
+      return;
+    }
+    this.addVisualElementAt(payload.type, Math.round(x), Math.round(y));
   }
 
   onElementMouseDown(event: MouseEvent, element: VisualElement) {
