@@ -325,16 +325,16 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "3gX76+leHng1uLPGo4qr/1NsPnNlaCI=",
-    "password": "Z95KSnd6UQiA0lbHzAhXl+wMoIruoWvYnD0diH0cOPc=",
+    "user": "57VJYcLYHBNF8WODDcBJDIrYbMEvksc=",
+    "password": "sJCtObR6EhTb1LI09Dj5ltVS5jsBMlIH0xx6cDGCY8Q=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "PvhMReV5bftVitX2xWMo1G3ncg==",
-    "password": "C3zdCsLzD+clYPKMTgKzdeqMxsP0YQ==",
+    "user": "/Ub8Q0Rl9pfXxxG3aVsyE+tIvQ==",
+    "password": "+AZNzX6aytUB/spItfVzL15aQW5g2A==",
     "database": "vzmsaneamento"
   },
   "concurrency": 5,
@@ -369,6 +369,22 @@
       "fontSize": 30,
       "fontFamily": "Helvetica, Arial, sans-serif",
       "cornerRadius": 8
+    },
+    {
+      "id": "2bdb3727-513a-4cc3-aa95-8277dbbf4d55",
+      "type": "circle",
+      "x": 120,
+      "y": 120,
+      "width": 140,
+      "height": 140,
+      "fillColor": "rgba(15, 23, 42, 0.65)",
+      "borderColor": "rgba(148, 163, 184, 0.6)",
+      "borderWidth": 2,
+      "textColor": "#e2e8f0",
+      "textAlign": "center",
+      "fontSize": 12,
+      "fontFamily": "Inter",
+      "cornerRadius": 9999
     }
   ]
 }
