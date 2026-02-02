@@ -68,6 +68,14 @@ export class Diagram implements AfterViewInit {
   scrollLeft = 0;
   scrollTop = 0;
 
+  isPanning = false;
+  viewOffsetX = 0;
+  viewOffsetY = 0;
+  panStartX = 0;
+  panStartY = 0;
+  panOriginX = 0;
+  panOriginY = 0;
+
   zoom = 1;
   minZoom = 0.3;
   maxZoom = 1.6;
@@ -164,6 +172,18 @@ export class Diagram implements AfterViewInit {
   },
   { passive: false }
 );
+
+  const storedOffset = localStorage.getItem('diagramOffset');
+  if (storedOffset) {
+    try {
+      const parsed = JSON.parse(storedOffset);
+      this.viewOffsetX = typeof parsed.x === 'number' ? parsed.x : 0;
+      this.viewOffsetY = typeof parsed.y === 'number' ? parsed.y : 0;
+    } catch {
+      this.viewOffsetX = 0;
+      this.viewOffsetY = 0;
+    }
+  }
 
   const projectId = this.project?.id;
     if (projectId) {
@@ -890,31 +910,33 @@ export class Diagram implements AfterViewInit {
   
 
   onMouseDown(e: MouseEvent): void {
-    this.isDragging = true;
+    const target = e.target as HTMLElement | null;
+    if (target && target.closest('.visual-element, .resize-handle, .box, .visual-panel, .context-menu, .mat-mdc-form-field')) {
+      return;
+    }
+    this.isPanning = true;
     const container = this.scrollContainer.nativeElement;
-    this.startX = e.pageX - container.offsetLeft;
-    this.startY = e.pageY - container.offsetTop;
-    this.scrollLeft = container.scrollLeft;
-    this.scrollTop = container.scrollTop;
+    this.panStartX = e.clientX;
+    this.panStartY = e.clientY;
+    this.panOriginX = this.viewOffsetX;
+    this.panOriginY = this.viewOffsetY;
     container.style.cursor = 'grabbing';
   }
 
   onMouseMove(e: MouseEvent): void {
-    if (!this.isDragging) return;
-
+    if (!this.isPanning) return;
     e.preventDefault();
-    const container = this.scrollContainer.nativeElement;
-    const x = e.pageX - container.offsetLeft;
-    const y = e.pageY - container.offsetTop;
-    const walkX = x - this.startX;
-    const walkY = y - this.startY;
-
-    container.scrollLeft = this.scrollLeft - walkX;
-    container.scrollTop = this.scrollTop - walkY;
+    const dx = (e.clientX - this.panStartX) / (this.zoom || 1);
+    const dy = (e.clientY - this.panStartY) / (this.zoom || 1);
+    this.viewOffsetX = this.panOriginX + dx;
+    this.viewOffsetY = this.panOriginY + dy;
   }
 
   onMouseUp(): void {
-    this.isDragging = false;
+    if (this.isPanning) {
+      localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
+    }
+    this.isPanning = false;
     this.scrollContainer.nativeElement.style.cursor = 'grab';
   }
 
@@ -925,6 +947,10 @@ export class Diagram implements AfterViewInit {
       this.instance.repaintEverything(); 
       localStorage.setItem('diagramZoom', this.zoom.toString());
     }
+  }
+
+  getDiagramTransform(): string {
+    return `translate(${this.viewOffsetX}px, ${this.viewOffsetY}px) scale(${this.zoom})`;
   }
 
 

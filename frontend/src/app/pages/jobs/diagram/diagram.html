@@ -81,7 +81,7 @@
     (mouseleave)="onMouseUp()"
     >
 
-    <div id="diagramContainer" class="diagram-content" [style.transform]="'scale(' + zoom + ')'">
+    <div id="diagramContainer" class="diagram-content" [style.transform]="getDiagramTransform()">
       <svg class="visual-lines" *ngIf="visualElements.length > 0">
         <line
           *ngFor="let el of visualElements"

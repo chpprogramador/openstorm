@@ -2,10 +2,11 @@ html, body {
   height: 100%;
   margin: 0;
   font-family: Roboto, sans-serif;
+  overflow: hidden;
   }
 
 .sidenav-container {
-  height: calc(100vh - 80px); /* Ajuste conforme a altura dos seus toolbars */
+  //height: calc(100vh - 64px);
   width: 100%; /* Ocupa toda a largura disponível */
     }
 
@@ -16,7 +17,7 @@ html, body {
   .content{
     //background-color: var(--background-color, #242424);
     border-top-left-radius: 10px;
-    height: 100%; //calc(100vh - 155px);
+    height: calc(100vh - 140px);
     padding: 20px 40px;
     box-sizing: border-box;
     box-shadow: 20px 20px 20px 1px rgba(0, 0, 0, 0.1) inset;
@@ -37,17 +38,23 @@ mat-sidenav-content {
   padding: 0;
   background: var(--bg-primary);
   box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden;
   height: 100%;
   color: var(--text-tertiary);
 }
 
 .content {
-  padding: 1.5rem !important;
+  padding: 0 !important;
   background: var(--bg-primary) !important;
-  min-height: calc(100vh - 140px);
+  min-height: 0;
+  height: 100%;
   border-top-left-radius: 0 !important;
   box-shadow: none !important;
+}
+
+// Remove bottom gap only for the Jobs page (infinite canvas)
+.content:has(app-jobs) {
+  min-height: 0;
 }
 
 // Custom navigation list
