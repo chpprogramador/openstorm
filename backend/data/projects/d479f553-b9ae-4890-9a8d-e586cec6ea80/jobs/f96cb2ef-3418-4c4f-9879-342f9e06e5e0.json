@@ -1,0 +1,20 @@
+{
+  "id": "f96cb2ef-3418-4c4f-9879-342f9e06e5e0",
+  "jobName": "Evento Recebimento",
+  "selectSql": "select\n\te.id id,\n\ttrue ativo,\n\te.ideventorecebimento codigo,\n\te.contacredito conta_credito,\n\te.contadebito conta_debito,\n\te.descricao descricao\nfrom accountfy.eventorecebimento e ",
+  "insertSql": "insert into evento_recebimento (\n\tid,\n\tativo,\n\tcodigo,\n\tconta_credito,\n\tconta_debito,\n\tdescricao)",
+  "columns": [
+    "id",
+    "ativo",
+    "codigo",
+    "conta_credito",
+    "conta_debito",
+    "descricao"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 0,
+  "top": 2880
+}

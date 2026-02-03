@@ -49,7 +49,6 @@
     "jobs/d61c8895-90a8-44ca-a8d4-2dc0cd634a81.json",
     "jobs/2293b292-34e1-4851-8e53-529013ae6220.json",
     "jobs/498cb2e6-a01d-41da-a882-2942d2693ab0.json",
-    "jobs/bf0de41d-8736-463d-925d-50cac38d0759.json",
     "jobs/88f359ce-b47f-497c-9f9d-ff80702f69a6.json",
     "jobs/bfb588d7-c488-4528-9e66-1e1f2eca37ae.json",
     "jobs/20af9d77-b283-468e-b820-5cb600ab85c3.json",
@@ -65,7 +64,15 @@
     "jobs/9efecf06-5dad-40bb-925d-c5e0fd917af7.json",
     "jobs/e3d53cd4-e1d8-4fab-9679-4146a5104782.json",
     "jobs/b58f47a7-b63d-4735-9293-1931fcfd6984.json",
-    "jobs/1de35fdc-8dbe-4033-aad4-6636a302a3ff.json"
+    "jobs/1de35fdc-8dbe-4033-aad4-6636a302a3ff.json",
+    "jobs/ff0257c6-72bd-404f-807d-3965d26d9cac.json",
+    "jobs/0ddaddd1-dc28-49aa-958e-432e139120ed.json",
+    "jobs/0d1e341e-7619-4b81-af57-e7b706059621.json",
+    "jobs/3a228165-e3c8-4181-8baf-8b26b4181bb3.json",
+    "jobs/f96cb2ef-3418-4c4f-9879-342f9e06e5e0.json",
+    "jobs/8302cba1-1bd2-43fc-9ea3-08878d7236d6.json",
+    "jobs/439062d1-009e-4796-8b70-50d570798d60.json",
+    "jobs/50b41a54-e059-4760-8568-d9390a241624.json"
   ],
   "connections": [
     {
@@ -237,14 +244,6 @@
       "target": "498cb2e6-a01d-41da-a882-2942d2693ab0"
     },
     {
-      "source": "498cb2e6-a01d-41da-a882-2942d2693ab0",
-      "target": "bf0de41d-8736-463d-925d-50cac38d0759"
-    },
-    {
-      "source": "bf0de41d-8736-463d-925d-50cac38d0759",
-      "target": "88f359ce-b47f-497c-9f9d-ff80702f69a6"
-    },
-    {
       "source": "88f359ce-b47f-497c-9f9d-ff80702f69a6",
       "target": "3a9a2b45-68d4-4274-abe3-ad4fe9a5aa42"
     },
@@ -318,23 +317,55 @@
     },
     {
       "source": "9efecf06-5dad-40bb-925d-c5e0fd917af7",
-      "target": "a8a3ff7f-821b-4eb4-b26e-3ffe5113944d"
+      "target": "3a228165-e3c8-4181-8baf-8b26b4181bb3"
+    },
+    {
+      "source": "3a228165-e3c8-4181-8baf-8b26b4181bb3",
+      "target": "0d1e341e-7619-4b81-af57-e7b706059621"
+    },
+    {
+      "source": "0d1e341e-7619-4b81-af57-e7b706059621",
+      "target": "0ddaddd1-dc28-49aa-958e-432e139120ed"
+    },
+    {
+      "source": "0ddaddd1-dc28-49aa-958e-432e139120ed",
+      "target": "ff0257c6-72bd-404f-807d-3965d26d9cac"
+    },
+    {
+      "source": "498cb2e6-a01d-41da-a882-2942d2693ab0",
+      "target": "88f359ce-b47f-497c-9f9d-ff80702f69a6"
+    },
+    {
+      "source": "ff0257c6-72bd-404f-807d-3965d26d9cac",
+      "target": "f96cb2ef-3418-4c4f-9879-342f9e06e5e0"
+    },
+    {
+      "source": "f96cb2ef-3418-4c4f-9879-342f9e06e5e0",
+      "target": "8302cba1-1bd2-43fc-9ea3-08878d7236d6"
+    },
+    {
+      "source": "8302cba1-1bd2-43fc-9ea3-08878d7236d6",
+      "target": "439062d1-009e-4796-8b70-50d570798d60"
+    },
+    {
+      "source": "439062d1-009e-4796-8b70-50d570798d60",
+      "target": "50b41a54-e059-4760-8568-d9390a241624"
     }
   ],
   "sourceDatabase": {
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "57VJYcLYHBNF8WODDcBJDIrYbMEvksc=",
-    "password": "sJCtObR6EhTb1LI09Dj5ltVS5jsBMlIH0xx6cDGCY8Q=",
+    "user": "l06pAq1amVWETF3MfdygH4pak4wSyYw=",
+    "password": "XGtp/0zgtCJTae/ZTnWsCbuGd+HjQ9nBboMTpcUkzlE=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "/Ub8Q0Rl9pfXxxG3aVsyE+tIvQ==",
-    "password": "+AZNzX6aytUB/spItfVzL15aQW5g2A==",
+    "user": "P5Y5OdPegEJ8Ty/nO+Y9w/0W6Q==",
+    "password": "y1MD+VYCkw884sXWCa82A7MS9rydaQ==",
     "database": "vzmsaneamento"
   },
   "concurrency": 5,
@@ -356,10 +387,10 @@
     {
       "id": "46458242-1830-42e2-8dc1-ddbae18b16a5",
       "type": "rect",
-      "x": -29,
-      "y": 2422,
-      "width": 1743,
-      "height": 297,
+      "x": -88,
+      "y": 2419,
+      "width": 1802,
+      "height": 298,
       "fillColor": "#000000",
       "borderColor": "#ffffff",
       "borderWidth": 2,
@@ -369,22 +400,6 @@
       "fontSize": 30,
       "fontFamily": "Helvetica, Arial, sans-serif",
       "cornerRadius": 8
-    },
-    {
-      "id": "2bdb3727-513a-4cc3-aa95-8277dbbf4d55",
-      "type": "circle",
-      "x": 120,
-      "y": 120,
-      "width": 140,
-      "height": 140,
-      "fillColor": "rgba(15, 23, 42, 0.65)",
-      "borderColor": "rgba(148, 163, 184, 0.6)",
-      "borderWidth": 2,
-      "textColor": "#e2e8f0",
-      "textAlign": "center",
-      "fontSize": 12,
-      "fontFamily": "Inter",
-      "cornerRadius": 9999
     }
   ]
 }
