@@ -4,6 +4,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  HostListener,
   Inject,
   Input,
   PLATFORM_ID,
@@ -20,6 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -46,6 +48,7 @@ import { DialogJobs } from '../dialog-jobs/dialog-jobs';
     CdkMenuModule,
     MatTooltipModule,
     MatProgressBarModule,
+    MatSnackBarModule,
     CommonModule,
     FormsModule,
     LogViewerComponent
@@ -98,6 +101,8 @@ export class Diagram implements AfterViewInit {
   private dragOriginY = 0;
   private dragOriginX2 = 0;
   private dragOriginY2 = 0;
+  private activeMoveHandler: ((e: MouseEvent) => void) | null = null;
+  private activeUpHandler: (() => void) | null = null;
   private elementSaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
   private lastDragWasElement = false;
   private resizingElementId: string | null = null;
@@ -124,12 +129,32 @@ export class Diagram implements AfterViewInit {
     'Monaco, monospace'
   ];
 
+  @HostListener('window:keydown', ['$event'])
+  onGlobalKeyDown(event: KeyboardEvent) {
+    if (event.key !== 'Delete' && event.key !== 'Backspace') {
+      return;
+    }
+
+    if (this.isEditableTarget(event.target)) {
+      return;
+    }
+
+    if (!this.selectedVisualElement) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.confirmDeleteVisualElement(this.selectedVisualElement);
+  }
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
     private jobService: JobService,
     private projectService: ProjectService,
     private dialog: MatDialog,
-    private visualElementService: VisualElementService
+    private visualElementService: VisualElementService,
+    private snackBar: MatSnackBar
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -181,6 +206,15 @@ export class Diagram implements AfterViewInit {
   },
   { passive: false }
 );
+
+  const handleBlur = () => this.flushVisualElementInteraction('blur');
+  const handleVisibility = () => {
+    if (document.hidden) {
+      this.flushVisualElementInteraction('visibilitychange');
+    }
+  };
+  window.addEventListener('blur', handleBlur);
+  document.addEventListener('visibilitychange', handleVisibility);
 
   const storedOffset = localStorage.getItem('diagramOffset');
   if (storedOffset) {
@@ -260,6 +294,7 @@ export class Diagram implements AfterViewInit {
 
   saveProject() {
     this.isSaving = true;
+    this.syncProjectVisualElements();
     this.projectService.updateProject(this.project!).subscribe({
       next: (updatedProject) => {
         console.log('Projeto atualizado com sucesso:', updatedProject);
@@ -267,6 +302,7 @@ export class Diagram implements AfterViewInit {
       },
       error: (error) => {
         console.error('Erro ao atualizar projeto:', error);
+        this.notifyPersistError('Erro ao salvar o projeto. Verifique sua conexão.', error);
         this.isSaved();
       }
     });
@@ -279,7 +315,7 @@ export class Diagram implements AfterViewInit {
     this.instance.makeSource(id, {
       filter: '.handle',
       anchor: 'Continuous',
-      connector: ['Flowchart', { stub: 10, gap: 5 }],
+      connector: ['Flowchart', { stub: 30, gap: 8, cornerRadius: 8, alwaysRespectStubs: true }],
       endpoint: 'Dot',
       connectorOverlays: [['Arrow', { width: 10, length: 10, location: 1 }]],
       maxConnections: -1,
@@ -341,7 +377,7 @@ export class Diagram implements AfterViewInit {
         source: conn.source,
         target: conn.target,
         anchor: 'Continuous',
-        connector: ['Flowchart', { stub: 10, gap: 5 }],
+        connector: ['Flowchart', { stub: 30, gap: 8, cornerRadius: 8, alwaysRespectStubs: true }],
         overlays: [['Arrow', { width: 10, length: 10, location: 1 }]],
       });
     });
@@ -379,16 +415,7 @@ export class Diagram implements AfterViewInit {
 
     this.jobService.addJob(this.project?.id || '', newJob).subscribe({
       next: () => {
-        this.projectService.updateProject(this.project!).subscribe({
-          next: (updatedProject) => {
-            console.log('Projeto atualizado com novo job:', updatedProject);
-            this.isSaved();
-          },
-          error: (error) => {
-            console.error('Erro ao atualizar projeto com novo job:', error);
-            this.isSaved();
-          }
-        });
+        this.saveProject();
       }
     });
   }
@@ -481,7 +508,10 @@ export class Diagram implements AfterViewInit {
   }
 
   addVisualElementAt(type: VisualElement['type'], x: number, y: number) {
-    if (!this.project?.id) return;
+    if (!this.project?.id) {
+      this.notifyPersistError('Projeto ainda não está carregado. Não foi possível criar o elemento visual.');
+      return;
+    }
     this.isSaving = true;
     const base: VisualElement = {
       type,
@@ -523,9 +553,82 @@ export class Diagram implements AfterViewInit {
       },
       error: (error) => {
         console.error('Erro ao criar elemento visual:', error);
+        this.notifyPersistError('Erro ao criar elemento visual. Verifique a conexão e tente novamente.', error);
         this.isSaved();
       }
     });
+  }
+
+  private notifyPersistError(message: string, error?: unknown) {
+    if (error) {
+      console.error(message, error);
+    } else {
+      console.error(message);
+    }
+    this.snackBar.open(message, 'Fechar', {
+      duration: 7000,
+      panelClass: ['error-snackbar']
+    });
+  }
+
+  private persistVisualElement(element: VisualElement, context: string) {
+    const elementId = this.getElementId(element);
+    if (!elementId || !this.project?.id) {
+      this.notifyPersistError(`Falha ao salvar elemento (${context}). Projeto ou ID ausente.`);
+      return;
+    }
+    this.isSaving = true;
+    const payload = this.toPayload(element);
+    this.visualElementService.update(this.project.id, elementId, payload).subscribe({
+      next: () => {
+        this.isSaved();
+      },
+      error: (error) => {
+        this.notifyPersistError(`Erro ao salvar elemento (${context}).`, error);
+        this.isSaved();
+      }
+    });
+  }
+
+  private syncProjectVisualElements() {
+    if (!this.project) return;
+    this.project.visualElements = this.visualElements.map(element => {
+      const id = this.getElementId(element);
+      const payload = this.toPayload(element);
+      return {
+        ...payload,
+        id
+      };
+    });
+  }
+
+  private flushVisualElementInteraction(reason: string) {
+    if (this.draggingElementId) {
+      const updated = this.visualElements.find(e => this.getElementId(e) === this.draggingElementId);
+      if (updated) {
+        this.normalizeElement(updated);
+        this.persistVisualElement(updated, `arraste interrompido (${reason})`);
+      }
+    }
+    if (this.resizingElementId) {
+      const updated = this.visualElements.find(e => this.getElementId(e) === this.resizingElementId);
+      if (updated) {
+        this.normalizeElement(updated);
+        this.persistVisualElement(updated, `redimensionamento interrompido (${reason})`);
+      }
+    }
+    if (this.activeMoveHandler) {
+      window.removeEventListener('mousemove', this.activeMoveHandler);
+      this.activeMoveHandler = null;
+    }
+    if (this.activeUpHandler) {
+      window.removeEventListener('mouseup', this.activeUpHandler);
+      this.activeUpHandler = null;
+    }
+    this.draggingElementId = null;
+    this.resizingElementId = null;
+    this.resizeHandle = null;
+    this.lastDragWasElement = false;
   }
 
   private scheduleJobPlumbAttach(jobId: string, attempt = 0) {
@@ -555,6 +658,10 @@ export class Diagram implements AfterViewInit {
   onDiagramDrop(event: DragEvent) {
     event.preventDefault();
     if (!event.dataTransfer || !this.scrollContainer) return;
+    if (!this.project?.id) {
+      this.notifyPersistError('Projeto ainda não está carregado. Não foi possível criar o item.');
+      return;
+    }
     const raw = event.dataTransfer.getData('application/json');
     if (!raw) return;
 
@@ -609,28 +716,21 @@ export class Diagram implements AfterViewInit {
     const onUp = () => {
       if (this.draggingElementId) {
         const updated = this.visualElements.find(e => e.id === this.draggingElementId);
-        const elementId = updated ? this.getElementId(updated) : undefined;
-        if (updated && elementId && this.project?.id) {
+        if (updated) {
           this.normalizeElement(updated);
-          const payload = this.toPayload(updated);
-          this.isSaving = true;
-          this.visualElementService.update(this.project.id, elementId, payload).subscribe({
-            next: () => {
-              this.isSaved();
-            },
-            error: (error) => {
-              console.error('Erro ao atualizar elemento visual:', error);
-              this.isSaved();
-            }
-          });
+          this.persistVisualElement(updated, 'arraste');
         }
       }
       this.draggingElementId = null;
       this.lastDragWasElement = false;
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
+      this.activeMoveHandler = null;
+      this.activeUpHandler = null;
     };
 
+    this.activeMoveHandler = onMove;
+    this.activeUpHandler = onUp;
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
   }
@@ -700,20 +800,9 @@ export class Diagram implements AfterViewInit {
     const onUp = () => {
       if (this.resizingElementId) {
         const updated = this.visualElements.find(e => this.getElementId(e) === this.resizingElementId);
-        const elementId = updated ? this.getElementId(updated) : undefined;
-        if (updated && elementId && this.project?.id) {
+        if (updated) {
           this.normalizeElement(updated);
-          const payload = this.toPayload(updated);
-          this.isSaving = true;
-          this.visualElementService.update(this.project.id, elementId, payload).subscribe({
-            next: () => {
-              this.isSaved();
-            },
-            error: (error) => {
-              console.error('Erro ao atualizar elemento visual:', error);
-              this.isSaved();
-            }
-          });
+          this.persistVisualElement(updated, 'redimensionamento');
         }
       }
       this.resizingElementId = null;
@@ -721,8 +810,12 @@ export class Diagram implements AfterViewInit {
       this.lastDragWasElement = false;
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
+      this.activeMoveHandler = null;
+      this.activeUpHandler = null;
     };
 
+    this.activeMoveHandler = onMove;
+    this.activeUpHandler = onUp;
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
   }
@@ -761,28 +854,21 @@ export class Diagram implements AfterViewInit {
     const onUp = () => {
       if (this.draggingElementId) {
         const updated = this.visualElements.find(e => this.getElementId(e) === this.draggingElementId);
-        const elementId = updated ? this.getElementId(updated) : undefined;
-        if (updated && elementId && this.project?.id) {
+        if (updated) {
           this.normalizeElement(updated);
-          const payload = this.toPayload(updated);
-          this.isSaving = true;
-          this.visualElementService.update(this.project.id, elementId, payload).subscribe({
-            next: () => {
-              this.isSaved();
-            },
-            error: (error) => {
-              console.error('Erro ao atualizar elemento visual:', error);
-              this.isSaved();
-            }
-          });
+          this.persistVisualElement(updated, 'ajuste de linha');
         }
       }
       this.draggingElementId = null;
       this.lastDragWasElement = false;
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
+      this.activeMoveHandler = null;
+      this.activeUpHandler = null;
     };
 
+    this.activeMoveHandler = onMove;
+    this.activeUpHandler = onUp;
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
   }
@@ -819,17 +905,7 @@ export class Diagram implements AfterViewInit {
       clearTimeout(existing);
     }
     const timer = setTimeout(() => {
-      const payload = this.toPayload(element);
-      this.isSaving = true;
-      this.visualElementService.update(this.project!.id, elementId, payload).subscribe({
-        next: () => {
-          this.isSaved();
-        },
-        error: (error) => {
-          console.error('Erro ao atualizar elemento visual:', error);
-          this.isSaved();
-        }
-      });
+      this.persistVisualElement(element, 'edição');
     }, 300);
     this.elementSaveTimers.set(elementId, timer);
   }
@@ -865,6 +941,23 @@ export class Diagram implements AfterViewInit {
   private toNumber(value: unknown, fallback: number): number {
     const parsed = typeof value === 'string' ? Number(value) : (value as number);
     return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  private confirmDeleteVisualElement(element: VisualElement) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      minWidth: '30vw',
+      minHeight: '20vh',
+      data: {
+        title: 'Remover elemento visual',
+        message: 'Tem certeza que deseja remover este elemento visual?'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.deleteVisualElement(element);
+      }
+    });
   }
 
   deleteVisualElement(element: VisualElement) {
@@ -936,6 +1029,11 @@ export class Diagram implements AfterViewInit {
     const parsed = typeof value === 'string' ? Number(value) : (value as number);
     if (!Number.isFinite(parsed)) return fallback;
     return Math.round(parsed);
+  }
+
+  private isEditableTarget(target: EventTarget | null): boolean {
+    if (!target || !(target instanceof Element)) return false;
+    return !!target.closest('input, textarea, select, [contenteditable="true"]');
   }
 
   getElementWidth(element: VisualElement): number {
@@ -1021,7 +1119,25 @@ export class Diagram implements AfterViewInit {
   }
 
   stopProject() {
-    this.isRunning = true;
+    if (!this.project?.id) {
+      this.notifyPersistError('Projeto ainda não está carregado. Não foi possível parar a pipeline.');
+      return;
+    }
+    this.isSaving = true;
+    this.projectService.stopProject(this.project.id).subscribe({
+      next: () => {
+        this.isRunning = false;
+        this.isSaved();
+      },
+      error: (error) => {
+        if (error?.status === 404) {
+          this.notifyPersistError('Nenhuma pipeline ativa para este projeto.');
+        } else {
+          this.notifyPersistError('Erro ao parar a pipeline. Tente novamente.', error);
+        }
+        this.isSaved();
+      }
+    });
   }
 
   showHideLogs() {

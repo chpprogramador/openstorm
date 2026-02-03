@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { VisualElement } from './visual-element.service';
 
 
 export interface DatabaseConfig {
@@ -34,6 +35,7 @@ export interface Project {
   destinationDatabase: DatabaseConfig;
   concurrency: number;
   variables?: Variable[];
+  visualElements?: VisualElement[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -61,6 +63,13 @@ export class ProjectService {
    */
   closeProject(id: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/${id}/close`, {});
+  }
+
+  /**
+   * Interrompe a pipeline em execução
+   */
+  stopProject(id: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/stop`, {});
   }
 
   /**
