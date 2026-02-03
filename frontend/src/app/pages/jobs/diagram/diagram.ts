@@ -160,13 +160,22 @@ export class Diagram implements AfterViewInit {
     if (event.ctrlKey) {
       event.preventDefault();
 
+      const rect = container.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+      const prevZoom = this.zoom;
+
       this.zoom += event.deltaY < 0 ? this.zoomStep : -this.zoomStep;
       this.zoom = Math.min(Math.max(this.zoom, this.minZoom), this.maxZoom);
 
       if (this.instance) {
+        // mantém o ponto sob o mouse fixo ao aplicar zoom
+        this.viewOffsetX = mouseX - ((mouseX - this.viewOffsetX) * (this.zoom / prevZoom));
+        this.viewOffsetY = mouseY - ((mouseY - this.viewOffsetY) * (this.zoom / prevZoom));
         this.instance.setZoom(this.zoom);
         this.instance.repaintEverything();  
         localStorage.setItem('diagramZoom', this.zoom.toString());
+        localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
       }
     }
   },
