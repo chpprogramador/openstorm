@@ -72,7 +72,7 @@
     "jobs/f96cb2ef-3418-4c4f-9879-342f9e06e5e0.json",
     "jobs/8302cba1-1bd2-43fc-9ea3-08878d7236d6.json",
     "jobs/439062d1-009e-4796-8b70-50d570798d60.json",
-    "jobs/50b41a54-e059-4760-8568-d9390a241624.json"
+    "jobs/b4544bf6-00d2-4e3c-a893-dcd23a82d0c4.json"
   ],
   "connections": [
     {
@@ -244,16 +244,8 @@
       "target": "498cb2e6-a01d-41da-a882-2942d2693ab0"
     },
     {
-      "source": "88f359ce-b47f-497c-9f9d-ff80702f69a6",
-      "target": "3a9a2b45-68d4-4274-abe3-ad4fe9a5aa42"
-    },
-    {
       "source": "d5caee76-8fce-4de0-a712-45283a595a7f",
       "target": "d61c8895-90a8-44ca-a8d4-2dc0cd634a81"
-    },
-    {
-      "source": "3a9a2b45-68d4-4274-abe3-ad4fe9a5aa42",
-      "target": "bfb588d7-c488-4528-9e66-1e1f2eca37ae"
     },
     {
       "source": "bfb588d7-c488-4528-9e66-1e1f2eca37ae",
@@ -332,10 +324,6 @@
       "target": "ff0257c6-72bd-404f-807d-3965d26d9cac"
     },
     {
-      "source": "498cb2e6-a01d-41da-a882-2942d2693ab0",
-      "target": "88f359ce-b47f-497c-9f9d-ff80702f69a6"
-    },
-    {
       "source": "ff0257c6-72bd-404f-807d-3965d26d9cac",
       "target": "f96cb2ef-3418-4c4f-9879-342f9e06e5e0"
     },
@@ -344,28 +332,44 @@
       "target": "8302cba1-1bd2-43fc-9ea3-08878d7236d6"
     },
     {
-      "source": "8302cba1-1bd2-43fc-9ea3-08878d7236d6",
-      "target": "439062d1-009e-4796-8b70-50d570798d60"
+      "source": "439062d1-009e-4796-8b70-50d570798d60",
+      "target": "88f359ce-b47f-497c-9f9d-ff80702f69a6"
     },
     {
-      "source": "439062d1-009e-4796-8b70-50d570798d60",
-      "target": "50b41a54-e059-4760-8568-d9390a241624"
+      "source": "88f359ce-b47f-497c-9f9d-ff80702f69a6",
+      "target": "3a9a2b45-68d4-4274-abe3-ad4fe9a5aa42"
+    },
+    {
+      "source": "498cb2e6-a01d-41da-a882-2942d2693ab0",
+      "target": "bfb588d7-c488-4528-9e66-1e1f2eca37ae"
+    },
+    {
+      "source": "3a9a2b45-68d4-4274-abe3-ad4fe9a5aa42",
+      "target": "a8a3ff7f-821b-4eb4-b26e-3ffe5113944d"
+    },
+    {
+      "source": "8302cba1-1bd2-43fc-9ea3-08878d7236d6",
+      "target": "b4544bf6-00d2-4e3c-a893-dcd23a82d0c4"
+    },
+    {
+      "source": "b4544bf6-00d2-4e3c-a893-dcd23a82d0c4",
+      "target": "439062d1-009e-4796-8b70-50d570798d60"
     }
   ],
   "sourceDatabase": {
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "l06pAq1amVWETF3MfdygH4pak4wSyYw=",
-    "password": "XGtp/0zgtCJTae/ZTnWsCbuGd+HjQ9nBboMTpcUkzlE=",
+    "user": "AwAMslLXj3SEydjT5jLD+ftNfvu/zbc=",
+    "password": "A4P3aWs1m2bvLBFfr6g1mnKKfxFno28z55RozNdnCQA=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "P5Y5OdPegEJ8Ty/nO+Y9w/0W6Q==",
-    "password": "y1MD+VYCkw884sXWCa82A7MS9rydaQ==",
+    "user": "1yPA//HVWiWNsOe/8ENl0t0GgQ==",
+    "password": "Vk6mgGfZ9/VHocHI5U3E0HwUg567Yw==",
     "database": "vzmsaneamento"
   },
   "concurrency": 5,
@@ -387,14 +391,31 @@
     {
       "id": "46458242-1830-42e2-8dc1-ddbae18b16a5",
       "type": "rect",
-      "x": -88,
+      "x": -111,
       "y": 2419,
-      "width": 1802,
-      "height": 298,
+      "width": 1822,
+      "height": 783,
       "fillColor": "#000000",
       "borderColor": "#ffffff",
       "borderWidth": 2,
       "text": "Arrecadação e Cobrança",
+      "textColor": "#e2e8f0",
+      "textAlign": "top-left",
+      "fontSize": 30,
+      "fontFamily": "Helvetica, Arial, sans-serif",
+      "cornerRadius": 8
+    },
+    {
+      "id": "8dfed805-fdd4-45d6-91aa-137d37754ce2",
+      "type": "rect",
+      "x": -108,
+      "y": 3248,
+      "width": 1818,
+      "height": 353,
+      "fillColor": "#000000",
+      "borderColor": "#ffffff",
+      "borderWidth": 3,
+      "text": "Serviços",
       "textColor": "#e2e8f0",
       "textAlign": "top-left",
       "fontSize": 30,

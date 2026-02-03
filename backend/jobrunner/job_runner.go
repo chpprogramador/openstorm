@@ -1,6 +1,7 @@
 package jobrunner
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"etl/dialects"
@@ -30,6 +31,11 @@ type JobRunner struct {
 	ConnMap        map[string][]string
 	Variables      map[string]string
 	PipelineLog    *logger.PipelineLog // Adicionado para logging
+	ProjectID      string
+	ctx            context.Context
+	cancel         context.CancelFunc
+	stopped        atomic.Bool
+	stopReason     atomic.Value
 }
 
 func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect dialects.SQLDialect, concurrency int, project string, projectID string) *JobRunner {
@@ -57,7 +63,9 @@ func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect d
 		ConnMap:        make(map[string][]string),
 		Variables:      LoadProjectVariables(projectID),
 		PipelineLog:    pipelineLog,
+		ProjectID:      projectID,
 	}
+	jr.ctx, jr.cancel = context.WithCancel(context.Background())
 
 	// Salva o log inicial do pipeline
 	jr.savePipelineLog()
@@ -66,6 +74,9 @@ func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect d
 }
 
 func (jr *JobRunner) RunJob(jobID string) {
+	if jr.shouldStop() {
+		return
+	}
 	job, ok := jr.JobMap[jobID]
 	if !ok {
 		log.Printf("Job %s não encontrado\n", jobID)
@@ -108,6 +119,10 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 	jr.WaitGroup.Add(1)
 	go func() {
 		defer jr.WaitGroup.Done()
+		if jr.shouldStop() {
+			jr.markJobFinalStatus(jobID, job, "error", "pipeline interrompida", time.Now())
+			return
+		}
 
 		start := time.Now()
 		jobLog := logger.JobLog{
@@ -179,11 +194,25 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			status.AppendLog(fmt.Sprintf("%s - Job: %s falhou: %s", jr.PipelineLog.Project, job.JobName, errMsg))
 		}
 
+		closeOnce := &sync.Once{}
+		closeBatch := func() {
+			closeOnce.Do(func() {
+				close(batchChan)
+			})
+		}
+		go func() {
+			<-jr.ctx.Done()
+			closeBatch()
+		}()
+
 		for w := 0; w < concurrency; w++ {
 			writersWG.Add(1)
 			go func(workerID int) {
 				defer writersWG.Done()
 				for batch := range batchChan {
+					if jr.shouldStop() {
+						return
+					}
 					batchStart := time.Now()
 					batchLog := logger.BatchLog{
 						Offset:    int(processed),
@@ -261,6 +290,9 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			readersWG.Add(1)
 			go func(workerID int) {
 				defer readersWG.Done()
+				if jr.shouldStop() {
+					return
+				}
 
 				queryExplain := jr.Dialect.BuildExplainSelectQueryByHash(job)
 				rowsExplain, err := jr.SourceDB.Query(queryExplain)
@@ -299,6 +331,9 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 				buffer := make([]map[string]interface{}, 0, batchSize)
 
 				for rows.Next() {
+					if jr.shouldStop() {
+						return
+					}
 					values := make([]interface{}, len(cols))
 					ptrs := make([]interface{}, len(cols))
 					for i := range cols {
@@ -318,13 +353,21 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					buffer = append(buffer, rec)
 
 					if len(buffer) == batchSize {
-						batchChan <- buffer
+						select {
+						case batchChan <- buffer:
+						case <-jr.ctx.Done():
+							return
+						}
 						buffer = make([]map[string]interface{}, 0, batchSize)
 					}
 				}
 
 					if len(buffer) > 0 {
-						batchChan <- buffer
+						select {
+						case batchChan <- buffer:
+						case <-jr.ctx.Done():
+							return
+						}
 					}
 
 					if err := rows.Err(); err != nil {
@@ -340,7 +383,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		// Fecha o canal quando todos leitores terminarem
 		go func() {
 			readersWG.Wait()
-			close(batchChan)
+			closeBatch()
 		}()
 
 		writersWG.Wait()
@@ -365,6 +408,9 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 				status.UpdateProjectStatus("error")
 				return
 			}
+		} else if jr.shouldStop() {
+			jr.markJobFinalStatus(jobID, job, "error", "pipeline interrompida", end)
+			return
 		} else {
 			jr.markJobFinalStatus(jobID, job, "done", "", end)
 		}
@@ -378,6 +424,10 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 	log.Printf("Executando job de execução: %s\n", job.JobName)
 	start := time.Now()
+	if jr.shouldStop() {
+		jr.markJobFinalStatus(jobID, job, "error", "pipeline interrompida", start)
+		return
+	}
 
 	// Inicializa log do job
 	jobLog := logger.JobLog{
@@ -410,6 +460,11 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 
 	_, err := jr.DestinationDB.Exec(cleanSQL)
 	end := time.Now()
+
+	if jr.shouldStop() {
+		jr.markJobFinalStatus(jobID, job, "error", "pipeline interrompida", end)
+		return
+	}
 
 	if err != nil {
 		log.Printf("Erro no job de execução: %v\n", err)
@@ -462,6 +517,10 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 	log.Printf("Executando job de condição: %s\n", job.JobName)
 	start := time.Now()
+	if jr.shouldStop() {
+		jr.markJobFinalStatus(jobID, job, "error", "pipeline interrompida", start)
+		return
+	}
 
 	// Inicializa log do job
 	jobLog := logger.JobLog{
@@ -490,6 +549,10 @@ func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 	err := jr.SourceDB.QueryRow(job.SelectSQL).Scan(&result)
 	end := time.Now()
 
+	if jr.shouldStop() {
+		jr.markJobFinalStatus(jobID, job, "error", "pipeline interrompida", end)
+		return
+	}
 	if err != nil {
 		log.Printf("Erro ao executar condição: %v\n", err)
 
@@ -601,6 +664,9 @@ func (jr *JobRunner) Run(startIDs []string) {
 	log.Printf("Iniciando pipeline %s para projeto %s\n", jr.PipelineLog.PipelineID, jr.PipelineLog.Project)
 
 	for _, id := range startIDs {
+		if jr.shouldStop() {
+			break
+		}
 		jr.RunJob(id)
 	}
 	jr.WaitGroup.Wait()
@@ -609,10 +675,48 @@ func (jr *JobRunner) Run(startIDs []string) {
 	jr.PipelineLog.EndedAt = time.Now()
 	if jr.PipelineLog.Status == "running" {
 		jr.PipelineLog.Status = "done"
+	} else if jr.PipelineLog.Status == "stopped" {
+		status.UpdateProjectStatus("stop")
 	}
 	jr.savePipelineLog()
+	clearActiveRunner(jr)
 
 	log.Printf("Pipeline %s finalizado com status: %s\n", jr.PipelineLog.PipelineID, jr.PipelineLog.Status)
+}
+
+func (jr *JobRunner) Stop(reason string) {
+	if jr.stopped.Swap(true) {
+		return
+	}
+	if reason == "" {
+		reason = "interrompido"
+	}
+	jr.stopReason.Store(reason)
+	jr.PipelineLog.Status = "stopped"
+	jr.PipelineLog.EndedAt = time.Now()
+	jr.savePipelineLog()
+	status.UpdateProjectStatus("stop")
+	status.AppendLog(fmt.Sprintf("%s - Pipeline interrompida: %s", jr.PipelineLog.Project, reason))
+	jr.cancel()
+	if jr.SourceDB != nil {
+		_ = jr.SourceDB.Close()
+	}
+	if jr.DestinationDB != nil {
+		_ = jr.DestinationDB.Close()
+	}
+	for id, job := range jr.JobMap {
+		js := status.GetJobStatus(id)
+		if js == nil || (js.Status != "done" && js.Status != "error") {
+			jr.markJobFinalStatus(id, job, "error", "pipeline interrompida", time.Now())
+		}
+	}
+}
+
+func (jr *JobRunner) shouldStop() bool {
+	if jr.stopped.Load() {
+		return true
+	}
+	return jr.ctx.Err() != nil
 }
 
 // Método auxiliar para salvar o log do pipeline

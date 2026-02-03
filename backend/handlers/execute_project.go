@@ -74,6 +74,7 @@ func RunProject(c *gin.Context) {
 
 	// cria o JobRunner
 	runner := jobrunner.NewJobRunner(sourceDB, destDB, buildDSN(project.SourceDatabase), buildDSN(project.DestinationDatabase), dialect, project.Concurrency, project.ProjectName, projectID)
+	jobrunner.SetActiveRunner(runner)
 
 	// Carregar os jobs
 	jobCount := 0
@@ -153,6 +154,16 @@ func RunProject(c *gin.Context) {
 	go runner.Run(startJobs)
 	c.JSON(http.StatusAccepted, gin.H{"message": "Execução iniciada", "startJobs": startJobs})
 	log.Printf("Execução do projeto %s iniciada com %d jobs", project.ProjectName, len(startJobs))
+}
+
+func StopProject(c *gin.Context) {
+	projectID := c.Param("id")
+	stopped := jobrunner.StopActiveRunner(projectID, "interrompido via endpoint")
+	if !stopped {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Nenhuma pipeline ativa para este projeto"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Pipeline interrompida"})
 }
 
 func buildDSN(cfg models.DatabaseConfig) string {

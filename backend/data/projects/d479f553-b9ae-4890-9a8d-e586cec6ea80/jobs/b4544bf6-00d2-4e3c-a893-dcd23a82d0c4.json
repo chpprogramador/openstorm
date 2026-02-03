@@ -1,0 +1,13 @@
+{
+  "id": "b4544bf6-00d2-4e3c-a893-dcd23a82d0c4",
+  "jobName": "Rubrica Grupo",
+  "selectSql": "INSERT INTO ${SCHEMA}.rubrica_grupo (id, nome_grupo_rubrica) VALUES(1, 'Geral');",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 800,
+  "top": 2880
+}

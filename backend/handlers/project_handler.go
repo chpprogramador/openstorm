@@ -9,9 +9,9 @@ import (
 	"etl/models"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -188,21 +188,22 @@ func DecryptFromBase64(b64 string) []byte {
 		return []byte{}
 	}
 
+	if !looksLikeBase64(b64) {
+		return []byte(b64)
+	}
+
 	ciphertext, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
-		log.Printf("DecodeString falhou: %v", err)
-		return []byte{}
+		return []byte(b64)
 	}
 
 	if len(ciphertext) < aes.BlockSize {
-		log.Printf("Descriptografar: ciphertext muito curto: %d bytes", len(ciphertext))
-		return []byte{}
+		return []byte(b64)
 	}
 
 	block, err := aes.NewCipher(chave)
 	if err != nil {
-		log.Printf("Erro ao criar cipher: %v", err)
-		return []byte{}
+		return []byte(b64)
 	}
 
 	iv := ciphertext[:aes.BlockSize]
@@ -212,5 +213,43 @@ func DecryptFromBase64(b64 string) []byte {
 	stream := cipher.NewCFBDecrypter(block, iv)
 	stream.XORKeyStream(texto, texto)
 
+	if !isProbablyText(texto) {
+		return []byte(b64)
+	}
+
 	return texto
+}
+
+func looksLikeBase64(value string) bool {
+	if len(value)%4 != 0 {
+		return false
+	}
+	for i := 0; i < len(value); i++ {
+		c := value[i]
+		if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '+' || c == '/' || c == '=' {
+			continue
+		}
+		return false
+	}
+	return true
+}
+
+func isProbablyText(value []byte) bool {
+	if len(value) == 0 {
+		return true
+	}
+	if !utf8.Valid(value) {
+		return false
+	}
+	printable := 0
+	for _, r := range string(value) {
+		if r == '\n' || r == '\r' || r == '\t' {
+			printable++
+			continue
+		}
+		if r >= 32 && r != 127 {
+			printable++
+		}
+	}
+	return printable > 0
 }

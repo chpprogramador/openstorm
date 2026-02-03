@@ -44,6 +44,7 @@ func main() {
 
 	// Executar projeto
 	router.POST("/projects/:id/run", handlers.RunProject)
+	router.POST("/projects/:id/stop", handlers.StopProject)
 
 	// Status de jobs via WebSocket
 	router.GET("/ws/status", func(c *gin.Context) {

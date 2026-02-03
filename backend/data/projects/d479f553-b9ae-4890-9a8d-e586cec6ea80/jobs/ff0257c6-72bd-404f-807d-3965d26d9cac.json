@@ -1,7 +1,7 @@
 {
   "id": "ff0257c6-72bd-404f-807d-3965d26d9cac",
   "jobName": "Rubrica Tipo Cobrança",
-  "selectSql": "INSERT INTO rubrica_tipo_cobranca (id, nome_tipo_cobranca) VALUES(1, 'Crédito');\nINSERT INTO rubrica_tipo_cobranca (id, nome_tipo_cobranca) VALUES(2, 'Débito');",
+  "selectSql": "INSERT INTO ${SCHEMA}.rubrica_tipo_cobranca (id, nome_tipo_cobranca) VALUES(1, 'Crédito');\nINSERT INTO ${SCHEMA}.rubrica_tipo_cobranca (id, nome_tipo_cobranca) VALUES(2, 'Débito');",
   "insertSql": "",
   "columns": [],
   "primaryKeys": null,
