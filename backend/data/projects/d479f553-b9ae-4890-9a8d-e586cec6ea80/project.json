@@ -360,16 +360,16 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "X0viDLLdavtudl5c1S1sYA3EzsaZjQI=",
-    "password": "0eyUVoxolbLgIsd39ryyXEJkzUGPibMJWp8ErqzNIfk=",
+    "user": "4tvG1wXF74qMGPi2sNySTNXITbviUjA=",
+    "password": "hj437E42Wup7bG+5DJasBFhzZuUkjlX23oN7flFREOE=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "cKhJPZobHy83PhUUq5nXjWNTSw==",
-    "password": "VVtl45OZ/FDvLPqx88GMWk+pCImvag==",
+    "user": "KhK8B797XMLkdemdmXqjszyViw==",
+    "password": "ozmoL4ZOcKSZ9JNxLkU6DfWxAYntnQ==",
     "database": "vzmsaneamento"
   },
   "concurrency": 5,
