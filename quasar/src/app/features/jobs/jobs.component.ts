@@ -4,8 +4,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { auditTime, catchError, distinctUntilChanged, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { AppState } from '../../core/services/app-state';
 import { Job, JobService } from '../../core/services/job.service';
 import { ProjectStatusService } from '../../core/services/project-status.service';
@@ -58,37 +58,43 @@ export class JobsComponent implements OnInit, OnDestroy {
     this.isRunning = isRunning_;
 
     this.projectService.selectedProject$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(project => {
-        this.isRunning = false;
-        jobs_.length = 0;
-        this.jobs = [];
-
-        const projectId = project?.id;
-        if (!projectId) {
+      .pipe(
+        takeUntil(this.destroy$),
+        map(project => project?.id ?? null),
+        distinctUntilChanged(),
+        tap(() => {
+          this.isRunning = false;
+          jobs_.length = 0;
+          this.jobs = [];
+          this.scheduleRender();
+        }),
+        switchMap(projectId => {
+          if (!projectId) return of(null);
+          return this.jobservice.listJobs(projectId).pipe(
+            catchError((error) => {
+              console.error('Erro ao listar projetos:', error);
+              return of(null);
+            })
+          );
+        })
+      )
+      .subscribe((jobs) => {
+        if (!Array.isArray(jobs) || jobs.length === 0) {
+          jobs_.length = 0;
+          this.jobs = [];
+          this.scheduleRender();
           return;
         }
-
-        this.jobservice.listJobs(projectId).subscribe({
-          next: (jobs) => {
-            if (!Array.isArray(jobs) || jobs.length === 0) {
-              jobs_.length = 0;
-              this.jobs = [];
-              this.cdr.detectChanges();
-              return;
-            }
-            updateJobsWithStatus(jobs);
-            this.jobs = [...jobs_];
-            this.cdr.detectChanges();
-          },
-          error: (error) => {
-            console.error('Erro ao listar projetos:', error);
-          }
-        });
+        updateJobsWithStatus(jobs);
+        this.jobs = jobs_;
+        this.scheduleRender();
       });
 
     this.statusService.listen()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        auditTime(250)
+      )
       .subscribe(statuses => {
       interface JobStatus {
         id: string;
@@ -116,8 +122,8 @@ export class JobsComponent implements OnInit, OnDestroy {
 
       const hasRunning = jobs_.some((job) => job.status === 'running');
       this.isRunning = hasRunning;
-      this.jobs = [...jobs_];
-      this.cdr.detectChanges();
+      this.jobs = jobs_;
+      this.scheduleRender();
     });
 
     this.projectStatusService.listen()
@@ -134,6 +140,12 @@ export class JobsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private scheduleRender() {
+    queueMicrotask(() => {
+      this.cdr.detectChanges();
+    });
   }
 
   job_click(job: any) {
