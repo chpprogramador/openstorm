@@ -1,0 +1,65 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.log-viewer-container {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--card-bg);
+  height: 100%;
+  box-shadow: var(--shadow-sm);
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--hover-bg);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  color: var(--text-primary);
+
+  mat-icon {
+    color: var(--accent-strong);
+  }
+
+  button {
+    margin-left: auto;
+  }
+}
+
+pre.log-container {
+  background: #0b1220;
+  color: #d6deeb;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+  width: 100%;
+  height: auto;
+}
+
+.log-viewer-container.embedded {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.log-viewer-container.embedded pre.log-container {
+  flex: 1 1 auto;
+  max-height: none;
+  height: 100%;
+  border-radius: 0;
+  padding: 12px 16px;
+}

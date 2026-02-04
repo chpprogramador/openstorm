@@ -28,6 +28,23 @@ export class ProjectService {
     constructor() {
         this.isBrowser = isPlatformBrowser(this.platformId);
         this.loadProjects();
+        this.loadSelectedProject();
+    }
+
+    private loadSelectedProject(): void {
+        if (!this.isBrowser) {
+            return;
+        }
+
+        const stored = localStorage.getItem('quasar_selected_project');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                this.selectedProjectSubject.next(parsed);
+            } catch {
+                localStorage.removeItem('quasar_selected_project');
+            }
+        }
     }
 
     private loadProjects(): void {
@@ -107,12 +124,13 @@ export class ProjectService {
                     updatedAt: p.updatedAt ? new Date(p.updatedAt) : new Date(),
                     // Mantém campos do legado
                     projectName: p.projectName,
-                    jobs: p.jobs,
-                    connections: p.connections,
+                    jobs: p.jobs || [],
+                    connections: p.connections || [],
                     sourceDatabase: p.sourceDatabase,
                     destinationDatabase: p.destinationDatabase,
                     concurrency: p.concurrency,
-                    variables: p.variables
+                    variables: p.variables,
+                    visualElements: p.visualElements
                 }));
                 console.log('🗺️ Projetos mapeados:', mappedProjects);
                 this.projectsSubject.next(mappedProjects);
@@ -139,12 +157,13 @@ export class ProjectService {
                     createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
                     updatedAt: p.updatedAt ? new Date(p.updatedAt) : new Date(),
                     projectName: p.projectName,
-                    jobs: p.jobs,
-                    connections: p.connections,
+                    jobs: p.jobs || [],
+                    connections: p.connections || [],
                     sourceDatabase: p.sourceDatabase,
                     destinationDatabase: p.destinationDatabase,
                     concurrency: p.concurrency,
-                    variables: p.variables
+                    variables: p.variables,
+                    visualElements: p.visualElements
                 };
                 return mappedProject;
             })
@@ -187,7 +206,8 @@ export class ProjectService {
             sourceDatabase: project.sourceDatabase,
             destinationDatabase: project.destinationDatabase,
             concurrency: project.concurrency || 10,
-            variables: project.variables || null
+            variables: project.variables || null,
+            visualElements: project.visualElements || null
         };
 
         if (this.useApi) {
@@ -201,12 +221,13 @@ export class ProjectService {
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         projectName: createdProject.projectName,
-                        jobs: createdProject.jobs,
-                        connections: createdProject.connections,
+                        jobs: createdProject.jobs || [],
+                        connections: createdProject.connections || [],
                         sourceDatabase: createdProject.sourceDatabase,
                         destinationDatabase: createdProject.destinationDatabase,
                         concurrency: createdProject.concurrency,
-                        variables: createdProject.variables
+                        variables: createdProject.variables,
+                        visualElements: createdProject.visualElements
                     };
                     const projects = [...this.projectsSubject.value, mapped];
                     this.projectsSubject.next(projects);
@@ -232,10 +253,19 @@ export class ProjectService {
     updateProject(id: string, updates: Partial<Project>): Observable<Project> | void {
         if (this.useApi) {
             const currentProject = this.projectsSubject.value.find(p => p.id === id);
+            const resolvedName =
+                updates.name ||
+                updates.projectName ||
+                currentProject?.projectName ||
+                currentProject?.name ||
+                '';
             const updatedProject = {
+                id,
                 ...currentProject,
                 ...updates,
-                projectName: updates.name || currentProject?.name, // Sincroniza name com projectName
+                name: resolvedName,
+                projectName: resolvedName,
+                description: updates.description ?? currentProject?.description ?? '',
                 updatedAt: new Date()
             };
 
@@ -249,12 +279,13 @@ export class ProjectService {
                         createdAt: project.createdAt ? new Date(project.createdAt) : new Date(),
                         updatedAt: new Date(),
                         projectName: project.projectName,
-                        jobs: project.jobs,
-                        connections: project.connections,
+                        jobs: project.jobs || [],
+                        connections: project.connections || [],
                         sourceDatabase: project.sourceDatabase,
                         destinationDatabase: project.destinationDatabase,
                         concurrency: project.concurrency,
-                        variables: project.variables
+                        variables: project.variables,
+                        visualElements: project.visualElements
                     };
 
                     const projects = this.projectsSubject.value.map(p =>
@@ -311,6 +342,54 @@ export class ProjectService {
     }
 
     /**
+     * Duplica um projeto pelo ID
+     */
+    duplicateProject(id: string, projectName?: string): Observable<Project> | Project | void {
+        if (this.useApi) {
+            const body = projectName ? { projectName } : {};
+            return this.http.post<any>(`${this.apiUrl}/${id}/duplicate`, body).pipe(
+                tap(createdProject => {
+                    const mapped = {
+                        id: createdProject.id,
+                        name: createdProject.projectName || createdProject.name,
+                        description: createdProject.description || '',
+                        createdAt: createdProject.createdAt ? new Date(createdProject.createdAt) : new Date(),
+                        updatedAt: createdProject.updatedAt ? new Date(createdProject.updatedAt) : new Date(),
+                        projectName: createdProject.projectName,
+                        jobs: createdProject.jobs || [],
+                        connections: createdProject.connections || [],
+                        sourceDatabase: createdProject.sourceDatabase,
+                        destinationDatabase: createdProject.destinationDatabase,
+                        concurrency: createdProject.concurrency,
+                        variables: createdProject.variables,
+                        visualElements: createdProject.visualElements
+                    };
+                    const projects = [...this.projectsSubject.value, mapped];
+                    this.projectsSubject.next(projects);
+                })
+            );
+        }
+
+        const current = this.projectsSubject.value.find(p => p.id === id);
+        if (!current) {
+            return;
+        }
+        const copyName = projectName || `${current.projectName || current.name || 'Projeto'} (Cópia)`;
+        const localProject: Project = {
+            ...current,
+            id: Date.now().toString(),
+            name: copyName,
+            projectName: copyName,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+        const projects = [...this.projectsSubject.value, localProject];
+        this.projectsSubject.next(projects);
+        this.saveToLocalStorage(projects);
+        return localProject;
+    }
+
+    /**
      * Executa um projeto
      */
     runProject(id: string): Observable<any> {
@@ -322,6 +401,13 @@ export class ProjectService {
      */
     closeProject(id: string): Observable<any> {
         return this.http.post(`${this.apiUrl}/${id}/close`, {});
+    }
+
+    /**
+     * Interrompe a pipeline em execucao
+     */
+    stopProject(id: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/${id}/stop`, {});
     }
 
     /**

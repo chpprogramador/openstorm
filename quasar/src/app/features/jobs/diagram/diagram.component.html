@@ -1,0 +1,388 @@
+<div class="jobs-header">
+  <div class="jobs-title-section">
+    <h1 class="jobs-title">Pipeline Visual</h1>
+    <p class="jobs-subtitle">Configure e monitore seus processos ETL</p>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="toolbar-section status-section">
+    @if(isSaving == true) {
+      <div class="status-indicator saving">
+        <mat-icon class="status-icon spin">sync</mat-icon>
+        <span class="status-text">Salvando...</span>
+      </div>
+    }
+    @if(isSaving == false) {
+      <div class="status-indicator saved">
+        <mat-icon class="status-icon">cloud_done</mat-icon>
+        <span class="status-text">Salvo</span>
+      </div>
+    }
+  </div>
+
+  <div class="toolbar-section actions-section">
+    @if(isRunning == false) {
+      <button mat-icon-button class="action-btn icon-btn run-btn" (click)="runProject()">
+        <mat-icon>play_arrow</mat-icon>
+      </button>
+    }
+    @if(isRunning == true) {
+      <button mat-icon-button class="action-btn icon-btn stop-btn" (click)="stopProject()">
+        <mat-icon>stop</mat-icon>
+      </button>
+    }
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addNewJob()"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'job' })"
+    >
+      <mat-icon>add_box</mat-icon>
+      <span>Novo Job SQL</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('rect')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'rect' })"
+    >
+      <mat-icon>crop_square</mat-icon>
+      <span>Retangulo</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('circle')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'circle' })"
+    >
+      <mat-icon>circle</mat-icon>
+      <span>Circulo</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('line')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'line' })"
+    >
+      <mat-icon>horizontal_rule</mat-icon>
+      <span>Linha</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('text')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'text' })"
+    >
+      <mat-icon>text_fields</mat-icon>
+      <span>Texto</span>
+    </button>
+
+    <button mat-stroked-button class="action-btn logs-btn" (click)="showHideLogs()">
+      <mat-icon>terminal</mat-icon>
+      <span>Logs</span>
+    </button>
+
+    <button mat-stroked-button class="action-btn zoom" (click)="removeZoom()">
+      <mat-icon>zoom_in</mat-icon>
+      <span>{{(zoom * 100 | number:'1.0-0')}}%</span>
+    </button>
+  </div>
+</div>
+
+<div class="diagram-layout" [class.with-logs]="showLogs">
+  <div
+    class="diagram-container"
+    #scrollContainer
+    (mousedown)="onMouseDown($event)"
+    (click)="onDiagramBackgroundClick($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseUp()"
+    (dragover)="onDiagramDragOver($event)"
+    (drop)="onDiagramDrop($event)"
+  >
+    <div id="diagramContainer" class="diagram-content" [style.transform]="getDiagramTransform()">
+      <svg class="visual-lines" *ngIf="visualElements.length > 0">
+        <line
+          *ngFor="let el of visualElements"
+          [attr.x1]="el.type === 'line' ? el.x : null"
+          [attr.y1]="el.type === 'line' ? el.y : null"
+          [attr.x2]="el.type === 'line' ? el.x2 : null"
+          [attr.y2]="el.type === 'line' ? el.y2 : null"
+          [attr.stroke]="el.borderColor || '#94a3b8'"
+          [attr.stroke-width]="el.borderWidth || 2"
+          [attr.stroke-linecap]="'round'"
+          [style.display]="el.type === 'line' ? 'block' : 'none'"
+          [class.is-selected]="selectedVisualElement?.id === el.id"
+          (mousedown)="onElementMouseDown($event, el)"
+          (click)="selectElement(el, $event)"
+        ></line>
+        <circle
+          *ngFor="let el of visualElements"
+          [attr.cx]="el.x"
+          [attr.cy]="el.y"
+          r="6"
+          class="line-handle"
+          [style.display]="el.type === 'line' && selectedVisualElement?.id === el.id ? 'block' : 'none'"
+          (mousedown)="onLineHandleMouseDown($event, el, 'start')"
+        ></circle>
+        <circle
+          *ngFor="let el of visualElements"
+          [attr.cx]="el.x2"
+          [attr.cy]="el.y2"
+          r="6"
+          class="line-handle"
+          [style.display]="el.type === 'line' && selectedVisualElement?.id === el.id ? 'block' : 'none'"
+          (mousedown)="onLineHandleMouseDown($event, el, 'end')"
+        ></circle>
+      </svg>
+
+      <div
+        class="visual-element"
+        *ngFor="let el of visualElements"
+        [class.is-circle]="el.type === 'circle'"
+        [class.is-text]="el.type === 'text'"
+        [class.is-selected]="selectedVisualElement?.id === el.id"
+        [style.left.px]="el.x"
+        [style.top.px]="el.y"
+        [style.width.px]="getElementWidth(el)"
+        [style.height.px]="getElementHeight(el)"
+        [style.background]="el.fillColor || 'transparent'"
+        [style.borderColor]="el.borderColor || 'transparent'"
+        [style.borderWidth.px]="el.borderWidth || 0"
+        [style.borderRadius]="getElementBorderRadius(el)"
+        [style.color]="el.textColor || 'inherit'"
+        [style.fontSize.px]="el.fontSize || 12"
+        [style.fontFamily]="el.fontFamily || 'inherit'"
+        [style.display]="el.type === 'line' ? 'none' : 'flex'"
+        (mousedown)="onElementMouseDown($event, el)"
+        (click)="selectElement(el, $event)"
+      >
+        <span
+          class="visual-text"
+          [style.textAlign]="getElementTextAlign(el)"
+          [style.justifyContent]="getElementJustifyContent(el)"
+          [style.alignItems]="getElementAlignItems(el)"
+        >{{ el.text || (el.type === 'text' ? 'Texto' : '') }}</span>
+        <div
+          class="resize-handle nw"
+          *ngIf="selectedVisualElement?.id === el.id && el.type !== 'line'"
+          (mousedown)="onResizeMouseDown($event, el, 'nw')"
+        ></div>
+        <div
+          class="resize-handle ne"
+          *ngIf="selectedVisualElement?.id === el.id && el.type !== 'line'"
+          (mousedown)="onResizeMouseDown($event, el, 'ne')"
+        ></div>
+        <div
+          class="resize-handle sw"
+          *ngIf="selectedVisualElement?.id === el.id && el.type !== 'line'"
+          (mousedown)="onResizeMouseDown($event, el, 'sw')"
+        ></div>
+        <div
+          class="resize-handle se"
+          *ngIf="selectedVisualElement?.id === el.id && el.type !== 'line'"
+          (mousedown)="onResizeMouseDown($event, el, 'se')"
+        ></div>
+        <button
+          class="visual-delete"
+          type="button"
+          (mousedown)="$event.stopPropagation()"
+          (click)="$event.stopPropagation(); deleteVisualElement(el)"
+          aria-label="Remover elemento"
+        >
+          ×
+        </button>
+      </div>
+
+      @for (job of jobs; track job.id) {
+        <div
+          [id]="job.id"
+          [class]="'box ' + job.status"
+          [style.left.px]="job.left"
+          [style.top.px]="job.top"
+          #jobEl
+          (contextmenu)="onRightClick($event, job)"
+          [cdkContextMenuTriggerFor]="contextMenu"
+        >
+          <div class="status">
+            @if (job.status === 'running') {
+              <mat-icon class="running">play_circle_filled</mat-icon>
+            }
+            @if (job.status === 'done') {
+              <mat-icon class="done">check_circle</mat-icon>
+            }
+            @if (job.status === 'error') {
+              <mat-icon
+                class="error"
+                [matTooltip]="job.error || ''"
+                [matTooltipDisabled]="!job.error"
+                matTooltipPosition="above"
+              >error_outline</mat-icon>
+            }
+          </div>
+
+          <div class="progress">
+            @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
+              {{ job.progress | number:'1.2-2'}}% |
+            }
+            {{ tempoTotal(job.startedAt!, job.endedAt!)  }}
+            @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
+              <mat-progress-bar
+                [mode]="'determinate'"
+                [value]="job.progress"
+                color="warn"
+              >
+              </mat-progress-bar>
+              {{ job.processed }} / {{ job.total }}
+            }
+          </div>
+
+          <div class="icons">
+            <mat-icon>bookmark_border</mat-icon> SQL {{ job.type.toUpperCase() }}
+          </div>
+          <div class="handle">{{ job.jobName }}</div>
+          <div class="icons">
+            <mat-icon>notes</mat-icon> {{ job.recordsPerPage }}
+            <span>|</span>
+            <mat-icon>layers</mat-icon> {{ project?.concurrency }}
+          </div>
+        </div>
+      }
+
+      <ng-template #contextMenu>
+        <div class="context-menu" cdkMenu cdkMenuPanel>
+          <button class="context-menu-item" cdkMenuItem (click)="openEditDialog(selectedJob)"><mat-icon>edit_outline</mat-icon> Editar</button>
+          <button class="context-menu-item" cdkMenuItem (click)="removeJob(selectedJob)"><mat-icon>delete_outline</mat-icon> Excluir</button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="visual-panel" *ngIf="selectedVisualElement as el" (click)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
+    <div class="panel-header">
+      <span>Elemento Visual</span>
+      <button type="button" class="panel-close" (click)="clearSelection()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="panel-section">
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo</mat-label>
+        <input matInput [value]="el.type" disabled>
+      </mat-form-field>
+    </div>
+
+    <div class="panel-section" *ngIf="el.type !== 'line'">
+      <mat-form-field appearance="outline">
+        <mat-label>Texto</mat-label>
+        <textarea matInput rows="2" [(ngModel)]="el.text" (ngModelChange)="onElementChange(el)"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="panel-row" *ngIf="el.type !== 'line' && el.type !== 'text'">
+      <mat-form-field appearance="outline">
+        <mat-label>Largura</mat-label>
+        <input matInput type="number" [(ngModel)]="el.width" (ngModelChange)="onElementChange(el)">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Altura</mat-label>
+        <input matInput type="number" [(ngModel)]="el.height" (ngModelChange)="onElementChange(el)">
+      </mat-form-field>
+    </div>
+
+    <div class="panel-row" *ngIf="el.type === 'line'">
+      <mat-form-field appearance="outline">
+        <mat-label>X2</mat-label>
+        <input matInput type="number" [(ngModel)]="el.x2" (ngModelChange)="onElementChange(el)">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Y2</mat-label>
+        <input matInput type="number" [(ngModel)]="el.y2" (ngModelChange)="onElementChange(el)">
+      </mat-form-field>
+    </div>
+
+    <div class="panel-row" *ngIf="el.type !== 'line' && el.type !== 'text'">
+      <mat-form-field appearance="outline">
+        <mat-label>Fundo</mat-label>
+        <input matInput type="color" [(ngModel)]="el.fillColor" (ngModelChange)="onElementChange(el)">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Borda</mat-label>
+        <input matInput type="color" [(ngModel)]="el.borderColor" (ngModelChange)="onElementChange(el)">
+      </mat-form-field>
+    </div>
+
+    <div class="panel-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Espessura</mat-label>
+        <input matInput type="number" [(ngModel)]="el.borderWidth" (ngModelChange)="onElementChange(el)">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Cor do texto</mat-label>
+        <input matInput type="color" [(ngModel)]="el.textColor" (ngModelChange)="onElementChange(el)">
+      </mat-form-field>
+    </div>
+
+    <div class="panel-row" *ngIf="el.type !== 'line'">
+      <mat-form-field appearance="outline">
+        <mat-label>Fonte</mat-label>
+        <mat-select [(ngModel)]="el.fontFamily" (selectionChange)="onElementChange(el)">
+          <mat-option *ngFor="let font of fontOptions" [value]="font">{{ font }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Tamanho</mat-label>
+        <input matInput type="number" [(ngModel)]="el.fontSize" (ngModelChange)="onElementChange(el)">
+      </mat-form-field>
+    </div>
+
+    <div class="panel-section" *ngIf="el.type !== 'line'">
+      <mat-form-field appearance="outline">
+        <mat-label>Alinhamento</mat-label>
+        <mat-select [(ngModel)]="el.textAlign" (selectionChange)="onElementChange(el)">
+          <mat-option value="top-left">Esquerda Superior</mat-option>
+          <mat-option value="top-center">Centro Superior</mat-option>
+          <mat-option value="top-right">Direita Superior</mat-option>
+          <mat-option value="center-left">Centro Esquerda</mat-option>
+          <mat-option value="center">Centralizado</mat-option>
+          <mat-option value="center-right">Centro Direita</mat-option>
+          <mat-option value="bottom-left">Esquerda Inferior</mat-option>
+          <mat-option value="bottom-center">Centro Inferior</mat-option>
+          <mat-option value="bottom-right">Direita Inferior</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="panel-actions">
+      <button mat-flat-button color="warn" (click)="deleteVisualElement(el)">Remover</button>
+    </div>
+  </div>
+
+  <div class="log-box" [ngStyle]="{'display': showLogs ? 'flex' : 'none'}">
+    <div class="log-header">
+      <div class="log-title">
+        <mat-icon>terminal</mat-icon>
+        <span>Log Viewer</span>
+      </div>
+      <button class="log-close" type="button" (click)="showHideLogs()" aria-label="Fechar logs">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="log-body">
+      <app-log-viewer [showHeader]="false" [embedded]="true"></app-log-viewer>
+    </div>
+  </div>
+</div>

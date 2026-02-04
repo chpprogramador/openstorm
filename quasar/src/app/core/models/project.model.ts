@@ -1,4 +1,5 @@
 // src/app/core/models/project.model.ts
+import { VisualElement } from './visual-element.model';
 
 export interface DatabaseConfig {
     type: string;
@@ -36,4 +37,5 @@ export interface Project {
     destinationDatabase?: DatabaseConfig;
     concurrency?: number;
     variables?: Variable[];
+    visualElements?: VisualElement[];
 }

@@ -1,0 +1,149 @@
+<div class="error-viewer-container">
+  <mat-card class="error-summary-card" *ngIf="errorSummary">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon color="warn">error</mat-icon>
+        Resumo de Erros - {{ errorSummary.pipeline_id }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        Total de erros: {{ errorSummary.total_errors }}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="error-types-section" *ngIf="errorSummary.error_types && (errorSummary.error_types | keyvalue).length > 0">
+        <h4>Tipos de Erro:</h4>
+        <div class="error-types-chips">
+          <mat-chip-set>
+            <mat-chip *ngFor="let errorType of errorSummary.error_types | keyvalue" [class]="getErrorTypeClass(errorType.key)">
+              <mat-icon>{{ getErrorTypeIcon(errorType.key) }}</mat-icon>
+              {{ getErrorTypeLabel(errorType.key) }} ({{ errorType.value }})
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="job-errors-section" *ngIf="jobErrors.length > 0">
+        <h4>
+          <mat-icon color="warn">work</mat-icon>
+          Erros de Jobs ({{ jobErrors.length }})
+        </h4>
+
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let jobError of jobErrors; let i = index">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon [color]="getErrorSeverity(jobError.error_type)">{{ getErrorTypeIcon(jobError.error_type) }}</mat-icon>
+                {{ jobError.job_name }}
+              </mat-panel-title>
+              <mat-panel-description>
+                <mat-chip [class]="getErrorTypeClass(jobError.error_type)">
+                  {{ getErrorTypeLabel(jobError.error_type) }}
+                </mat-chip>
+                <span class="error-time">{{ formatTimeSafe(jobError.ended_at) }}</span>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="error-details">
+              <div class="error-message">
+                <strong>Erro:</strong>
+                <pre class="error-text">{{ jobError.error }}</pre>
+              </div>
+
+              <div class="error-info" *ngIf="jobError.error_details">
+                <div class="error-suggestion" *ngIf="jobError.error_details.suggestion">
+                  <mat-icon color="primary">lightbulb</mat-icon>
+                  <strong>Sugestão:</strong> {{ jobError.error_details.suggestion }}
+                </div>
+              </div>
+
+              <div class="error-metadata">
+                <div class="metadata-item">
+                  <strong>Job ID:</strong> {{ jobError.job_id }}
+                </div>
+                <div class="metadata-item">
+                  <strong>Código do Erro:</strong> {{ jobError.error_code }}
+                </div>
+                <div class="metadata-item" *ngIf="jobError.started_at">
+                  <strong>Iniciado em:</strong> {{ formatDateTime(jobError.started_at) }}
+                </div>
+                <div class="metadata-item" *ngIf="jobError.ended_at">
+                  <strong>Finalizado em:</strong> {{ formatDateTime(jobError.ended_at) }}
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+
+      <mat-divider *ngIf="jobErrors.length > 0 && batchErrors.length > 0"></mat-divider>
+
+      <div class="batch-errors-section" *ngIf="batchErrors.length > 0">
+        <h4>
+          <mat-icon color="warn">view_list</mat-icon>
+          Erros de Batches ({{ batchErrors.length }})
+        </h4>
+
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let batchError of batchErrors; let i = index">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon [color]="getErrorSeverity(batchError.error_type)">{{ getErrorTypeIcon(batchError.error_type) }}</mat-icon>
+                {{ batchError.job_name }} - Batch {{ batchError.batch_offset }}-{{ batchError.batch_offset + batchError.batch_limit }}
+              </mat-panel-title>
+              <mat-panel-description>
+                <mat-chip [class]="getErrorTypeClass(batchError.error_type)">
+                  {{ getErrorTypeLabel(batchError.error_type) }}
+                </mat-chip>
+                <span class="error-time">{{ formatTimeSafe(batchError.ended_at) }}</span>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="error-details">
+              <div class="error-message">
+                <strong>Erro:</strong>
+                <pre class="error-text">{{ batchError.error }}</pre>
+              </div>
+
+              <div class="error-info" *ngIf="batchError.error_details">
+                <div class="error-suggestion" *ngIf="batchError.error_details.suggestion">
+                  <mat-icon color="primary">lightbulb</mat-icon>
+                  <strong>Sugestão:</strong> {{ batchError.error_details.suggestion }}
+                </div>
+              </div>
+
+              <div class="error-metadata">
+                <div class="metadata-item">
+                  <strong>Job ID:</strong> {{ batchError.job_id }}
+                </div>
+                <div class="metadata-item">
+                  <strong>Offset:</strong> {{ batchError.batch_offset }}
+                </div>
+                <div class="metadata-item">
+                  <strong>Limit:</strong> {{ batchError.batch_limit }}
+                </div>
+                <div class="metadata-item">
+                  <strong>Código do Erro:</strong> {{ batchError.error_code }}
+                </div>
+                <div class="metadata-item" *ngIf="batchError.started_at">
+                  <strong>Iniciado em:</strong> {{ formatDateTime(batchError.started_at) }}
+                </div>
+                <div class="metadata-item" *ngIf="batchError.ended_at">
+                  <strong>Finalizado em:</strong> {{ formatDateTime(batchError.ended_at) }}
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="no-errors-message" *ngIf="!errorSummary || errorSummary.total_errors === 0">
+    <mat-icon color="primary">check_circle</mat-icon>
+    <h3>Nenhum erro encontrado!</h3>
+    <p>O pipeline foi executado com sucesso sem erros.</p>
+  </div>
+</div>

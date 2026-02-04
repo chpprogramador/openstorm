@@ -15,13 +15,16 @@ import { Observable } from 'rxjs';
     <header class="header">
       <div class="header-container">
         <div class="header-left">
-          <h1 class="logo" (click)="goToProjects()">Quasar</h1>
+          <button class="logo-btn" type="button" (click)="goToProjects()" aria-label="Quasar">
+            <img class="logo-img logo-light" src="quasar-logo-light.png" alt="Quasar" />
+            <img class="logo-img logo-dark" src="quasar-logo-dark.png" alt="Quasar" />
+          </button>
           
           <nav class="nav" *ngIf="selectedProject$ | async as project">
             <a routerLink="/home" routerLinkActive="active" class="nav-link">Home</a>
             <a routerLink="/variables" routerLinkActive="active" class="nav-link">Variáveis</a>
             <a routerLink="/jobs" routerLinkActive="active" class="nav-link">Jobs</a>
-            <a routerLink="/history" routerLinkActive="active" class="nav-link">Histórico</a>
+            <a routerLink="/history" routerLinkActive="active" class="nav-link">Historico</a>
           </nav>
         </div>
 
@@ -76,20 +79,35 @@ import { Observable } from 'rxjs';
       gap: 3rem;
     }
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .logo-btn {
+      background: transparent;
+      border: none;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
       cursor: pointer;
-      margin: 0;
-      transition: opacity 0.2s;
     }
 
-    .logo:hover {
-      opacity: 0.8;
+    .logo-btn:hover {
+      opacity: 0.9;
+    }
+
+    .logo-img {
+      height: 34px;
+      width: auto;
+      display: block;
+    }
+
+    .logo-dark {
+      display: none;
+    }
+
+    :host-context(body.dark-theme) .logo-light {
+      display: none;
+    }
+
+    :host-context(body.dark-theme) .logo-dark {
+      display: block;
     }
 
     .nav {

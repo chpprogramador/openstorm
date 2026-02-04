@@ -1,0 +1,10 @@
+<div class="log-viewer-container" [class.embedded]="embedded">
+  <div class="log-header" *ngIf="showHeader">
+    <mat-icon>terminal</mat-icon>
+    <span>Logs em Tempo Real</span>
+    <button mat-icon-button (click)="clearLogs()" matTooltip="Limpar logs">
+      <mat-icon>clear</mat-icon>
+    </button>
+  </div>
+  <pre #logBox class="log-container">{{ logText }}</pre>
+</div>

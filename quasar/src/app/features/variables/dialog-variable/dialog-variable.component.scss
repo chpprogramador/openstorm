@@ -1,0 +1,50 @@
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+mat-dialog-content {
+  min-width: 420px;
+}
+
+.preview-section {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: var(--hover-bg);
+  border-radius: 8px;
+  border-left: 4px solid var(--accent-strong);
+
+  h4 {
+    margin: 0 0 8px 0;
+    color: var(--accent-strong);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .preview-code {
+    margin: 8px 0;
+
+    code {
+      background-color: var(--card-bg);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent-strong);
+      border: 1px solid var(--border-color);
+      display: inline-block;
+    }
+  }
+
+  small {
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+}
+
+mat-form-field {
+  mat-hint {
+    font-size: 12px;
+  }
+}

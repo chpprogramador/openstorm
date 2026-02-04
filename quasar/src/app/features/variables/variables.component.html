@@ -1,0 +1,128 @@
+<div class="variables-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>settings</mat-icon>
+        Variaveis do Projeto
+      </mat-card-title>
+      <mat-card-subtitle>
+        Gerencie as variaveis que podem ser utilizadas nos scripts SQL
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="actions-toolbar">
+        <button
+          mat-raised-button
+          color="primary"
+          class="mat-raised-button add-variable-button"
+          (click)="openVariableDialog()"
+          [disabled]="!appState.project"
+        >
+          <mat-icon>add</mat-icon>
+          Nova Variavel
+        </button>
+
+        <button
+          mat-button
+          (click)="loadVariables()"
+          [disabled]="loading"
+        >
+          <mat-icon>refresh</mat-icon>
+          Atualizar
+        </button>
+      </div>
+
+      <div class="info-panel" *ngIf="variables.length === 0 && !loading">
+        <mat-icon class="info-icon">info</mat-icon>
+        <p>Nenhuma variavel encontrada.</p>
+        <p class="info-subtitle">
+          Clique em "Nova Variavel" para criar sua primeira variavel.
+        </p>
+      </div>
+
+      <div class="usage-info" *ngIf="variables.length > 0">
+        <mat-icon>lightbulb</mat-icon>
+        <span>
+          Use as variaveis em suas queries SQL com a sintaxe:
+          <code>${{ '{nome_da_variavel}' }}</code>
+        </span>
+      </div>
+
+      <mat-table [dataSource]="variables" class="variables-table" *ngIf="variables.length > 0">
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+          <mat-cell *matCellDef="let variable">
+            <div class="variable-name">
+              <strong>{{variable.name}}</strong>
+              <button
+                mat-icon-button
+                matTooltip="Copiar referencia da variavel"
+                (click)="copyToClipboard(variable.name)"
+                class="copy-button"
+              >
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <mat-header-cell *matHeaderCellDef>Tipo</mat-header-cell>
+          <mat-cell *matCellDef="let variable">
+            <mat-chip [color]="getTypeColor(variable.type)">
+              {{getTypeLabel(variable.type)}}
+            </mat-chip>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="value">
+          <mat-header-cell *matHeaderCellDef>Valor</mat-header-cell>
+          <mat-cell *matCellDef="let variable">
+            <div class="variable-value">
+              <code>{{formatValue(variable.value, variable.type)}}</code>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <mat-header-cell *matHeaderCellDef>Descricao</mat-header-cell>
+          <mat-cell *matCellDef="let variable">
+            <span class="description-text">{{variable.description || 'Sem descricao'}}</span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef>Acoes</mat-header-cell>
+          <mat-cell *matCellDef="let variable">
+            <div class="action-buttons">
+              <button
+                mat-icon-button
+                matTooltip="Editar variavel"
+                (click)="openVariableDialog(variable)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                matTooltip="Excluir variavel"
+                color="warn"
+                (click)="deleteVariable(variable)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+
+      <div class="loading-indicator" *ngIf="loading">
+        <mat-icon class="spinning">autorenew</mat-icon>
+        <span>Carregando variaveis...</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

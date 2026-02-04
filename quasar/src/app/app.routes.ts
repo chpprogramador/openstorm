@@ -22,7 +22,11 @@ export const routes: Routes = [
     },
     {
         path: 'history',
-        loadComponent: () => import('./features/history/history.component').then(m => m.HistoryComponent)
+        loadComponent: () => import('./features/errors/errors.component').then(m => m.ErrorsComponent)
+    },
+    {
+        path: 'errors',
+        loadComponent: () => import('./features/errors/errors.component').then(m => m.ErrorsComponent)
     },
     {
         path: '**',
