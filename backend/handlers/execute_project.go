@@ -23,20 +23,11 @@ func RunProject(c *gin.Context) {
 
 	status.ClearJobLogs()
 
-	//lê o JSON do projeto
+	//l? o JSON do projeto
 	projectID := c.Param("id")
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")
-	projectBytes, err := os.ReadFile(projectPath)
+	project, err := loadProjectFile(projectPath)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Projeto não encontrado"})
-		log.Println("Projeto não encontrado:", projectPath)
-		return
-	}
-	log.Printf("Lendo projeto %s de %s", projectID, projectPath)
-
-	// Deserializa o JSON do projeto
-	var project models.Project
-	if err := json.Unmarshal(projectBytes, &project); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao ler project.json"})
 		log.Println("Erro ao ler project.json:", err)
 		return

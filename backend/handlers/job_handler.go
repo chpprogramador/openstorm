@@ -18,14 +18,8 @@ import (
 func ListJobs(c *gin.Context) {
 	projectID := c.Param("id")
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")
-	projectBytes, err := ioutil.ReadFile(projectPath)
+	project, err := loadProjectFile(projectPath)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Projeto não encontrado"})
-		return
-	}
-
-	var project models.Project
-	if err := json.Unmarshal(projectBytes, &project); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao ler project.json"})
 		return
 	}
@@ -66,12 +60,9 @@ func AddJob(c *gin.Context) {
 	}
 
 	projectPath := filepath.Join(projectDir, "project.json")
-	projectBytes, _ := ioutil.ReadFile(projectPath)
-	var project models.Project
-	_ = json.Unmarshal(projectBytes, &project)
+	project, _ := loadProjectFile(projectPath)
 	project.Jobs = append(project.Jobs, filepath.Join("jobs", jobFileName))
-	updatedBytes, _ := json.MarshalIndent(project, "", "  ")
-	_ = ioutil.WriteFile(projectPath, updatedBytes, 0644)
+	_ = writeProjectFile(projectPath, &project)
 
 	c.JSON(201, job)
 }
@@ -109,9 +100,7 @@ func DeleteJob(c *gin.Context) {
 	}
 
 	projectPath := filepath.Join(projectDir, "project.json")
-	projectBytes, _ := ioutil.ReadFile(projectPath)
-	var project models.Project
-	_ = json.Unmarshal(projectBytes, &project)
+	project, _ := loadProjectFile(projectPath)
 
 	var updatedJobs []string
 	for _, job := range project.Jobs {
@@ -120,8 +109,7 @@ func DeleteJob(c *gin.Context) {
 		}
 	}
 	project.Jobs = updatedJobs
-	updatedBytes, _ := json.MarshalIndent(project, "", "  ")
-	_ = ioutil.WriteFile(projectPath, updatedBytes, 0644)
+	_ = writeProjectFile(projectPath, &project)
 
 	c.JSON(200, gin.H{"message": "Job removido com sucesso!"})
 }
@@ -158,14 +146,8 @@ func ValidateJobHandler(c *gin.Context) {
 
 	projectID := req.ProjectID
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")
-	projectBytes, err := ioutil.ReadFile(projectPath)
+	project, err := loadProjectFile(projectPath)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Projeto não encontrado"})
-		return
-	}
-
-	var project models.Project
-	if err := json.Unmarshal(projectBytes, &project); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao ler project.json"})
 		return
 	}

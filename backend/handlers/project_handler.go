@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -8,10 +9,10 @@ import (
 	"encoding/json"
 	"etl/models"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,7 @@ import (
 )
 
 var chave = []byte("a1b2c3d4e5f6g7h8a1b2c3d4e5f6g7h8") // 32 bytes para AES-256
+var projectFileMu sync.Mutex
 
 // -------------------- List Projects --------------------
 func ListProjects(c *gin.Context) {
@@ -34,13 +36,8 @@ func ListProjects(c *gin.Context) {
 	for _, entry := range entries {
 		if entry.IsDir() {
 			projectPath := filepath.Join(baseDir, entry.Name(), "project.json")
-			projectBytes, err := os.ReadFile(projectPath)
+			project, err := loadProjectFile(projectPath)
 			if err != nil {
-				continue
-			}
-
-			var project models.Project
-			if err := json.Unmarshal(projectBytes, &project); err != nil {
 				continue
 			}
 
@@ -73,8 +70,7 @@ func CreateProject(c *gin.Context) {
 	}
 
 	projectPath := filepath.Join(projectDir, "project.json")
-	projectBytes, _ := json.MarshalIndent(project, "", "  ")
-	if err := ioutil.WriteFile(projectPath, projectBytes, 0644); err != nil {
+	if err := writeProjectFile(projectPath, &project); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao salvar arquivo project.json"})
 		return
 	}
@@ -89,14 +85,8 @@ func CreateProject(c *gin.Context) {
 func GetProjectByID(c *gin.Context) {
 	projectID := c.Param("id")
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")
-	projectBytes, err := ioutil.ReadFile(projectPath)
+	project, err := loadProjectFile(projectPath)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Projeto não encontrado"})
-		return
-	}
-
-	var project models.Project
-	if err := json.Unmarshal(projectBytes, &project); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao ler o JSON do projeto"})
 		return
 	}
@@ -125,13 +115,7 @@ func UpdateProject(c *gin.Context) {
 	updatedProject.ID = projectID
 	encryptProjectFields(&updatedProject)
 
-	projectBytes, err := json.MarshalIndent(updatedProject, "", "  ")
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Erro ao serializar o projeto"})
-		return
-	}
-
-	if err := os.WriteFile(projectPath, projectBytes, 0644); err != nil {
+	if err := writeProjectFile(projectPath, &updatedProject); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao salvar o projeto"})
 		return
 	}
@@ -152,19 +136,8 @@ func DuplicateProject(c *gin.Context) {
 	sourceDir := filepath.Join("data", "projects", projectID)
 	projectPath := filepath.Join(sourceDir, "project.json")
 
-	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
-		c.JSON(404, gin.H{"error": "Projeto não encontrado"})
-		return
-	}
-
-	projectBytes, err := os.ReadFile(projectPath)
+	project, err := loadProjectFile(projectPath)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Erro ao ler project.json"})
-		return
-	}
-
-	var project models.Project
-	if err := json.Unmarshal(projectBytes, &project); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao interpretar project.json"})
 		return
 	}
@@ -200,12 +173,7 @@ func DuplicateProject(c *gin.Context) {
 
 	// salva project.json novo
 	encryptProjectFields(&newProject)
-	newProjectBytes, err := json.MarshalIndent(newProject, "", "  ")
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Erro ao serializar o projeto duplicado"})
-		return
-	}
-	if err := os.WriteFile(filepath.Join(destDir, "project.json"), newProjectBytes, 0644); err != nil {
+	if err := writeProjectFile(filepath.Join(destDir, "project.json"), &newProject); err != nil {
 		c.JSON(500, gin.H{"error": "Erro ao salvar project.json do projeto duplicado"})
 		return
 	}
@@ -296,6 +264,51 @@ func copyFile(srcPath, destPath string) error {
 	}
 
 	return nil
+}
+
+// -------------------- Safe Load Helper --------------------
+func loadProjectFile(path string) (models.Project, error) {
+	var project models.Project
+	projectBytes, err := os.ReadFile(path)
+	if err != nil {
+		return project, err
+	}
+
+	dec := json.NewDecoder(bytes.NewReader(projectBytes))
+	if err := dec.Decode(&project); err != nil {
+		return project, err
+	}
+
+	// Detect trailing data; if present, rewrite a clean JSON file.
+	if err := dec.Decode(&struct{}{}); err != io.EOF {
+		if clean, err2 := json.MarshalIndent(project, "", "  "); err2 == nil {
+			_ = os.WriteFile(path, clean, 0644)
+		}
+	}
+
+	return project, nil
+}
+
+func writeProjectFile(path string, project *models.Project) error {
+	projectFileMu.Lock()
+	defer projectFileMu.Unlock()
+
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		return err
+	}
+
+	projectBytes, err := json.MarshalIndent(project, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmpPath := path + ".tmp"
+	if err := os.WriteFile(tmpPath, projectBytes, 0644); err != nil {
+		return err
+	}
+
+	_ = os.Remove(path)
+	return os.Rename(tmpPath, path)
 }
 
 // -------------------- Encrypt / Decrypt Helpers --------------------

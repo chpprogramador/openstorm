@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	"encoding/json"
 	"etl/models"
 	"net/http"
-	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -159,13 +157,8 @@ func GetVariable(c *gin.Context) {
 // Funções auxiliares para carregar e salvar projeto
 func loadProject(projectID string) (*models.Project, error) {
 	projectPath := filepath.Join("data", "projects", projectID, "project.json")
-	projectBytes, err := os.ReadFile(projectPath)
+	project, err := loadProjectFile(projectPath)
 	if err != nil {
-		return nil, err
-	}
-
-	var project models.Project
-	if err := json.Unmarshal(projectBytes, &project); err != nil {
 		return nil, err
 	}
 
@@ -174,17 +167,5 @@ func loadProject(projectID string) (*models.Project, error) {
 
 func saveProject(project *models.Project) error {
 	projectPath := filepath.Join("data", "projects", project.ID, "project.json")
-	
-	// Garante que o diretório existe
-	dir := filepath.Dir(projectPath)
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return err
-	}
-
-	projectBytes, err := json.MarshalIndent(project, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(projectPath, projectBytes, 0644)
+	return writeProjectFile(projectPath, project)
 }
