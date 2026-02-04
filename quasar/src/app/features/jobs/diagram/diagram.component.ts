@@ -26,7 +26,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { of } from 'rxjs';
+import { Subscription, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { LogViewerComponent } from '../../../shared/components/log-viewer/log-viewer.component';
@@ -124,6 +124,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   private visibilityHandler: (() => void) | null = null;
   private suppressConnectionEvents = false;
   private repaintTimer: ReturnType<typeof setTimeout> | null = null;
+  private jobElementsSub: Subscription | null = null;
+  private rebuildAttempts = 0;
   fontOptions: string[] = [
     'Space Grotesk, sans-serif',
     'IBM Plex Sans, sans-serif',
@@ -185,9 +187,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     setTimeout(() => {
-      this.jobs.forEach((job) => this.addJobToJsPlumb(job));
-      this.addExistingConnections();
-    }, 1000);
+      this.scheduleRebuild('after-view-init');
+    }, 0);
 
     const container = this.scrollContainer.nativeElement;
     const storedZoom = localStorage.getItem('diagramZoom');
@@ -255,6 +256,11 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
         }
       });
     }
+
+    // Rebuild once job elements are actually rendered in the DOM.
+    this.jobElementsSub = this.jobElements.changes.subscribe(() => {
+      this.scheduleRebuild('job-elements-changed');
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -310,6 +316,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       clearTimeout(this.repaintTimer);
       this.repaintTimer = null;
     }
+    if (this.jobElementsSub) {
+      this.jobElementsSub.unsubscribe();
+      this.jobElementsSub = null;
+    }
 
     const container = this.scrollContainer?.nativeElement;
     if (container && this.wheelHandler) {
@@ -347,6 +357,16 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   private rebuildPlumb(reason: string) {
     if (!this.instance) return;
+
+    const rendered = this.jobElements?.length ?? 0;
+    if (rendered < this.jobs.length) {
+      if (this.rebuildAttempts < 10) {
+        this.rebuildAttempts += 1;
+        this.scheduleRebuild(`wait-dom-${reason}`);
+        return;
+      }
+    }
+    this.rebuildAttempts = 0;
 
     // Clear existing endpoints and connections to avoid cross-project artifacts.
     this.suppressConnectionEvents = true;
@@ -488,16 +508,35 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   addExistingConnections() {
     if (!this.instance || !this.project?.connections) return;
 
-    this.project.connections.forEach((conn) => {
-      this.instance.connect({
-        source: conn.source,
-        target: conn.target,
-        anchors: ['Right', 'Left'],
-        connector: ['Flowchart', { stub: 30, gap: 8, cornerRadius: 8, alwaysRespectStubs: true }],
-        overlays: [['Arrow', { width: 10, length: 10, location: 1 }]]
+    const conns = this.project.connections.slice();
+    const chunkSize = 25;
+    let index = 0;
+
+    const connectChunk = () => {
+      if (!this.instance) return;
+      const batch = conns.slice(index, index + chunkSize);
+      if (batch.length === 0) {
+        this.isLoading = false;
+        return;
+      }
+
+      this.instance.batch(() => {
+        batch.forEach((conn) => {
+          this.instance.connect({
+            source: conn.source,
+            target: conn.target,
+            anchors: ['Right', 'Left'],
+            connector: ['Flowchart', { stub: 30, gap: 8, cornerRadius: 8, alwaysRespectStubs: true }],
+            overlays: [['Arrow', { width: 10, length: 10, location: 1 }]]
+          });
+        });
       });
-    });
-    this.isLoading = false;
+
+      index += chunkSize;
+      requestAnimationFrame(connectChunk);
+    };
+
+    connectChunk();
   }
 
   addNewJob(): void {
