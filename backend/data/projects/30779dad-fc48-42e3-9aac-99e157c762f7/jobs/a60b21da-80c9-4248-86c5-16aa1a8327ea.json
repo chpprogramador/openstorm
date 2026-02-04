@@ -1,0 +1,16 @@
+{
+  "id": "a60b21da-80c9-4248-86c5-16aa1a8327ea",
+  "jobName": "Reservatorio",
+  "selectSql": "select id, reservatorio from public.reservatorio",
+  "insertSql": "INSERT INTO ${SCHEMA}.reservatorio (id, nome_reservatorio) ",
+  "columns": [
+    "id",
+    "reservatorio"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 900
+}

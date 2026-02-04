@@ -1,0 +1,16 @@
+{
+  "id": "0d1e341e-7619-4b81-af57-e7b706059621",
+  "jobName": "Classificação Fiscal",
+  "selectSql": "select \n\tc.id id,\n\tc.classificacaofiscal nome_classificacao_fiscal \nfrom classificacaofiscal c ",
+  "insertSql": "INSERT INTO ${SCHEMA}.classificacao_fiscal (\n\tid, \n\tnome_classificacao_fiscal)",
+  "columns": [
+    "id",
+    "nome_classificacao_fiscal"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 800,
+  "top": 2700
+}

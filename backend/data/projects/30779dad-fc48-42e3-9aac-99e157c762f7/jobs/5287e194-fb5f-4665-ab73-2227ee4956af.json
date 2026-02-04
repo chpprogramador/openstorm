@@ -1,0 +1,16 @@
+{
+  "id": "5287e194-fb5f-4665-ab73-2227ee4956af",
+  "jobName": "Fonte Abastecimento",
+  "selectSql": "select f.id, f.fonteabastecimento from public.fonteabastecimento f",
+  "insertSql": "INSERT INTO ${SCHEMA}.fonte_abastecimento (id, nome_fonte_abastecimento)",
+  "columns": [
+    "id",
+    "fonteabastecimento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 360
+}

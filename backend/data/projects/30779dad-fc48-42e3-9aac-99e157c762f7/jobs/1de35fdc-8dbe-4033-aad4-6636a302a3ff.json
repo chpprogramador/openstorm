@@ -1,0 +1,28 @@
+{
+  "id": "1de35fdc-8dbe-4033-aad4-6636a302a3ff",
+  "jobName": "Arrecadação",
+  "selectSql": "select\n\ta.id id,\n\tto_date(fp.datacredito,'YYYYMMDD') data_credito,\n\tto_date(nullif(trim(a.datageracaoarquivo),''),'YYYYMMDD') data_geracao_arquivo,\n\tto_timestamp(a.dataimportacao,'YYYYMMDD') data_hora_processamento,\n\tcase when a.debitoautomatico = 'S' then true else false end debito_automatico,\n\ta.nomearquivo nome_arquivo,\n\ta.nsa nsa,\n\ta.qtdregistros quantidade_registros,\n\tcase \n\t\twhen a.tipobaixa = 'M' then 'MANUAL'\n\t\twhen a.tipobaixa = 'A' then 'AUTOMATICO'\n\t\telse null\n\tend tipo_baixa_arrecadacao,\n\ta.valorprocessado valor_processado,\n\ta.totaltaxaarrecadacao valor_taxa_arrecadacao,\n\ta.valor valor_total,\n\ta.idarrecadador id_arrecadador,\n\tnull id_usuario_processamento\nfrom arrecadacao a\nleft join (\n\tselect fp.idarrecadacao, max(fp.datacredito) datacredito\n\tfrom faturapagamento fp\n\tgroup by fp.idarrecadacao\n) fp on (a.id = fp.idarrecadacao)",
+  "insertSql": "insert into ${SCHEMA}.arrecadacao (\n\tid,\n\tdata_credito,\n\tdata_geracao_arquivo,\n\tdata_hora_processamento,\n\tdebito_automatico,\n\tnome_arquivo,\n\tnsa,\n\tquantidade_registros,\n\ttipo_baixa_arrecadacao,\n\tvalor_processado,\n\tvalor_taxa_arrecadacao,\n\tvalor_total,\n\tid_arrecadador,\n\tid_usuario_processamento)",
+  "columns": [
+    "id",
+    "data_credito",
+    "data_geracao_arquivo",
+    "data_hora_processamento",
+    "debito_automatico",
+    "nome_arquivo",
+    "nsa",
+    "quantidade_registros",
+    "tipo_baixa_arrecadacao",
+    "valor_processado",
+    "valor_taxa_arrecadacao",
+    "valor_total",
+    "id_arrecadador",
+    "id_usuario_processamento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 10000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 800,
+  "top": 2520
+}

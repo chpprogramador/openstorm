@@ -1,0 +1,16 @@
+{
+  "id": "b937f899-796c-4068-b199-2cc1d54c6c04",
+  "jobName": "Medidor Situação",
+  "selectSql": "select id, sitmedidor from public.sitmedidor",
+  "insertSql": "INSERT INTO ${SCHEMA}.medidor_situacao (id, medidor_situacao) ",
+  "columns": [
+    "id",
+    "sitmedidor"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1600,
+  "top": 900
+}

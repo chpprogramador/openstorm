@@ -1,0 +1,25 @@
+{
+  "id": "439062d1-009e-4796-8b70-50d570798d60",
+  "jobName": "Rubrica",
+  "selectSql": "select\n\tr.id id,\n\tcase when r.situacao = 'A' then true else false end ativo,\n\tr.rubricaresumida nome_resumido,\n\tr.rubrica nome_rubrica,\n\tr.valor valor,\n\tnull id_classificacao_contabil,\n\tr.idclasscontabil id_classificacao_fiscal,\n\tr.idgruporeceita id_grupo_receita,\n\t1 id_rubrica_grupo,\n\tr.idrubricaparc id_rubrica_parcelamento,\n\tr.idtiporubrica id_rubrica_tipo_cobranca\nfrom rubrica r",
+  "insertSql": "insert into\t${SCHEMA}.rubrica (\n\tid,\n\tativo,\n\tnome_resumido,\n\tnome_rubrica,\n\tvalor,\n\tid_classificacao_contabil,\n\tid_classificacao_fiscal,\n\tid_grupo_receita,\n\tid_rubrica_grupo,\n\tid_rubrica_parcelamento,\n\tid_rubrica_tipo_cobranca)",
+  "columns": [
+    "id",
+    "ativo",
+    "nome_resumido",
+    "nome_rubrica",
+    "valor",
+    "id_classificacao_contabil",
+    "id_classificacao_fiscal",
+    "id_grupo_receita",
+    "id_rubrica_grupo",
+    "id_rubrica_parcelamento",
+    "id_rubrica_tipo_cobranca"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1200,
+  "top": 2880
+}

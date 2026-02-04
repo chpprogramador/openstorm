@@ -1,0 +1,13 @@
+{
+  "id": "88f359ce-b47f-497c-9f9d-ff80702f69a6",
+  "jobName": "Parcelamento Parametro",
+  "selectSql": "insert\r\n\tinto\r\n\t${SCHEMA}.parcelamento_parametro (id,\r\n\tentrada_obrigatoria,\r\n\tnumero_dias_valida_entrada,\r\n\tnumero_dias_vencimento_entrada,\r\n\tid_rubrica_entrada,\r\n\tporcentagem_minima_entrada,\r\n\tid_rubrica_encargo,\r\n\tid_rubrica_desconto)\r\nvalues(1, true, 25, 15, 13, 10.0, 14, 15);",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1200,
+  "top": 3060
+}

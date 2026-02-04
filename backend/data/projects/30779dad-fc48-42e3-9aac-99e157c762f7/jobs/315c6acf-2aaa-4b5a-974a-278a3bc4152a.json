@@ -1,0 +1,16 @@
+{
+  "id": "315c6acf-2aaa-4b5a-974a-278a3bc4152a",
+  "jobName": "Padrão Instalação",
+  "selectSql": "select id, padraoinstalacao from padraoinstalacao",
+  "insertSql": "INSERT INTO ${SCHEMA}.local_padrao_instalacao (id, nome_local_padrao_instalacao)",
+  "columns": [
+    "id",
+    "padraoinstalacao"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 540
+}

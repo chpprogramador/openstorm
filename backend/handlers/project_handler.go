@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
@@ -143,6 +144,158 @@ func UpdateProject(c *gin.Context) {
 func CloseProject(c *gin.Context) {
 	projectID := c.Param("id")
 	c.JSON(200, gin.H{"message": "Projeto '" + projectID + "' fechado com sucesso."})
+}
+
+// -------------------- Duplicate Project --------------------
+func DuplicateProject(c *gin.Context) {
+	projectID := c.Param("id")
+	sourceDir := filepath.Join("data", "projects", projectID)
+	projectPath := filepath.Join(sourceDir, "project.json")
+
+	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
+		c.JSON(404, gin.H{"error": "Projeto não encontrado"})
+		return
+	}
+
+	projectBytes, err := os.ReadFile(projectPath)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Erro ao ler project.json"})
+		return
+	}
+
+	var project models.Project
+	if err := json.Unmarshal(projectBytes, &project); err != nil {
+		c.JSON(500, gin.H{"error": "Erro ao interpretar project.json"})
+		return
+	}
+
+	// prepara novo projeto
+	decryptProjectFields(&project)
+
+	var req struct {
+		ProjectName string `json:"projectName"`
+	}
+	_ = c.ShouldBindJSON(&req)
+
+	newProject := project
+	newProject.ID = uuid.New().String()
+	if strings.TrimSpace(req.ProjectName) != "" {
+		newProject.ProjectName = req.ProjectName
+	} else {
+		newProject.ProjectName = project.ProjectName + " (Cópia)"
+	}
+
+	// cria diretório do novo projeto
+	destDir := filepath.Join("data", "projects", newProject.ID)
+	if err := os.MkdirAll(destDir, os.ModePerm); err != nil {
+		c.JSON(500, gin.H{"error": "Erro ao criar diretório do projeto duplicado"})
+		return
+	}
+
+	// copia todos os arquivos e pastas (exceto project.json)
+	if err := copyProjectDir(sourceDir, destDir); err != nil {
+		c.JSON(500, gin.H{"error": "Erro ao copiar arquivos do projeto"})
+		return
+	}
+
+	// salva project.json novo
+	encryptProjectFields(&newProject)
+	newProjectBytes, err := json.MarshalIndent(newProject, "", "  ")
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Erro ao serializar o projeto duplicado"})
+		return
+	}
+	if err := os.WriteFile(filepath.Join(destDir, "project.json"), newProjectBytes, 0644); err != nil {
+		c.JSON(500, gin.H{"error": "Erro ao salvar project.json do projeto duplicado"})
+		return
+	}
+
+	decryptProjectFields(&newProject)
+	c.JSON(201, newProject)
+}
+
+func copyProjectDir(srcDir, destDir string) error {
+	entries, err := os.ReadDir(srcDir)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		name := entry.Name()
+		if name == "project.json" {
+			continue
+		}
+		srcPath := filepath.Join(srcDir, name)
+		destPath := filepath.Join(destDir, name)
+
+		if entry.IsDir() {
+			if err := os.MkdirAll(destPath, os.ModePerm); err != nil {
+				return err
+			}
+			if err := copyDirRecursive(srcPath, destPath); err != nil {
+				return err
+			}
+			continue
+		}
+
+		if err := copyFile(srcPath, destPath); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func copyDirRecursive(srcDir, destDir string) error {
+	entries, err := os.ReadDir(srcDir)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		srcPath := filepath.Join(srcDir, entry.Name())
+		destPath := filepath.Join(destDir, entry.Name())
+
+		if entry.IsDir() {
+			if err := os.MkdirAll(destPath, os.ModePerm); err != nil {
+				return err
+			}
+			if err := copyDirRecursive(srcPath, destPath); err != nil {
+				return err
+			}
+			continue
+		}
+
+		if err := copyFile(srcPath, destPath); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func copyFile(srcPath, destPath string) error {
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	dest, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer dest.Close()
+
+	if _, err := io.Copy(dest, src); err != nil {
+		return err
+	}
+
+	if info, err := os.Stat(srcPath); err == nil {
+		_ = os.Chmod(destPath, info.Mode())
+	}
+
+	return nil
 }
 
 // -------------------- Encrypt / Decrypt Helpers --------------------

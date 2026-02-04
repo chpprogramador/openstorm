@@ -1,0 +1,13 @@
+{
+  "id": "bfb588d7-c488-4528-9e66-1e1f2eca37ae",
+  "jobName": "Cronograma Fases",
+  "selectSql": "INSERT INTO ${SCHEMA}.medicao_cronograma_fase (id, nome_fase, sequencia_execucao) VALUES(1, 'Separação de Rotas', 1);\r\nINSERT INTO ${SCHEMA}.medicao_cronograma_fase (id, nome_fase, sequencia_execucao) VALUES(2, 'Envio Coletor', 2);\r\nINSERT INTO ${SCHEMA}.medicao_cronograma_fase (id, nome_fase, sequencia_execucao) VALUES(3, 'Retorno Leitura', 3);\r\nINSERT INTO ${SCHEMA}.medicao_cronograma_fase (id, nome_fase, sequencia_execucao) VALUES(4, 'Fechamento', 4);",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 400,
+  "top": 1800
+}

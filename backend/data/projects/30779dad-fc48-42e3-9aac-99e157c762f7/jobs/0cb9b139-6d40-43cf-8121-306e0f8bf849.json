@@ -1,0 +1,21 @@
+{
+  "id": "0cb9b139-6d40-43cf-8121-306e0f8bf849",
+  "jobName": "Agente Comercial",
+  "selectSql": "select \n  \tl.id,\n  \tl.leiturista agente_comerical, \n  \tcase when l.agentedecorte = 'S' then true else false end agente_corte, \n  \tcase when l.ativo = 'S' then true else false end ativo, \n  \ttrue realiza_leituras, \n  \tcase when l.agentedecorte = 'S' then true else false end realiza_servicos, \n  \tnull id_usuario\n  from leiturista l \n  ",
+  "insertSql": "INSERT INTO ${SCHEMA}.agente_comercial (id, agente_comerical, agente_corte, ativo, realiza_leituras, realiza_servicos, id_usuario) ",
+  "columns": [
+    "id",
+    "agente_comerical",
+    "agente_corte",
+    "ativo",
+    "realiza_leituras",
+    "realiza_servicos",
+    "id_usuario"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1200,
+  "top": 1980
+}

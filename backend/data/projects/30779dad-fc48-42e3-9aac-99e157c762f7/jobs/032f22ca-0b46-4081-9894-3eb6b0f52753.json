@@ -1,0 +1,23 @@
+{
+  "id": "032f22ca-0b46-4081-9894-3eb6b0f52753",
+  "jobName": "Medidor",
+  "selectSql": "SELECT\n  id,\n  anofabricacao,\n  dataaquisicao,\n  CASE\n    WHEN instalado = 'S' THEN TRUE\n    ELSE FALSE\n  END,\n  medidor,\n  notafiscal,\n  idmodelomedidor,\n  idsitmedidor,\n  FALSE\nFROM\n  public.medidor",
+  "insertSql": "INSERT INTO ${SCHEMA}.medidor (id, ano_fabricacao, data_aquisicao, instalado, medidor, nota_fiscal, id_medidor_modelo, id_medidor_situacao, dispositivo_anti_fraude) ",
+  "columns": [
+    "id",
+    "anofabricacao",
+    "dataaquisicao",
+    "case",
+    "medidor",
+    "notafiscal",
+    "idmodelomedidor",
+    "idsitmedidor",
+    "bool"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1200,
+  "top": 900
+}

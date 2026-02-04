@@ -1,0 +1,18 @@
+{
+  "id": "d88d54d0-0d73-4020-bd61-f3daec9869ee",
+  "jobName": "Decreto Categoria",
+  "selectSql": "select \r\n\tdc.id,\r\n\tcase when dc.imp_decreto = 'S' then true else false end imp_decreto,\r\n\tdc.idcategoria,\r\n\tdc.iddecreto \r\nfrom decretocategoria dc",
+  "insertSql": "INSERT INTO ${SCHEMA}.decreto_categoria (id, imp_decreto, id_categoria, id_decreto)",
+  "columns": [
+    "id",
+    "imp_decreto",
+    "idcategoria",
+    "iddecreto"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1600,
+  "top": 1620
+}

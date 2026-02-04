@@ -1,0 +1,13 @@
+{
+  "id": "3a9a2b45-68d4-4274-abe3-ad4fe9a5aa42",
+  "jobName": "Arrecadação Parametro",
+  "selectSql": "insert\r\n\tinto\r\n\t${SCHEMA}.arrecadacao_parametro (id,\r\n\tcaminho_arquivo_arrecadacao,\r\n\tcaminho_arquivo_backup,\r\n\tcaminho_arquivo_erros,\r\n\tcaminho_arquivo_processados,\r\n\tidentificacao_febraban,\r\n\tporcentagem_pagamento_religacao,\r\n\trealiza_devolucao_pagamento,\r\n\tid_encargo_atraso_vigente,\r\n\tid_rubrica_devolucao_pagamento,\r\n\tcaminho_arquivo_debito_automatico,\r\n\tid_servico_corte_final)\r\nvalues(5, '${SCHEMA}/Arrecadacao/Pendentes/', '${SCHEMA}/Arrecadacao/Backup/', '${SCHEMA}/Arrecadacao/Erros/', '${SCHEMA}/Arrecadacao/Processados/', 1234, 100, true, 9, 1, '${SCHEMA}/Arrecadacao/Envio/DebitoAutomatico/', null);",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 0,
+  "top": 3060
+}

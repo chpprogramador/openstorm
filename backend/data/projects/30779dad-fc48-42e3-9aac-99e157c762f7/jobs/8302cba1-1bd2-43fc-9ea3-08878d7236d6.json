@@ -1,0 +1,19 @@
+{
+  "id": "8302cba1-1bd2-43fc-9ea3-08878d7236d6",
+  "jobName": "Grupo Rubrica Faturamento",
+  "selectSql": "select\n\tg.id id,\n\ttrue ativo,\n\tg.descricao descricao,\n\tg.descricao nome_grupo,\n\tNULLIF(g.ideventorecebimento,0) id_evento_recebimento\nfrom accountfy.gruporubricafaturamento g",
+  "insertSql": "insert into ${SCHEMA}.grupo_rubrica_faturamento (\n\tid,\n\tativo,\n\tdescricao,\n\tnome_grupo,\n\tid_evento_recebimento)",
+  "columns": [
+    "id",
+    "ativo",
+    "descricao",
+    "nome_grupo",
+    "id_evento_recebimento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 2880
+}

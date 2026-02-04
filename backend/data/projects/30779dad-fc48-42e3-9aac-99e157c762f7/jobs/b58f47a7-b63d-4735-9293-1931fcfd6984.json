@@ -1,0 +1,22 @@
+{
+  "id": "b58f47a7-b63d-4735-9293-1931fcfd6984",
+  "jobName": "Arrecadador Arquivos",
+  "selectSql": "select\n\ta.id id,\n\ta.codconvenioarrecadacao codigo_convenio_arrecadacao,\n\ta.codconveniodebauto codigo_convenio_debito_automatico,\n\ta.seqarrecadacao numero_sequencial_arquivo_arrecadacao,\n\ta.seqdebauto numero_sequencial_arquivo_debito_automatico,\n\ta.seqenviodebauto numero_sequencial_envio_arquivo_debito_automatico,\n\ta.txdebitoautomatico taxa_debito_automatico,\n\ta.idarrecadador id_arrecadador\nfrom arrecadadorarquivos a ",
+  "insertSql": "insert into ${SCHEMA}.arrecadador_arquivo (\n\tid,\n\tcodigo_convenio_arrecadacao,\n\tcodigo_convenio_debito_automatico,\n\tnumero_sequencial_arquivo_arrecadacao,\n\tnumero_sequencial_arquivo_debito_automatico,\n\tnumero_sequencial_envio_arquivo_debito_automatico,\n\ttaxa_debito_automatico,\n\tid_arrecadador)",
+  "columns": [
+    "id",
+    "codigo_convenio_arrecadacao",
+    "codigo_convenio_debito_automatico",
+    "numero_sequencial_arquivo_arrecadacao",
+    "numero_sequencial_arquivo_debito_automatico",
+    "numero_sequencial_envio_arquivo_debito_automatico",
+    "taxa_debito_automatico",
+    "id_arrecadador"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 2520
+}

@@ -1,0 +1,16 @@
+{
+  "id": "9587a320-098a-46db-8bd1-29c4e6ffa10d",
+  "jobName": "Calçada Tipo",
+  "selectSql": "select id, tipocalcada from public.tipocalcada",
+  "insertSql": "INSERT INTO ${SCHEMA}.calcada_tipo (id, nome_calcada_tipo) ",
+  "columns": [
+    "id",
+    "tipocalcada"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 800,
+  "top": 1080
+}

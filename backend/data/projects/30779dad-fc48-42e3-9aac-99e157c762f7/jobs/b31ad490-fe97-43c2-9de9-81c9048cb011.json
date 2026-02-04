@@ -1,0 +1,19 @@
+{
+  "id": "b31ad490-fe97-43c2-9de9-81c9048cb011",
+  "jobName": "Período",
+  "selectSql": "select \r\n\tp.id,\r\n\tp.ano,\r\n\tcase when p.inativo = 'N' then true else false end ativo,\r\n\tp.mes,\r\n\tp.periodo \r\nfrom periodo p",
+  "insertSql": "INSERT INTO ${SCHEMA}.periodo (id, ano, ativo, mes, periodo) ",
+  "columns": [
+    "id",
+    "ano",
+    "ativo",
+    "mes",
+    "periodo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 1260
+}

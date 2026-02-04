@@ -1,0 +1,16 @@
+{
+  "id": "0ddaddd1-dc28-49aa-958e-432e139120ed",
+  "jobName": "Grupo Receita",
+  "selectSql": "select\n\tg.id id, \n\tg.descricao nome_grupo_receita\nfrom gruporeceita g",
+  "insertSql": "INSERT INTO ${SCHEMA}.grupo_receita (\n\tid, \n\tnome_grupo_receita)",
+  "columns": [
+    "id",
+    "nome_grupo_receita"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 400,
+  "top": 2700
+}
