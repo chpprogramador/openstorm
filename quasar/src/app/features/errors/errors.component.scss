@@ -40,6 +40,13 @@
       flex: 1;
       min-width: 300px;
     }
+
+    .selector-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
   }
 }
 

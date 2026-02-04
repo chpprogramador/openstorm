@@ -120,6 +120,18 @@ export class ErrorsComponent implements OnInit {
     });
   }
 
+  openPipelineReportPreview() {
+    if (!this.selectedPipelineId) return;
+    const url = this.errorService.getPipelineReportPreviewUrl(this.selectedPipelineId);
+    window.open(url, '_blank');
+  }
+
+  downloadPipelineReport() {
+    if (!this.selectedPipelineId) return;
+    const url = this.errorService.getPipelineReportUrl(this.selectedPipelineId);
+    window.open(url, '_blank');
+  }
+
   getStatusClass(status: string): string {
     const classes: { [key: string]: string } = {
       done: 'status-done',

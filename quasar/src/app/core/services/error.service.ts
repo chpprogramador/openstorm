@@ -108,6 +108,14 @@ export class ErrorService {
     return this.http.get<string[]>(`${this.apiUrl}/pipelines/reports`);
   }
 
+  getPipelineReportUrl(pipelineId: string): string {
+    return `${this.apiUrl}/pipeline/${pipelineId}/report`;
+  }
+
+  getPipelineReportPreviewUrl(pipelineId: string): string {
+    return `${this.apiUrl}/pipeline/${pipelineId}/report/preview`;
+  }
+
   categorizeError(errorMessage: string): { type: string; label: string; icon: string; severity: string } {
     const lowerError = errorMessage.toLowerCase();
 

@@ -23,10 +23,20 @@
           </mat-select>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" (click)="loadPipelineData()" [disabled]="!selectedPipelineId || isLoading">
-          <mat-icon>refresh</mat-icon>
-          Carregar
-        </button>
+        <div class="selector-actions">
+          <button mat-raised-button color="primary" (click)="loadPipelineData()" [disabled]="!selectedPipelineId || isLoading">
+            <mat-icon>refresh</mat-icon>
+            Carregar
+          </button>
+          <button mat-stroked-button color="primary" (click)="openPipelineReportPreview()" [disabled]="!selectedPipelineId || isLoading">
+            <mat-icon>picture_as_pdf</mat-icon>
+            Visualizar PDF
+          </button>
+          <button mat-stroked-button (click)="downloadPipelineReport()" [disabled]="!selectedPipelineId || isLoading">
+            <mat-icon>download</mat-icon>
+            Baixar PDF
+          </button>
+        </div>
       </div>
     </mat-card-content>
   </mat-card>
