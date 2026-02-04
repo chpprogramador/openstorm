@@ -8,6 +8,6 @@
   "recordsPerPage": 1000,
   "type": "execution",
   "stopOnError": true,
-  "left": 800,
-  "top": 180
+  "left": 410,
+  "top": 3120
 }

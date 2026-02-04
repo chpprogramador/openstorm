@@ -24,6 +24,6 @@
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 0,
-  "top": 1980
+  "left": 1300,
+  "top": 720
 }
