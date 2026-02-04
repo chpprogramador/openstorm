@@ -7,8 +7,11 @@ import {
   HostListener,
   Inject,
   Input,
+  OnChanges,
+  OnDestroy,
   PLATFORM_ID,
   QueryList,
+  SimpleChanges,
   ViewChild,
   ViewChildren
 } from '@angular/core';
@@ -58,7 +61,7 @@ import { DialogJobs } from '../dialog-jobs/dialog-jobs.component';
   templateUrl: './diagram.component.html',
   styleUrls: ['./diagram.component.scss']
 })
-export class Diagram implements AfterViewInit {
+export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   @Input() jobs: JobExtended[] = [];
   @Input() project: Project | null = null;
   @Input() isRunning = false;
@@ -114,6 +117,13 @@ export class Diagram implements AfterViewInit {
   private resizeOriginY = 0;
   private resizeOriginW = 0;
   private resizeOriginH = 0;
+  private lastProjectId: string | null = null;
+  private rebuildTimer: ReturnType<typeof setTimeout> | null = null;
+  private wheelHandler: ((event: WheelEvent) => void) | null = null;
+  private blurHandler: (() => void) | null = null;
+  private visibilityHandler: (() => void) | null = null;
+  private suppressConnectionEvents = false;
+  private repaintTimer: ReturnType<typeof setTimeout> | null = null;
   fontOptions: string[] = [
     'Space Grotesk, sans-serif',
     'IBM Plex Sans, sans-serif',
@@ -186,41 +196,38 @@ export class Diagram implements AfterViewInit {
       this.instance.setZoom(this.zoom);
     }
 
-    container.addEventListener(
-      'wheel',
-      (event: WheelEvent) => {
-        if (event.ctrlKey) {
-          event.preventDefault();
+    this.wheelHandler = (event: WheelEvent) => {
+      if (event.ctrlKey) {
+        event.preventDefault();
 
-          const rect = container.getBoundingClientRect();
-          const mouseX = event.clientX - rect.left;
-          const mouseY = event.clientY - rect.top;
-          const prevZoom = this.zoom;
+        const rect = container.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+        const prevZoom = this.zoom;
 
-          this.zoom += event.deltaY < 0 ? this.zoomStep : -this.zoomStep;
-          this.zoom = Math.min(Math.max(this.zoom, this.minZoom), this.maxZoom);
+        this.zoom += event.deltaY < 0 ? this.zoomStep : -this.zoomStep;
+        this.zoom = Math.min(Math.max(this.zoom, this.minZoom), this.maxZoom);
 
-          if (this.instance) {
-            this.viewOffsetX = mouseX - ((mouseX - this.viewOffsetX) * (this.zoom / prevZoom));
-            this.viewOffsetY = mouseY - ((mouseY - this.viewOffsetY) * (this.zoom / prevZoom));
-            this.instance.setZoom(this.zoom);
-            this.instance.repaintEverything();
-            localStorage.setItem('diagramZoom', this.zoom.toString());
-            localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
-          }
+        if (this.instance) {
+          this.viewOffsetX = mouseX - ((mouseX - this.viewOffsetX) * (this.zoom / prevZoom));
+          this.viewOffsetY = mouseY - ((mouseY - this.viewOffsetY) * (this.zoom / prevZoom));
+          this.instance.setZoom(this.zoom);
+          this.instance.repaintEverything();
+          localStorage.setItem('diagramZoom', this.zoom.toString());
+          localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
         }
-      },
-      { passive: false }
-    );
+      }
+    };
+    container.addEventListener('wheel', this.wheelHandler, { passive: false });
 
-    const handleBlur = () => this.flushVisualElementInteraction('blur');
-    const handleVisibility = () => {
+    this.blurHandler = () => this.flushVisualElementInteraction('blur');
+    this.visibilityHandler = () => {
       if (document.hidden) {
         this.flushVisualElementInteraction('visibilitychange');
       }
     };
-    window.addEventListener('blur', handleBlur);
-    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('blur', this.blurHandler);
+    document.addEventListener('visibilitychange', this.visibilityHandler);
 
     const storedOffset = localStorage.getItem('diagramOffset');
     if (storedOffset) {
@@ -235,6 +242,7 @@ export class Diagram implements AfterViewInit {
     }
 
     const projectId = this.project?.id;
+    this.lastProjectId = projectId ?? null;
     if (projectId) {
       this.visualElementService.list(projectId).subscribe({
         next: (elements) => {
@@ -247,6 +255,114 @@ export class Diagram implements AfterViewInit {
         }
       });
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (!this.isBrowser || !this.instance) return;
+
+    const projectChanged = !!changes['project'] && this.project?.id !== this.lastProjectId;
+    const jobsChanged = !!changes['jobs'] && !changes['jobs'].firstChange;
+
+    if (projectChanged) {
+      this.lastProjectId = this.project?.id ?? null;
+      this.visualElements = [];
+      const projectId = this.project?.id;
+      if (projectId) {
+        this.visualElementService.list(projectId).subscribe({
+          next: (elements) => {
+            const list = Array.isArray(elements) ? elements : [];
+            list.forEach(el => this.normalizeElement(el));
+            this.visualElements = list;
+          },
+          error: (error) => {
+            console.error('Erro ao listar elementos visuais:', error);
+          }
+        });
+      }
+    }
+
+    if (projectChanged) {
+      this.scheduleRebuild('project-change');
+      return;
+    }
+
+    if (jobsChanged) {
+      const prevJobs = (changes['jobs']?.previousValue as JobExtended[] | undefined) ?? [];
+      const currJobs = this.jobs ?? [];
+      const idsChanged =
+        prevJobs.length !== currJobs.length ||
+        prevJobs.some((job, idx) => job?.id !== currJobs[idx]?.id);
+
+      if (idsChanged) {
+        this.scheduleRebuild('jobs-structure-change');
+      } else {
+        this.scheduleRepaint('jobs-update');
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.rebuildTimer) {
+      clearTimeout(this.rebuildTimer);
+      this.rebuildTimer = null;
+    }
+    if (this.repaintTimer) {
+      clearTimeout(this.repaintTimer);
+      this.repaintTimer = null;
+    }
+
+    const container = this.scrollContainer?.nativeElement;
+    if (container && this.wheelHandler) {
+      container.removeEventListener('wheel', this.wheelHandler);
+    }
+    if (this.blurHandler) {
+      window.removeEventListener('blur', this.blurHandler);
+    }
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
+  }
+
+  private scheduleRebuild(reason: string) {
+    if (this.rebuildTimer) {
+      clearTimeout(this.rebuildTimer);
+    }
+    this.isLoading = true;
+    this.rebuildTimer = setTimeout(() => {
+      this.rebuildTimer = null;
+      this.rebuildPlumb(reason);
+    }, 100);
+  }
+
+  private scheduleRepaint(reason: string) {
+    if (!this.instance) return;
+    if (this.repaintTimer) {
+      clearTimeout(this.repaintTimer);
+    }
+    this.repaintTimer = setTimeout(() => {
+      this.repaintTimer = null;
+      this.instance.repaintEverything();
+    }, 50);
+  }
+
+  private rebuildPlumb(reason: string) {
+    if (!this.instance) return;
+
+    // Clear existing endpoints and connections to avoid cross-project artifacts.
+    this.suppressConnectionEvents = true;
+    try {
+      this.instance.deleteEveryConnection();
+      this.instance.deleteEveryEndpoint();
+    } catch {
+      // no-op, jsPlumb might not be fully ready yet
+    }
+
+    // Re-attach jobs and connections for the current project.
+    this.jobs.forEach((job) => this.addJobToJsPlumb(job));
+    this.addExistingConnections();
+    this.instance.repaintEverything();
+    requestAnimationFrame(() => this.instance?.repaintEverything());
+    this.suppressConnectionEvents = false;
   }
 
   private jsPlumbInitialized = false;
@@ -271,7 +387,7 @@ export class Diagram implements AfterViewInit {
     });
 
     this.instance.bind('connection', (info: any) => {
-      if (!this.isLoading && this.project) {
+      if (!this.isLoading && !this.suppressConnectionEvents && this.project) {
         this.project.connections = this.project.connections || [];
         this.project.connections.push({
           source: info.sourceId,
@@ -282,6 +398,7 @@ export class Diagram implements AfterViewInit {
     });
 
     this.instance.bind('connectionDetached', (info: any) => {
+      if (this.suppressConnectionEvents || this.isLoading) return;
       if (!this.project || !this.project.connections) return;
       const index = this.project.connections.findIndex(
         (conn) => conn.source === info.sourceId && conn.target === info.targetId
@@ -318,7 +435,7 @@ export class Diagram implements AfterViewInit {
 
     this.instance.makeSource(id, {
       filter: '.handle',
-      anchor: 'Continuous',
+      anchor: 'Right',
       connector: ['Flowchart', { stub: 30, gap: 8, cornerRadius: 8, alwaysRespectStubs: true }],
       endpoint: 'Dot',
       connectorOverlays: [['Arrow', { width: 10, length: 10, location: 1 }]],
@@ -326,7 +443,7 @@ export class Diagram implements AfterViewInit {
     });
 
     this.instance.makeTarget(id, {
-      anchor: 'Continuous',
+      anchor: 'Left',
       allowLoopback: false,
       endpoint: 'Blank'
     });
@@ -375,7 +492,7 @@ export class Diagram implements AfterViewInit {
       this.instance.connect({
         source: conn.source,
         target: conn.target,
-        anchor: 'Continuous',
+        anchors: ['Right', 'Left'],
         connector: ['Flowchart', { stub: 30, gap: 8, cornerRadius: 8, alwaysRespectStubs: true }],
         overlays: [['Arrow', { width: 10, length: 10, location: 1 }]]
       });
