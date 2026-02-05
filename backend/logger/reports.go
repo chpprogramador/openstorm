@@ -30,12 +30,48 @@ type PDFExporter struct {
 	pdf *gofpdf.Fpdf
 }
 
+type theme struct {
+	primary     color
+	primaryDark color
+	accent      color
+	success     color
+	warning     color
+	danger      color
+	gray900     color
+	gray700     color
+	gray500     color
+	gray200     color
+	gray100     color
+}
+
+var reportTheme = theme{
+	primary:     color{24, 94, 174},
+	primaryDark: color{16, 63, 118},
+	accent:      color{0, 153, 168},
+	success:     color{40, 167, 69},
+	warning:     color{255, 193, 7},
+	danger:      color{220, 53, 69},
+	gray900:     color{33, 37, 41},
+	gray700:     color{73, 80, 87},
+	gray500:     color{120, 126, 131},
+	gray200:     color{233, 236, 239},
+	gray100:     color{248, 249, 250},
+}
+
 // NewPDFExporter cria uma nova instância do exportador PDF
 func NewPDFExporter() *PDFExporter {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	//pdf.AddUTF8Font("DejaVu", "", "./fonts/DejaVuSans.ttf")
 	//pdf.AddUTF8Font("DejaVu", "B", "./fonts/DejaVuSans-Bold.ttf")
 	pdf.SetFont("Arial", "", 14)
+	pdf.SetMargins(18, 18, 18)
+	pdf.SetAutoPageBreak(true, 18)
+	pdf.SetFooterFunc(func() {
+		pdf.SetY(-14)
+		pdf.SetFont("Arial", "", 8)
+		pdf.SetTextColor(reportTheme.gray500.r, reportTheme.gray500.g, reportTheme.gray500.b)
+		pdf.CellFormat(0, 6, fmt.Sprintf("Pagina %d", pdf.PageNo()), "", 0, "C", false, 0, "")
+	})
 	return &PDFExporter{pdf: pdf}
 }
 
@@ -205,42 +241,48 @@ func ListPipelineReportsHandler(c *gin.Context) {
 // Funções auxiliares para geração do PDF
 
 func (e *PDFExporter) addHeader(log *PipelineLog) {
-	// Logo/Título principal
-	e.pdf.SetFont("Arial", "B", 24)
-	e.pdf.SetTextColor(0, 123, 255) // Azul
-	e.pdf.CellFormat(0, 15, "RELATORIO DE EXECUCAO", "", 1, "C", false, 0, "")
+	pageW, _ := e.pdf.GetPageSize()
+	left, _, right, _ := e.pdf.GetMargins()
+	bandH := 28.0
+	e.pdf.SetFillColor(reportTheme.primary.r, reportTheme.primary.g, reportTheme.primary.b)
+	e.pdf.Rect(0, 0, pageW, bandH, "F")
 
-	// Subtítulo
-	e.pdf.SetFont("Arial", "", 14)
-	e.pdf.SetTextColor(102, 102, 102) // Cinza
-	e.pdf.CellFormat(0, 8, strings.ToUpper(removeAccents(log.Project)), "", 1, "C", false, 0, "")
+	e.pdf.SetTextColor(255, 255, 255)
+	e.pdf.SetFont("Arial", "B", 20)
+	e.pdf.SetXY(left, 6)
+	e.pdf.CellFormat(pageW-left-right, 8, "RELATORIO DE EXECUCAO", "", 1, "L", false, 0, "")
 
-	// Data de geração
-	e.pdf.SetFont("Arial", "", 10)
-	e.pdf.CellFormat(0, 6, fmt.Sprintf("Gerado em: %s", time.Now().Format("02/01/2006 15:04:05")), "", 1, "C", false, 0, "")
+	e.pdf.SetFont("Arial", "", 11)
+	e.pdf.SetXY(left, 15)
+	e.pdf.CellFormat(pageW-left-right, 6, strings.ToUpper(removeAccents(log.Project)), "", 1, "L", false, 0, "")
 
-	// Linha separadora
-	e.pdf.SetDrawColor(0, 123, 255)
-	e.pdf.SetLineWidth(1)
-	e.pdf.Line(20, e.pdf.GetY()+5, 190, e.pdf.GetY()+5)
-	e.pdf.Ln(10)
+	e.pdf.SetFont("Arial", "", 9)
+	e.pdf.SetXY(left, 22)
+	e.pdf.CellFormat(pageW-left-right, 5, fmt.Sprintf("Pipeline: %s | Gerado em: %s",
+		removeAccents(log.PipelineID), time.Now().Format("02/01/2006 15:04:05")), "", 1, "L", false, 0, "")
+
+	e.pdf.SetY(bandH + 6)
+	e.pdf.SetDrawColor(reportTheme.gray200.r, reportTheme.gray200.g, reportTheme.gray200.b)
+	e.pdf.SetLineWidth(0.4)
+	e.pdf.Line(left, e.pdf.GetY(), pageW-right, e.pdf.GetY())
+	e.pdf.Ln(6)
 }
 
 func (e *PDFExporter) addStatusSummary(log *PipelineLog) {
 	currentY := e.pdf.GetY()
 
-	// Background colorido para o status
+	// Background do status
 	statusColor := e.getStatusColor(log.Status)
 	e.pdf.SetFillColor(statusColor.r, statusColor.g, statusColor.b)
-	e.pdf.Rect(20, currentY, 170, 25, "F")
+	e.pdf.Rect(18, currentY, 174, 24, "F")
 
 	// Texto do status
 	e.pdf.SetTextColor(255, 255, 255) // Branco
-	e.pdf.SetFont("Arial", "B", 16)
+	e.pdf.SetFont("Arial", "B", 15)
 	statusText := fmt.Sprintf("STATUS GERAL: %s", strings.ToUpper(e.translateStatus(log.Status)))
 
-	e.pdf.SetXY(25, currentY+5)
-	e.pdf.CellFormat(160, 8, statusText, "", 1, "C", false, 0, "")
+	e.pdf.SetXY(22, currentY+4)
+	e.pdf.CellFormat(166, 8, statusText, "", 1, "C", false, 0, "")
 
 	// Duração
 	duration := log.EndedAt.Sub(log.StartedAt)
@@ -251,11 +293,11 @@ func (e *PDFExporter) addStatusSummary(log *PipelineLog) {
 
 	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
 
-	e.pdf.SetFont("Arial", "", 12)
-	e.pdf.SetXY(25, currentY+15)
-	e.pdf.CellFormat(160, 6, fmt.Sprintf("Pipeline executado em %s", formattedDuration), "", 1, "C", false, 0, "")
+	e.pdf.SetFont("Arial", "", 11)
+	e.pdf.SetXY(22, currentY+14)
+	e.pdf.CellFormat(166, 6, fmt.Sprintf("Pipeline executado em %s", formattedDuration), "", 1, "C", false, 0, "")
 
-	e.pdf.SetY(currentY + 30)
+	e.pdf.SetY(currentY + 28)
 	e.pdf.Ln(5)
 }
 
@@ -263,8 +305,8 @@ func (e *PDFExporter) addGeneralInfo(log *PipelineLog) {
 	e.addSectionTitle("INFORMACOES GERAIS")
 
 	// Grid de informações (2 colunas)
-	leftX := 20
-	rightX := 110
+	leftX := 18
+	rightX := 108
 	startY := e.pdf.GetY()
 
 	// Coluna esquerda
@@ -277,23 +319,23 @@ func (e *PDFExporter) addGeneralInfo(log *PipelineLog) {
 
 	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
 
-	e.addInfoCard("Pipeline ID", removeAccents(log.PipelineID), 85)
+	e.addInfoCard("Pipeline ID", removeAccents(log.PipelineID), 86)
 
 	e.pdf.SetXY(float64(leftX), e.pdf.GetY())
-	e.addInfoCard("Projeto", removeAccents(log.Project), 85)
+	e.addInfoCard("Projeto", removeAccents(log.Project), 86)
 
 	e.pdf.SetXY(float64(leftX), e.pdf.GetY())
-	e.addInfoCard("Status Final", e.translateStatus(log.Status), 85)
+	e.addInfoCard("Status Final", e.translateStatus(log.Status), 86)
 
 	// Coluna direita
 	e.pdf.SetXY(float64(rightX), startY)
-	e.addInfoCard("Duracao Total", formattedDuration, 85)
+	e.addInfoCard("Duracao Total", formattedDuration, 86)
 
 	e.pdf.SetXY(float64(rightX), e.pdf.GetY())
-	e.addInfoCard("Inicio", log.StartedAt.Format("02/01/2006 15:04:05"), 85)
+	e.addInfoCard("Inicio", log.StartedAt.Format("02/01/2006 15:04:05"), 86)
 
 	e.pdf.SetXY(float64(rightX), e.pdf.GetY())
-	e.addInfoCard("Termino", log.EndedAt.Format("02/01/2006 15:04:05"), 85)
+	e.addInfoCard("Termino", log.EndedAt.Format("02/01/2006 15:04:05"), 86)
 
 	e.pdf.Ln(10)
 }
@@ -304,23 +346,23 @@ func (e *PDFExporter) addStatistics(log *PipelineLog) {
 	// Calcula estatísticas
 	stats := e.calculateStats(log)
 
-	leftX := 20
-	//rightX := 110
+	leftX := 18
+	rightX := 108
 	startY := e.pdf.GetY()
 
 	// Coluna esquerda
 	e.pdf.SetXY(float64(leftX), startY)
-	e.addInfoCard("Total de Jobs", fmt.Sprintf("%d", stats.totalJobs), 85)
+	e.addInfoCard("Total de Jobs", fmt.Sprintf("%d", stats.totalJobs), 86)
 
 	e.pdf.SetXY(float64(leftX), e.pdf.GetY())
-	e.addInfoCard("Jobs Concluidos", fmt.Sprintf("%d", stats.jobsDone), 85)
+	e.addInfoCard("Jobs Concluidos", fmt.Sprintf("%d", stats.jobsDone), 86)
 
 	// Coluna direita
-	// e.pdf.SetXY(float64(rightX), startY)
-	// e.addInfoCard("Total de Batches", fmt.Sprintf("%d", stats.totalBatches), 85)
+	e.pdf.SetXY(float64(rightX), startY)
+	e.addInfoCard("Total de Batches", fmt.Sprintf("%d", stats.totalBatches), 86)
 
-	// e.pdf.SetXY(float64(rightX), e.pdf.GetY())
-	// e.addInfoCard("Registros Processados", fmt.Sprintf("%d", stats.totalProcessed), 85)
+	e.pdf.SetXY(float64(rightX), e.pdf.GetY())
+	e.addInfoCard("Registros Processados", fmt.Sprintf("%d", stats.totalProcessed), 86)
 
 	e.pdf.Ln(10)
 }
@@ -342,33 +384,33 @@ func (e *PDFExporter) addJobCard(index int, job *JobLog) {
 	startY := e.pdf.GetY()
 
 	// Background do card
-	e.pdf.SetFillColor(248, 249, 250) // Cinza claro
-	e.pdf.Rect(20, startY, 170, 20, "F")
+	e.pdf.SetFillColor(reportTheme.gray100.r, reportTheme.gray100.g, reportTheme.gray100.b)
+	e.pdf.Rect(18, startY, 174, 24, "F")
 
 	// Border do card
-	e.pdf.SetDrawColor(233, 236, 239)
-	e.pdf.SetLineWidth(0.5)
-	e.pdf.Rect(20, startY, 170, 20, "D")
+	e.pdf.SetDrawColor(reportTheme.gray200.r, reportTheme.gray200.g, reportTheme.gray200.b)
+	e.pdf.SetLineWidth(0.4)
+	e.pdf.Rect(18, startY, 174, 24, "D")
 
 	// Nome do job
 	e.pdf.SetFont("Arial", "B", 12)
-	e.pdf.SetTextColor(51, 51, 51)
-	e.pdf.SetXY(25, startY+3)
-	e.pdf.CellFormat(100, 6, fmt.Sprintf("%d. %s", index, removeAccents(job.JobName)), "", 0, "L", false, 0, "")
+	e.pdf.SetTextColor(reportTheme.gray900.r, reportTheme.gray900.g, reportTheme.gray900.b)
+	e.pdf.SetXY(22, startY+3)
+	e.pdf.CellFormat(120, 6, fmt.Sprintf("%d. %s", index, removeAccents(job.JobName)), "", 0, "L", false, 0, "")
 
 	// Status badge
 	statusColor := e.getStatusColor(job.Status)
 	e.pdf.SetFillColor(statusColor.r, statusColor.g, statusColor.b)
 	e.pdf.SetTextColor(255, 255, 255)
 	e.pdf.SetFont("Arial", "B", 8)
-	badgeX := 160
-	e.pdf.SetXY(float64(badgeX), startY+2)
-	e.pdf.CellFormat(25, 8, strings.ToUpper(e.translateStatus(job.Status)), "", 0, "C", true, 0, "")
+	badgeX := 156
+	e.pdf.SetXY(float64(badgeX), startY+3)
+	e.pdf.CellFormat(32, 7, strings.ToUpper(e.translateStatus(job.Status)), "", 0, "C", true, 0, "")
 
 	// Detalhes do job
 	e.pdf.SetFont("Arial", "", 9)
-	e.pdf.SetTextColor(102, 102, 102)
-	e.pdf.SetXY(25, startY+9)
+	e.pdf.SetTextColor(reportTheme.gray700.r, reportTheme.gray700.g, reportTheme.gray700.b)
+	e.pdf.SetXY(22, startY+10)
 
 	duration := job.EndedAt.Sub(job.StartedAt)
 
@@ -380,26 +422,26 @@ func (e *PDFExporter) addJobCard(index int, job *JobLog) {
 
 	details := fmt.Sprintf("Job ID: %s | Duracao: %v | Processados: %d registros",
 		job.JobID[:8]+"...", formattedDuration, job.Processed)
-	e.pdf.CellFormat(130, 4, details, "", 1, "L", false, 0, "")
+	e.pdf.CellFormat(150, 4, details, "", 1, "L", false, 0, "")
 
-	e.pdf.SetXY(25, startY+13)
+	e.pdf.SetXY(22, startY+15)
 	stopOnError := "Nao"
 	if job.StopOnError {
 		stopOnError = "Sim"
 	}
-	e.pdf.CellFormat(130, 4, fmt.Sprintf("Stop on Error: %s", stopOnError), "", 1, "L", false, 0, "")
+	e.pdf.CellFormat(150, 4, fmt.Sprintf("Stop on Error: %s", stopOnError), "", 1, "L", false, 0, "")
 
 	// Informações de batches se houver
 	if len(job.Batches) > 0 {
-		e.pdf.SetXY(25, startY+17)
+		e.pdf.SetXY(22, startY+19)
 		e.pdf.SetFont("Arial", "", 8)
-		e.pdf.SetTextColor(25, 118, 210) // Azul
+		e.pdf.SetTextColor(reportTheme.accent.r, reportTheme.accent.g, reportTheme.accent.b)
 		batchInfo := fmt.Sprintf("Batches: %d executados, %d linhas processadas",
 			len(job.Batches), e.countBatchRows(job.Batches))
-		e.pdf.CellFormat(130, 3, batchInfo, "", 1, "L", false, 0, "")
+		e.pdf.CellFormat(150, 3, batchInfo, "", 1, "L", false, 0, "")
 	}
 
-	e.pdf.SetY(startY + 25)
+	e.pdf.SetY(startY + 28)
 }
 
 func (e *PDFExporter) addConclusions(log *PipelineLog) {
@@ -413,28 +455,28 @@ func (e *PDFExporter) addConclusions(log *PipelineLog) {
 
 	// Background da conclusão
 	startY := e.pdf.GetY()
-	e.pdf.SetFillColor(212, 237, 218) // Verde claro
-	e.pdf.Rect(20, startY, 170, 40, "F")
+	e.pdf.SetFillColor(232, 245, 235)
+	e.pdf.Rect(18, startY, 174, 42, "F")
 
 	// Border verde
-	e.pdf.SetDrawColor(40, 167, 69)
-	e.pdf.SetLineWidth(2)
-	e.pdf.Line(20, startY, 20, startY+40)
+	e.pdf.SetDrawColor(reportTheme.success.r, reportTheme.success.g, reportTheme.success.b)
+	e.pdf.SetLineWidth(2.2)
+	e.pdf.Line(18, startY, 18, startY+42)
 
 	// Título da conclusão
 	e.pdf.SetFont("Arial", "B", 14)
-	e.pdf.SetTextColor(21, 87, 36) // Verde escuro
-	e.pdf.SetXY(25, startY+5)
+	e.pdf.SetTextColor(21, 87, 36)
+	e.pdf.SetXY(23, startY+6)
 	if log.Status == "done" {
-		e.pdf.CellFormat(160, 8, "Pipeline Executado com Sucesso", "", 1, "L", false, 0, "")
+		e.pdf.CellFormat(164, 8, "Pipeline Executado com Sucesso", "", 1, "L", false, 0, "")
 	} else {
-		e.pdf.CellFormat(160, 8, "Pipeline com Problemas", "", 1, "L", false, 0, "")
+		e.pdf.CellFormat(164, 8, "Pipeline com Problemas", "", 1, "L", false, 0, "")
 	}
 
 	// Pontos principais
 	e.pdf.SetFont("Arial", "", 10)
 	e.pdf.SetTextColor(51, 51, 51)
-	y := startY + 15
+	y := startY + 17
 
 	// Calcula a duração formatada
 	duration := log.EndedAt.Sub(log.StartedAt)
@@ -452,21 +494,24 @@ func (e *PDFExporter) addConclusions(log *PipelineLog) {
 	}
 
 	for _, point := range points {
-		e.pdf.SetXY(25, y)
-		e.pdf.CellFormat(160, 5, point, "", 1, "L", false, 0, "")
+		e.pdf.SetXY(23, y)
+		e.pdf.CellFormat(164, 5, point, "", 1, "L", false, 0, "")
 		y += 6
 	}
 
-	e.pdf.SetY(startY + 45)
+	e.pdf.SetY(startY + 48)
 }
 
 // Funções auxiliares
 
 func (e *PDFExporter) addSectionTitle(title string) {
-	e.pdf.SetFont("Arial", "B", 14)
-	e.pdf.SetTextColor(0, 123, 255)
-	e.pdf.CellFormat(0, 10, title, "", 1, "L", false, 0, "")
-	e.pdf.Ln(2)
+	e.pdf.SetFont("Arial", "B", 13)
+	e.pdf.SetTextColor(reportTheme.primaryDark.r, reportTheme.primaryDark.g, reportTheme.primaryDark.b)
+	e.pdf.CellFormat(0, 8, title, "", 1, "L", false, 0, "")
+	e.pdf.SetDrawColor(reportTheme.gray200.r, reportTheme.gray200.g, reportTheme.gray200.b)
+	e.pdf.SetLineWidth(0.4)
+	e.pdf.Line(18, e.pdf.GetY(), 192, e.pdf.GetY())
+	e.pdf.Ln(4)
 }
 
 func (e *PDFExporter) addInfoCard(label, value string, width float64) {
@@ -474,24 +519,24 @@ func (e *PDFExporter) addInfoCard(label, value string, width float64) {
 	currentY := e.pdf.GetY()
 
 	// Background do card
-	e.pdf.SetFillColor(248, 249, 250)
-	e.pdf.Rect(currentX, currentY, width, 15, "F")
+	e.pdf.SetFillColor(reportTheme.gray100.r, reportTheme.gray100.g, reportTheme.gray100.b)
+	e.pdf.Rect(currentX, currentY, width, 16, "F")
 
 	// Border esquerda colorida
-	e.pdf.SetDrawColor(40, 167, 69) // Verde
+	e.pdf.SetDrawColor(reportTheme.accent.r, reportTheme.accent.g, reportTheme.accent.b)
 	e.pdf.SetLineWidth(2)
-	e.pdf.Line(currentX, currentY, currentX, currentY+15)
+	e.pdf.Line(currentX, currentY, currentX, currentY+16)
 
 	// Label
 	e.pdf.SetFont("Arial", "B", 8)
-	e.pdf.SetTextColor(102, 102, 102)
-	e.pdf.SetXY(currentX+3, currentY+2)
+	e.pdf.SetTextColor(reportTheme.gray500.r, reportTheme.gray500.g, reportTheme.gray500.b)
+	e.pdf.SetXY(currentX+3, currentY+3)
 	e.pdf.CellFormat(width-6, 4, strings.ToUpper(label), "", 1, "L", false, 0, "")
 
 	// Value
 	e.pdf.SetFont("Arial", "B", 11)
-	e.pdf.SetTextColor(40, 167, 69)
-	e.pdf.SetXY(currentX+3, currentY+7)
+	e.pdf.SetTextColor(reportTheme.gray900.r, reportTheme.gray900.g, reportTheme.gray900.b)
+	e.pdf.SetXY(currentX+3, currentY+8)
 
 	if len(value) > 25 {
 		value = value[:22] + "..."
@@ -500,7 +545,7 @@ func (e *PDFExporter) addInfoCard(label, value string, width float64) {
 	e.pdf.CellFormat(width-6, 6, value, "", 1, "L", false, 0, "")
 
 	// Atualiza a coordenada Y manualmente, se necessario
-	e.pdf.SetY(currentY + 18)
+	e.pdf.SetY(currentY + 19)
 }
 
 // Estruturas e funções auxiliares
