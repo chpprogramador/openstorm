@@ -59,6 +59,14 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
+	if ok, dupes := validateUniqueConnections(project.Connections); !ok {
+		c.JSON(400, gin.H{
+			"error":     "Conexões duplicadas não são permitidas",
+			"duplicate": dupes[0],
+		})
+		return
+	}
+
 	// Criptografa os campos
 	encryptProjectFields(&project)
 
@@ -109,6 +117,14 @@ func UpdateProject(c *gin.Context) {
 	var updatedProject models.Project
 	if err := c.BindJSON(&updatedProject); err != nil {
 		c.JSON(400, gin.H{"error": "JSON inválido"})
+		return
+	}
+
+	if ok, dupes := validateUniqueConnections(updatedProject.Connections); !ok {
+		c.JSON(400, gin.H{
+			"error":     "Conexões duplicadas não são permitidas",
+			"duplicate": dupes[0],
+		})
 		return
 	}
 
@@ -309,6 +325,25 @@ func writeProjectFile(path string, project *models.Project) error {
 
 	_ = os.Remove(path)
 	return os.Rename(tmpPath, path)
+}
+
+func validateUniqueConnections(connections []models.JobConnection) (bool, []models.JobConnection) {
+	if len(connections) == 0 {
+		return true, nil
+	}
+
+	seen := make(map[string]struct{}, len(connections))
+	var duplicates []models.JobConnection
+	for _, conn := range connections {
+		key := conn.Source + "->" + conn.Target
+		if _, exists := seen[key]; exists {
+			duplicates = append(duplicates, conn)
+			continue
+		}
+		seen[key] = struct{}{}
+	}
+
+	return len(duplicates) == 0, duplicates
 }
 
 // -------------------- Encrypt / Decrypt Helpers --------------------
