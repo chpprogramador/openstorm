@@ -93,8 +93,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   isSaving = false;
   isBrowser: boolean;
   instance: any;
-  gridX = 350;
-  gridY = 100;
+  gridX = 100;
+  gridY = 60;
   showLogs = false;
   visualElements: VisualElement[] = [];
   selectedVisualElement: VisualElement | null = null;
@@ -105,6 +105,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   private dragOriginY = 0;
   private dragOriginX2 = 0;
   private dragOriginY2 = 0;
+  private snapToGrid(x: number, y: number): [number, number] {
+    return [Math.round(x / this.gridX) * this.gridX, Math.round(y / this.gridY) * this.gridY];
+  }
   private activeMoveHandler: ((e: MouseEvent) => void) | null = null;
   private activeUpHandler: (() => void) | null = null;
   private elementSaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -664,11 +667,12 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       this.notifyPersistError('Projeto ainda nao esta carregado. Nao foi possivel criar o elemento visual.');
       return;
     }
+    const [sx, sy] = this.snapToGrid(x, y);
     this.isSaving = true;
     const base: VisualElement = {
       type,
-      x,
-      y,
+      x: sx,
+      y: sy,
       width: 200,
       height: 120,
       fillColor: 'rgba(15, 23, 42, 0.65)',
@@ -689,8 +693,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     if (type === 'line') {
-      base.x2 = x + 200;
-      base.y2 = y;
+      const [sx2, sy2] = this.snapToGrid(sx + 200, sy);
+      base.x2 = sx2;
+      base.y2 = sy2;
       base.borderColor = '#94a3b8';
       base.borderWidth = 2;
     }
@@ -868,6 +873,20 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       if (this.draggingElementId) {
         const updated = this.visualElements.find(e => e.id === this.draggingElementId);
         if (updated) {
+          if (updated.type === 'line') {
+            const [sx, sy] = this.snapToGrid(updated.x, updated.y);
+            updated.x = sx;
+            updated.y = sy;
+            if (updated.x2 !== undefined && updated.y2 !== undefined) {
+              const [sx2, sy2] = this.snapToGrid(updated.x2, updated.y2);
+              updated.x2 = sx2;
+              updated.y2 = sy2;
+            }
+          } else {
+            const [sx, sy] = this.snapToGrid(updated.x, updated.y);
+            updated.x = sx;
+            updated.y = sy;
+          }
           this.normalizeElement(updated);
           this.persistVisualElement(updated, 'arraste');
         }
@@ -952,6 +971,21 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       if (this.resizingElementId) {
         const updated = this.visualElements.find(e => this.getElementId(e) === this.resizingElementId);
         if (updated) {
+          const [sx, sy] = this.snapToGrid(updated.x, updated.y);
+          updated.x = sx;
+          updated.y = sy;
+          if (updated.type !== 'line') {
+            const snappedW = Math.round(this.getElementWidth(updated) / this.gridX) * this.gridX;
+            const snappedH = Math.round(this.getElementHeight(updated) / this.gridY) * this.gridY;
+            if (updated.type === 'circle') {
+              const size = Math.max(snappedW || this.gridX, snappedH || this.gridY);
+              updated.width = size;
+              updated.height = size;
+            } else {
+              updated.width = Math.max(40, snappedW || this.gridX);
+              updated.height = Math.max(40, snappedH || this.gridY);
+            }
+          }
           this.normalizeElement(updated);
           this.persistVisualElement(updated, 'redimensionamento');
         }
@@ -1006,6 +1040,14 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       if (this.draggingElementId) {
         const updated = this.visualElements.find(e => this.getElementId(e) === this.draggingElementId);
         if (updated) {
+          const [sx, sy] = this.snapToGrid(updated.x, updated.y);
+          updated.x = sx;
+          updated.y = sy;
+          if (updated.x2 !== undefined && updated.y2 !== undefined) {
+            const [sx2, sy2] = this.snapToGrid(updated.x2, updated.y2);
+            updated.x2 = sx2;
+            updated.y2 = sy2;
+          }
           this.normalizeElement(updated);
           this.persistVisualElement(updated, 'ajuste de linha');
         }
