@@ -104,6 +104,7 @@
   <div
     class="diagram-container"
     #scrollContainer
+    [class.panning-ready]="isSpacePressed"
     (mousedown)="onMouseDown($event)"
     (click)="onDiagramBackgroundClick($event)"
     (mousemove)="onMouseMove($event)"
@@ -124,7 +125,7 @@
           [attr.stroke-width]="el.borderWidth || 2"
           [attr.stroke-linecap]="'round'"
           [style.display]="el.type === 'line' ? 'block' : 'none'"
-          [class.is-selected]="selectedVisualElement?.id === el.id"
+          [class.is-selected]="isElementSelected(el)"
           (mousedown)="onElementMouseDown($event, el)"
           (click)="selectElement(el, $event)"
         ></line>
@@ -149,11 +150,20 @@
       </svg>
 
       <div
+        class="selection-rect"
+        *ngIf="isSelecting"
+        [style.left.px]="selectionRect.x"
+        [style.top.px]="selectionRect.y"
+        [style.width.px]="selectionRect.width"
+        [style.height.px]="selectionRect.height"
+      ></div>
+
+      <div
         class="visual-element"
         *ngFor="let el of visualElements"
         [class.is-circle]="el.type === 'circle'"
         [class.is-text]="el.type === 'text'"
-        [class.is-selected]="selectedVisualElement?.id === el.id"
+        [class.is-selected]="isElementSelected(el)"
         [style.left.px]="el.x"
         [style.top.px]="el.y"
         [style.width.px]="getElementWidth(el)"
@@ -210,9 +220,11 @@
         <div
           [id]="job.id"
           [class]="'box ' + job.status"
+          [class.is-selected]="isJobSelected(job)"
           [style.left.px]="job.left"
           [style.top.px]="job.top"
           #jobEl
+          (mousedown)="onJobMouseDown($event, job)"
           (contextmenu)="onRightClick($event, job)"
           [cdkContextMenuTriggerFor]="contextMenu"
         >

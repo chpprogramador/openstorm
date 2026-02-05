@@ -82,6 +82,15 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   panStartY = 0;
   panOriginX = 0;
   panOriginY = 0;
+  isSpacePressed = false;
+  isSelecting = false;
+  selectionStartX = 0;
+  selectionStartY = 0;
+  selectionRect = { x: 0, y: 0, width: 0, height: 0 };
+  selectionMoved = false;
+  suppressBackgroundClick = false;
+  jobBoxWidth = 300;
+  jobBoxHeight = 100;
 
   zoom = 1;
   minZoom = 0.3;
@@ -89,6 +98,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   zoomStep = 0.05;
 
   selectedJob: JobExtended | null = null;
+  selectedVisualElements: VisualElement[] = [];
+  selectedJobs: JobExtended[] = [];
   isLoading = false;
   isSaving = false;
   isBrowser: boolean;
@@ -110,6 +121,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   }
   private activeMoveHandler: ((e: MouseEvent) => void) | null = null;
   private activeUpHandler: (() => void) | null = null;
+  private groupDragOrigins = new Map<string, { x: number; y: number; x2?: number; y2?: number }>();
+  private groupJobOrigins = new Map<string, { left: number; top: number }>();
+  private isGroupDragging = false;
+  private groupRepaintRaf: number | null = null;
   private elementSaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
   private lastDragWasElement = false;
   private resizingElementId: string | null = null;
@@ -122,6 +137,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   private resizeOriginH = 0;
   private lastProjectId: string | null = null;
   private rebuildTimer: ReturnType<typeof setTimeout> | null = null;
+  private rebuildNonce = 0;
+  private activeRebuildNonce = 0;
   private wheelHandler: ((event: WheelEvent) => void) | null = null;
   private blurHandler: (() => void) | null = null;
   private visibilityHandler: (() => void) | null = null;
@@ -150,6 +167,15 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onGlobalKeyDown(event: KeyboardEvent) {
+    if (event.code === 'Space') {
+      if (!this.isSpacePressed) {
+        this.isSpacePressed = true;
+      }
+      if (!this.isEditableTarget(event.target)) {
+        event.preventDefault();
+      }
+      return;
+    }
     if (event.key !== 'Delete' && event.key !== 'Backspace') {
       return;
     }
@@ -165,6 +191,20 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     this.confirmDeleteVisualElement(this.selectedVisualElement);
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  onGlobalKeyUp(event: KeyboardEvent) {
+    if (event.code === 'Space') {
+      this.isSpacePressed = false;
+      if (this.isPanning) {
+        this.isPanning = false;
+      }
+      const container = this.scrollContainer?.nativeElement;
+      if (container) {
+        container.style.cursor = 'default';
+      }
+    }
   }
 
   constructor(
@@ -360,6 +400,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   private rebuildPlumb(reason: string) {
     if (!this.instance) return;
+    const rebuildNonce = ++this.rebuildNonce;
+    this.activeRebuildNonce = rebuildNonce;
 
     const rendered = this.jobElements?.length ?? 0;
     if (rendered < this.jobs.length) {
@@ -382,10 +424,12 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
     // Re-attach jobs and connections for the current project.
     this.jobs.forEach((job) => this.addJobToJsPlumb(job));
-    this.addExistingConnections();
-    this.instance.repaintEverything();
-    requestAnimationFrame(() => this.instance?.repaintEverything());
-    this.suppressConnectionEvents = false;
+    this.addExistingConnections(() => {
+      if (this.activeRebuildNonce !== rebuildNonce) return;
+      this.instance.repaintEverything();
+      requestAnimationFrame(() => this.instance?.repaintEverything());
+      this.suppressConnectionEvents = false;
+    });
   }
 
   private jsPlumbInitialized = false;
@@ -508,8 +552,11 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     });
   }
 
-  addExistingConnections() {
-    if (!this.instance || !this.project?.connections) return;
+  addExistingConnections(onDone?: () => void) {
+    if (!this.instance || !this.project?.connections) {
+      if (onDone) onDone();
+      return;
+    }
 
     const conns = this.project.connections.slice();
     const chunkSize = 25;
@@ -520,6 +567,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       const batch = conns.slice(index, index + chunkSize);
       if (batch.length === 0) {
         this.isLoading = false;
+        if (onDone) onDone();
         return;
       }
 
@@ -843,7 +891,19 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   onElementMouseDown(event: MouseEvent, element: VisualElement) {
     event.stopPropagation();
     event.preventDefault();
-    this.selectedVisualElement = element;
+    if (this.isSpacePressed) {
+      this.startPanning(event);
+      return;
+    }
+    const alreadySelected = this.isElementSelected(element);
+    if (!alreadySelected) {
+      this.setSelection([element]);
+    }
+    const totalSelected = this.selectedVisualElements.length + this.selectedJobs.length;
+    if (totalSelected > 1) {
+      this.startGroupDrag(event);
+      return;
+    }
     this.lastDragWasElement = true;
     this.draggingElementId = this.getElementId(element) || null;
     this.dragStartX = event.clientX;
@@ -852,14 +912,15 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     this.dragOriginY = element.y;
     this.dragOriginX2 = element.x2 || 0;
     this.dragOriginY2 = element.y2 || 0;
+    this.groupDragOrigins.clear();
 
     const onMove = (moveEvent: MouseEvent) => {
       if (!this.draggingElementId) return;
       const dx = moveEvent.clientX - this.dragStartX;
       const dy = moveEvent.clientY - this.dragStartY;
+      const scale = this.zoom || 1;
       const target = this.visualElements.find(e => e.id === this.draggingElementId);
       if (!target) return;
-      const scale = this.zoom || 1;
       target.x = this.dragOriginX + dx / scale;
       target.y = this.dragOriginY + dy / scale;
       if (target.type === 'line' && target.x2 !== undefined && target.y2 !== undefined) {
@@ -897,6 +958,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       window.removeEventListener('mouseup', onUp);
       this.activeMoveHandler = null;
       this.activeUpHandler = null;
+      this.groupDragOrigins.clear();
     };
 
     this.activeMoveHandler = onMove;
@@ -1008,7 +1070,19 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   onLineHandleMouseDown(event: MouseEvent, element: VisualElement, handle: 'start' | 'end') {
     event.stopPropagation();
     event.preventDefault();
-    this.selectedVisualElement = element;
+    if (this.isSpacePressed) {
+      this.startPanning(event);
+      return;
+    }
+    const alreadySelected = this.isElementSelected(element);
+    if (!alreadySelected) {
+      this.setSelection([element]);
+    }
+    const totalSelected = this.selectedVisualElements.length + this.selectedJobs.length;
+    if (totalSelected > 1) {
+      this.startGroupDrag(event);
+      return;
+    }
     this.lastDragWasElement = true;
     this.draggingElementId = this.getElementId(element) || null;
     this.dragStartX = event.clientX;
@@ -1068,21 +1142,136 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   selectElement(element: VisualElement, event: MouseEvent) {
     event.stopPropagation();
-    this.selectedVisualElement = element;
+    this.setSelection([element]);
+  }
+
+  onJobMouseDown(event: MouseEvent, job: JobExtended) {
+    if (event.button !== 0) return;
+    event.stopPropagation();
+    if (this.isSpacePressed) {
+      this.startPanning(event);
+      return;
+    }
+    const alreadySelected = this.isJobSelected(job);
+    if (!alreadySelected) {
+      this.setJobSelection([job]);
+    }
+    const totalSelected = this.selectedVisualElements.length + this.selectedJobs.length;
+    if (totalSelected > 1) {
+      event.preventDefault();
+      this.startGroupDrag(event);
+    }
   }
 
   clearSelection() {
     this.selectedVisualElement = null;
+    this.selectedVisualElements = [];
+    this.selectedJobs = [];
+  }
+
+  private setSelection(elements: VisualElement[], preserveJobs = false) {
+    this.selectedVisualElements = elements;
+    if (!preserveJobs) {
+      this.selectedJobs = [];
+    }
+    if (elements.length === 1) {
+      this.selectedVisualElement = elements[0];
+    } else {
+      this.selectedVisualElement = null;
+    }
+  }
+
+  private setJobSelection(jobs: JobExtended[], preserveVisuals = false) {
+    this.selectedJobs = jobs;
+    if (!preserveVisuals) {
+      this.selectedVisualElements = [];
+      this.selectedVisualElement = null;
+    }
+  }
+
+  isElementSelected(element: VisualElement): boolean {
+    const id = this.getElementId(element);
+    return !!this.selectedVisualElements.find((el) => this.getElementId(el) === id);
+  }
+
+  isJobSelected(job: JobExtended): boolean {
+    return !!this.selectedJobs.find((j) => j.id === job.id);
+  }
+
+  private toDiagramPoint(event: MouseEvent): { x: number; y: number } {
+    const rect = this.scrollContainer.nativeElement.getBoundingClientRect();
+    const scale = this.zoom || 1;
+    const x = (event.clientX - rect.left - this.viewOffsetX) / scale;
+    const y = (event.clientY - rect.top - this.viewOffsetY) / scale;
+    return { x, y };
+  }
+
+  private getElementBounds(element: VisualElement): { left: number; top: number; right: number; bottom: number } {
+    if (element.type === 'line') {
+      const x1 = element.x;
+      const y1 = element.y;
+      const x2 = element.x2 ?? element.x;
+      const y2 = element.y2 ?? element.y;
+      return {
+        left: Math.min(x1, x2),
+        top: Math.min(y1, y2),
+        right: Math.max(x1, x2),
+        bottom: Math.max(y1, y2)
+      };
+    }
+    const width = this.getElementWidth(element);
+    const height = this.getElementHeight(element);
+    return {
+      left: element.x,
+      top: element.y,
+      right: element.x + width,
+      bottom: element.y + height
+    };
+  }
+
+  private isElementInSelection(element: VisualElement, rect: { x: number; y: number; width: number; height: number }): boolean {
+    const bounds = this.getElementBounds(element);
+    const rectLeft = rect.x;
+    const rectTop = rect.y;
+    const rectRight = rect.x + rect.width;
+    const rectBottom = rect.y + rect.height;
+    return !(bounds.right < rectLeft || bounds.left > rectRight || bounds.bottom < rectTop || bounds.top > rectBottom);
+  }
+
+  private getJobBounds(job: JobExtended): { left: number; top: number; right: number; bottom: number } {
+    const left = job.left ?? 0;
+    const top = job.top ?? 0;
+    return {
+      left,
+      top,
+      right: left + this.jobBoxWidth,
+      bottom: top + this.jobBoxHeight
+    };
+  }
+
+  private isJobInSelection(job: JobExtended, rect: { x: number; y: number; width: number; height: number }): boolean {
+    const bounds = this.getJobBounds(job);
+    const rectLeft = rect.x;
+    const rectTop = rect.y;
+    const rectRight = rect.x + rect.width;
+    const rectBottom = rect.y + rect.height;
+    return !(bounds.right < rectLeft || bounds.left > rectRight || bounds.bottom < rectTop || bounds.top > rectBottom);
   }
 
   onDiagramBackgroundClick(event: MouseEvent) {
     if (this.lastDragWasElement) return;
+    if (this.suppressBackgroundClick) {
+      this.suppressBackgroundClick = false;
+      return;
+    }
     const target = event.target as HTMLElement | null;
     if (!target) return;
     if (target.closest('.visual-panel, .visual-element, .box, .mat-mdc-form-field, .visual-lines')) {
       return;
     }
-    this.clearSelection();
+    if (!this.isSelecting) {
+      this.clearSelection();
+    }
   }
 
   onElementChange(element: VisualElement) {
@@ -1335,9 +1524,66 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   onMouseDown(e: MouseEvent): void {
     const target = e.target as HTMLElement | null;
-    if (target && target.closest('.visual-element, .resize-handle, .box, .visual-panel, .context-menu, .mat-mdc-form-field')) {
+    if (target && (target.closest('.visual-element, .resize-handle, .line-handle, .box, .visual-panel, .context-menu, .mat-mdc-form-field') || target.tagName === 'line')) {
       return;
     }
+    if (this.isSpacePressed) {
+      this.startPanning(e);
+      return;
+    }
+    this.isSelecting = true;
+    this.selectionMoved = false;
+    const point = this.toDiagramPoint(e);
+    this.selectionStartX = point.x;
+    this.selectionStartY = point.y;
+    this.selectionRect = { x: point.x, y: point.y, width: 0, height: 0 };
+  }
+
+  onMouseMove(e: MouseEvent): void {
+    if (this.isPanning) {
+      e.preventDefault();
+      const dx = e.clientX - this.panStartX;
+      const dy = e.clientY - this.panStartY;
+      this.viewOffsetX = this.panOriginX + dx;
+      this.viewOffsetY = this.panOriginY + dy;
+      return;
+    }
+    if (!this.isSelecting) return;
+    const point = this.toDiagramPoint(e);
+    const x1 = this.selectionStartX;
+    const y1 = this.selectionStartY;
+    const x2 = point.x;
+    const y2 = point.y;
+    const minX = Math.min(x1, x2);
+    const minY = Math.min(y1, y2);
+    const maxX = Math.max(x1, x2);
+    const maxY = Math.max(y1, y2);
+    this.selectionRect = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+    this.selectionMoved = this.selectionRect.width > 4 || this.selectionRect.height > 4;
+  }
+
+  onMouseUp(): void {
+    if (this.isPanning) {
+      localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
+    }
+    this.isPanning = false;
+    this.scrollContainer.nativeElement.style.cursor = this.isSpacePressed ? 'grab' : 'default';
+    if (!this.isSelecting) return;
+    this.isSelecting = false;
+    if (!this.selectionMoved) {
+      this.selectionRect = { x: 0, y: 0, width: 0, height: 0 };
+      this.clearSelection();
+      return;
+    }
+    const selected = this.visualElements.filter((el) => this.isElementInSelection(el, this.selectionRect));
+    const selectedJobs = this.jobs.filter((job) => this.isJobInSelection(job, this.selectionRect));
+    this.setSelection(selected, true);
+    this.setJobSelection(selectedJobs, true);
+    this.suppressBackgroundClick = true;
+    this.selectionRect = { x: 0, y: 0, width: 0, height: 0 };
+  }
+
+  private startPanning(e: MouseEvent) {
     this.isPanning = true;
     const container = this.scrollContainer.nativeElement;
     this.panStartX = e.clientX;
@@ -1347,21 +1593,121 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     container.style.cursor = 'grabbing';
   }
 
-  onMouseMove(e: MouseEvent): void {
-    if (!this.isPanning) return;
-    e.preventDefault();
-    const dx = e.clientX - this.panStartX;
-    const dy = e.clientY - this.panStartY;
-    this.viewOffsetX = this.panOriginX + dx;
-    this.viewOffsetY = this.panOriginY + dy;
-  }
+  private startGroupDrag(event: MouseEvent) {
+    this.isGroupDragging = true;
+    this.lastDragWasElement = true;
+    this.dragStartX = event.clientX;
+    this.dragStartY = event.clientY;
+    this.groupDragOrigins.clear();
+    this.groupJobOrigins.clear();
 
-  onMouseUp(): void {
-    if (this.isPanning) {
-      localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
-    }
-    this.isPanning = false;
-    this.scrollContainer.nativeElement.style.cursor = 'grab';
+    this.selectedVisualElements.forEach((el) => {
+      const id = this.getElementId(el);
+      if (!id) return;
+      this.groupDragOrigins.set(id, {
+        x: el.x,
+        y: el.y,
+        x2: el.x2,
+        y2: el.y2
+      });
+    });
+
+    this.selectedJobs.forEach((job) => {
+      this.groupJobOrigins.set(job.id, {
+        left: job.left ?? 0,
+        top: job.top ?? 0
+      });
+    });
+
+    const onMove = (moveEvent: MouseEvent) => {
+      if (!this.isGroupDragging) return;
+      const dx = moveEvent.clientX - this.dragStartX;
+      const dy = moveEvent.clientY - this.dragStartY;
+      const scale = this.zoom || 1;
+
+      this.selectedVisualElements.forEach((el) => {
+        const id = this.getElementId(el);
+        if (!id) return;
+        const origin = this.groupDragOrigins.get(id);
+        if (!origin) return;
+        el.x = origin.x + dx / scale;
+        el.y = origin.y + dy / scale;
+        if (el.type === 'line' && el.x2 !== undefined && el.y2 !== undefined) {
+          el.x2 = (origin.x2 || 0) + dx / scale;
+          el.y2 = (origin.y2 || 0) + dy / scale;
+        }
+        this.normalizeElement(el);
+      });
+
+      this.selectedJobs.forEach((job) => {
+        const origin = this.groupJobOrigins.get(job.id);
+        if (!origin) return;
+        job.left = origin.left + dx / scale;
+        job.top = origin.top + dy / scale;
+      });
+
+      if (this.instance && this.groupRepaintRaf === null) {
+        this.groupRepaintRaf = requestAnimationFrame(() => {
+          this.groupRepaintRaf = null;
+          this.instance.repaintEverything();
+        });
+      }
+    };
+
+    const onUp = () => {
+      if (this.isGroupDragging) {
+        this.selectedVisualElements.forEach((el) => {
+          if (el.type === 'line') {
+            const [sx, sy] = this.snapToGrid(el.x, el.y);
+            el.x = sx;
+            el.y = sy;
+            if (el.x2 !== undefined && el.y2 !== undefined) {
+              const [sx2, sy2] = this.snapToGrid(el.x2, el.y2);
+              el.x2 = sx2;
+              el.y2 = sy2;
+            }
+          } else {
+            const [sx, sy] = this.snapToGrid(el.x, el.y);
+            el.x = sx;
+            el.y = sy;
+          }
+          this.normalizeElement(el);
+          this.persistVisualElement(el, 'arraste');
+        });
+
+        this.selectedJobs.forEach((job) => {
+          const [sx, sy] = this.snapToGrid(job.left ?? 0, job.top ?? 0);
+          job.left = sx;
+          job.top = sy;
+          this.instance?.revalidate(job.id);
+          this.jobService.updateJob(this.project?.id || '', job.id, job).subscribe({
+            next: () => {
+              this.isSaved();
+            },
+            error: () => {
+              this.isSaved();
+            }
+          });
+        });
+
+        if (this.instance) {
+          this.instance.repaintEverything();
+        }
+      }
+
+      this.isGroupDragging = false;
+      this.groupDragOrigins.clear();
+      this.groupJobOrigins.clear();
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      this.activeMoveHandler = null;
+      this.activeUpHandler = null;
+    };
+
+    this.activeMoveHandler = onMove;
+    this.activeUpHandler = onUp;
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
   }
 
   removeZoom() {

@@ -58,6 +58,11 @@
   transition: all 0.3s ease;
   overflow: hidden;
   background-clip: padding-box;
+  cursor: default;
+}
+
+.diagram-container.panning-ready {
+  cursor: grab;
 }
 
 .diagram-content {
@@ -95,6 +100,14 @@
 .visual-lines line.is-selected {
   stroke: #60a5fa;
   stroke-width: 3;
+}
+
+.selection-rect {
+  position: absolute;
+  border: 1px dashed rgba(96, 165, 250, 0.8);
+  background: rgba(59, 130, 246, 0.15);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .visual-element {
@@ -307,6 +320,10 @@
   }
 
   
+}
+
+.box.is-selected {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.65), 0 0 12px rgba(59, 130, 246, 0.35);
 }
 
 // JsPlumb connectors behind jobs
