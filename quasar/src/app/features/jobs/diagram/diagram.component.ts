@@ -139,6 +139,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   private rebuildTimer: ReturnType<typeof setTimeout> | null = null;
   private rebuildNonce = 0;
   private activeRebuildNonce = 0;
+  private pendingRebuild = false;
+  private pendingRebuildKey: string | null = null;
+  private lastRebuildKey: string | null = null;
   private wheelHandler: ((event: WheelEvent) => void) | null = null;
   private blurHandler: (() => void) | null = null;
   private visibilityHandler: (() => void) | null = null;
@@ -302,7 +305,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
     // Rebuild once job elements are actually rendered in the DOM.
     this.jobElementsSub = this.jobElements.changes.subscribe(() => {
-      this.scheduleRebuild('job-elements-changed');
+      if (this.pendingRebuild) {
+        this.scheduleRebuild('job-elements-changed');
+      }
     });
   }
 
@@ -376,7 +381,20 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     }
   }
 
-  private scheduleRebuild(reason: string) {
+  private scheduleRebuild(reason: string, force = false) {
+    const key = this.computeStructureKey();
+    if (!force) {
+      if (this.pendingRebuild && this.pendingRebuildKey === key) {
+        if (this.rebuildTimer) {
+          return;
+        }
+      }
+      if (!this.pendingRebuild && this.lastRebuildKey === key) {
+        return;
+      }
+    }
+    this.pendingRebuild = true;
+    this.pendingRebuildKey = key;
     if (this.rebuildTimer) {
       clearTimeout(this.rebuildTimer);
     }
@@ -398,16 +416,37 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     }, 50);
   }
 
+  private computeStructureKey(): string {
+    const jobIds = (this.jobs ?? [])
+      .map(job => job.id)
+      .filter(Boolean)
+      .sort()
+      .join(',');
+    const conns = (this.project?.connections ?? [])
+      .map(conn => `${conn.source}->${conn.target}`)
+      .sort()
+      .join(',');
+    const projectId = this.project?.id ?? '';
+    return `${projectId}|jobs:${jobIds}|conns:${conns}`;
+  }
+
   private rebuildPlumb(reason: string) {
     if (!this.instance) return;
     const rebuildNonce = ++this.rebuildNonce;
     this.activeRebuildNonce = rebuildNonce;
+    const expectedKey = this.pendingRebuildKey ?? this.computeStructureKey();
+
+    if (expectedKey === this.lastRebuildKey) {
+      this.pendingRebuild = false;
+      this.pendingRebuildKey = null;
+      return;
+    }
 
     const rendered = this.jobElements?.length ?? 0;
     if (rendered < this.jobs.length) {
       if (this.rebuildAttempts < 10) {
         this.rebuildAttempts += 1;
-        this.scheduleRebuild(`wait-dom-${reason}`);
+        this.scheduleRebuild(`wait-dom-${reason}`, true);
         return;
       }
     }
@@ -429,6 +468,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       this.instance.repaintEverything();
       requestAnimationFrame(() => this.instance?.repaintEverything());
       this.suppressConnectionEvents = false;
+      this.lastRebuildKey = expectedKey;
+      this.pendingRebuild = false;
+      this.pendingRebuildKey = null;
     });
   }
 
