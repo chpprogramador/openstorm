@@ -20,9 +20,9 @@
     "id_usuario_processamento"
   ],
   "primaryKeys": null,
-  "recordsPerPage": 10000,
+  "recordsPerPage": 2000,
   "type": "insert",
   "stopOnError": true,
   "left": 900,
-  "top": 3120
+  "top": 3960
 }

@@ -1,0 +1,16 @@
+{
+  "id": "ab257446-499c-47e7-8054-b8887bf61e97",
+  "jobName": "Acordo Situação",
+  "selectSql": "select\n\ts.id id,\n\ts.situacaoacordo nome_acordo_situacao\nfrom situacaoacordo s ",
+  "insertSql": "insert into ${SCHEMA}.acordo_situacao (\n\tid,\n\tnome_acordo_situacao)",
+  "columns": [
+    "id",
+    "nome_acordo_situacao"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 4860
+}

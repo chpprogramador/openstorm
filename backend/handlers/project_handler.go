@@ -59,6 +59,7 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
+	project.Connections = normalizeConnections(project.Connections)
 	if ok, dupes := validateUniqueConnections(project.Connections); !ok {
 		c.JSON(400, gin.H{
 			"error":     "Conexões duplicadas não são permitidas",
@@ -120,6 +121,7 @@ func UpdateProject(c *gin.Context) {
 		return
 	}
 
+	updatedProject.Connections = normalizeConnections(updatedProject.Connections)
 	if ok, dupes := validateUniqueConnections(updatedProject.Connections); !ok {
 		c.JSON(400, gin.H{
 			"error":     "Conexões duplicadas não são permitidas",
@@ -344,6 +346,30 @@ func validateUniqueConnections(connections []models.JobConnection) (bool, []mode
 	}
 
 	return len(duplicates) == 0, duplicates
+}
+
+func normalizeConnections(connections []models.JobConnection) []models.JobConnection {
+	if len(connections) == 0 {
+		return connections
+	}
+
+	seen := make(map[string]struct{}, len(connections))
+	unique := make([]models.JobConnection, 0, len(connections))
+	for _, conn := range connections {
+		conn.Source = strings.TrimSpace(conn.Source)
+		conn.Target = strings.TrimSpace(conn.Target)
+		if conn.Source == "" || conn.Target == "" || conn.Source == conn.Target {
+			continue
+		}
+		key := conn.Source + "->" + conn.Target
+		if _, exists := seen[key]; exists {
+			continue
+		}
+		seen[key] = struct{}{}
+		unique = append(unique, conn)
+	}
+
+	return unique
 }
 
 // -------------------- Encrypt / Decrypt Helpers --------------------

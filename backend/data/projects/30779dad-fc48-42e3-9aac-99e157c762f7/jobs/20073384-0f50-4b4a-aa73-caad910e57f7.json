@@ -1,0 +1,16 @@
+{
+  "id": "20073384-0f50-4b4a-aa73-caad910e57f7",
+  "jobName": "Acordo Motivo",
+  "selectSql": "select \n\tm.id id,\n\tm.motivoacordo nome_acordo_motivo\nfrom motivoacordo m",
+  "insertSql": "insert into ${SCHEMA}.acordo_motivo (\n\tid,\n\tnome_acordo_motivo)",
+  "columns": [
+    "id",
+    "nome_acordo_motivo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 4680
+}
