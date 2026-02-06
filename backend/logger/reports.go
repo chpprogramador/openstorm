@@ -2,11 +2,8 @@ package logger
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
 	"time"
 	"unicode"
@@ -205,12 +202,6 @@ func (e *PDFExporter) generateReport(log *PipelineLog) error {
 // ListPipelineReportsHandler endpoint para listar todos os pipelines disponíveis
 func ListPipelineReportsHandler(c *gin.Context) {
 	projectID := strings.TrimSpace(c.Query("projectId"))
-	var projectName string
-	if projectID != "" {
-		if name, err := loadProjectName(projectID); err == nil {
-			projectName = name
-		}
-	}
 
 	logs, err := ListPipelineLogs()
 	if err != nil {
@@ -220,7 +211,7 @@ func ListPipelineReportsHandler(c *gin.Context) {
 		return
 	}
 
-	if projectName == "" && projectID == "" {
+	if projectID == "" {
 		c.JSON(http.StatusOK, logs)
 		return
 	}
@@ -231,13 +222,7 @@ func ListPipelineReportsHandler(c *gin.Context) {
 		if err != nil {
 			continue
 		}
-		if log.ProjectID != "" {
-			if log.ProjectID == projectID {
-				filtered = append(filtered, pipelineID)
-			}
-			continue
-		}
-		if projectName != "" && log.Project == projectName {
+		if log.ProjectID == projectID {
 			filtered = append(filtered, pipelineID)
 		}
 	}
@@ -271,25 +256,6 @@ func ListPipelineReportsHandler(c *gin.Context) {
 	// })
 }
 
-func loadProjectName(projectID string) (string, error) {
-	projectPath := filepath.Join("data", "projects", projectID, "project.json")
-	data, err := os.ReadFile(projectPath)
-	if err != nil {
-		return "", err
-	}
-
-	var payload struct {
-		ProjectName string `json:"projectName"`
-	}
-	if err := json.Unmarshal(data, &payload); err != nil {
-		return "", err
-	}
-	if strings.TrimSpace(payload.ProjectName) == "" {
-		return "", fmt.Errorf("projectName vazio")
-	}
-
-	return payload.ProjectName, nil
-}
 
 // Funções auxiliares para geração do PDF
 

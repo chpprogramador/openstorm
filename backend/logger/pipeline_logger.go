@@ -160,6 +160,9 @@ func ListPipelineLogs() ([]string, error) {
 	return logs, nil
 }
 
+// UpdatePipelineLogsForProject atualiza logs existentes após renomear o projeto.
+// Preenche project_id e atualiza o nome do projeto quando aplicável.
+
 // Função para obter estatísticas de um pipeline
 func GetPipelineStats(pipelineID string) (map[string]interface{}, error) {
 	log, err := LoadPipelineLog(pipelineID)
