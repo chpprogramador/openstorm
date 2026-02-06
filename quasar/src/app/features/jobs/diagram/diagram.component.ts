@@ -7,13 +7,15 @@ import {
   HostListener,
   Inject,
   Input,
+  NgZone,
   OnChanges,
   OnDestroy,
   PLATFORM_ID,
   QueryList,
   SimpleChanges,
   ViewChild,
-  ViewChildren
+  ViewChildren,
+  ChangeDetectorRef
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -216,7 +218,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     private projectService: ProjectService,
     private dialog: MatDialog,
     private visualElementService: VisualElementService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -244,26 +248,45 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     this.wheelHandler = (event: WheelEvent) => {
-      if (event.ctrlKey) {
-        event.preventDefault();
-
-        const rect = container.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-        const prevZoom = this.zoom;
-
-        this.zoom += event.deltaY < 0 ? this.zoomStep : -this.zoomStep;
-        this.zoom = Math.min(Math.max(this.zoom, this.minZoom), this.maxZoom);
-
-        if (this.instance) {
-          this.viewOffsetX = mouseX - ((mouseX - this.viewOffsetX) * (this.zoom / prevZoom));
-          this.viewOffsetY = mouseY - ((mouseY - this.viewOffsetY) * (this.zoom / prevZoom));
-          this.instance.setZoom(this.zoom);
-          this.instance.repaintEverything();
-          localStorage.setItem('diagramZoom', this.zoom.toString());
-          localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
-        }
+      if (this.isEditableTarget(event.target)) {
+        return;
       }
+      this.ngZone.run(() => {
+        if (event.ctrlKey) {
+          event.preventDefault();
+
+          const rect = container.getBoundingClientRect();
+          const mouseX = event.clientX - rect.left;
+          const mouseY = event.clientY - rect.top;
+          const prevZoom = this.zoom;
+
+          this.zoom += event.deltaY < 0 ? this.zoomStep : -this.zoomStep;
+          this.zoom = Math.min(Math.max(this.zoom, this.minZoom), this.maxZoom);
+
+          if (this.instance) {
+            this.viewOffsetX = mouseX - ((mouseX - this.viewOffsetX) * (this.zoom / prevZoom));
+            this.viewOffsetY = mouseY - ((mouseY - this.viewOffsetY) * (this.zoom / prevZoom));
+            this.instance.setZoom(this.zoom);
+            this.instance.repaintEverything();
+            localStorage.setItem('diagramZoom', this.zoom.toString());
+            localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
+          }
+          this.cdr.detectChanges();
+          return;
+        }
+
+        event.preventDefault();
+        let deltaX = event.deltaX;
+        let deltaY = event.deltaY;
+        if (event.shiftKey && !deltaX) {
+          deltaX = deltaY;
+          deltaY = 0;
+        }
+        this.viewOffsetX -= deltaX;
+        this.viewOffsetY -= deltaY;
+        localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
+        this.cdr.detectChanges();
+      });
     };
     container.addEventListener('wheel', this.wheelHandler, { passive: false });
 
