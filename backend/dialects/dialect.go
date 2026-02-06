@@ -54,7 +54,7 @@ func AnalyzeAndModifySQL(query string) (bool, string) {
 	lowerQuery := strings.ToLower(query)
 
 	// Detecta se há WHERE
-	hasWhere := regexp.MustCompile(`\bwhere\b`).MatchString(lowerQuery)
+	hasWhere := hasWhereAtTopLevel(lowerQuery)
 
 	// Remove LIMIT
 	reLimit := regexp.MustCompile(`(?i)\blimit\s+\d+(\s*,\s*\d+)?\b`)
@@ -70,6 +70,46 @@ func AnalyzeAndModifySQL(query string) (bool, string) {
 	fmt.Printf("Possui WHERE: %v\n", hasWhere)
 
 	return hasWhere, queryModified
+}
+
+// hasWhereAtTopLevel detecta WHERE apenas no nível principal (fora de subqueries/CTEs e strings).
+func hasWhereAtTopLevel(lowerQuery string) bool {
+	depth := 0
+	inSingle := false
+	for i := 0; i < len(lowerQuery); i++ {
+		ch := lowerQuery[i]
+		if ch == '\'' {
+			if inSingle && i+1 < len(lowerQuery) && lowerQuery[i+1] == '\'' {
+				i++
+				continue
+			}
+			inSingle = !inSingle
+			continue
+		}
+		if inSingle {
+			continue
+		}
+		switch ch {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		}
+		if depth == 0 && i+5 <= len(lowerQuery) && lowerQuery[i:i+5] == "where" {
+			prev := i == 0 || !isIdentChar(lowerQuery[i-1])
+			next := i+5 == len(lowerQuery) || !isIdentChar(lowerQuery[i+5])
+			if prev && next {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isIdentChar(b byte) bool {
+	return (b >= 'a' && b <= 'z') || (b >= '0' && b <= '9') || b == '_'
 }
 
 // removeOrderByAtTopLevel remove ORDER BY apenas fora de subqueries/CTEs.
