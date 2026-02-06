@@ -104,7 +104,12 @@ export class ErrorService {
     return this.http.get<PipelineStats>(`${this.apiUrl}/pipeline/${pipelineId}/stats`);
   }
 
-  listPipelines(): Observable<string[]> {
+  listPipelines(projectId?: string | null): Observable<string[]> {
+    if (projectId) {
+      return this.http.get<string[]>(`${this.apiUrl}/pipelines/reports`, {
+        params: { projectId }
+      });
+    }
     return this.http.get<string[]>(`${this.apiUrl}/pipelines/reports`);
   }
 

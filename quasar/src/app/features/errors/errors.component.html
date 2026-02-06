@@ -17,21 +17,13 @@
         <mat-form-field appearance="outline" class="pipeline-select">
           <mat-label>Selecione um Pipeline</mat-label>
           <mat-select [(value)]="selectedPipelineId" (selectionChange)="onPipelineChange($event.value)">
-            <mat-option *ngFor="let pipeline of availablePipelines" [value]="pipeline">
-              {{ pipeline }}
+            <mat-option *ngFor="let pipeline of formattedPipelines" [value]="pipeline.id">
+              {{ pipeline.label }}
             </mat-option>
           </mat-select>
         </mat-form-field>
 
         <div class="selector-actions">
-          <button mat-raised-button color="primary" (click)="loadPipelineData()" [disabled]="!selectedPipelineId || isLoading">
-            <mat-icon>refresh</mat-icon>
-            Carregar
-          </button>
-          <button mat-stroked-button color="primary" (click)="openPipelineReportPreview()" [disabled]="!selectedPipelineId || isLoading">
-            <mat-icon>picture_as_pdf</mat-icon>
-            Visualizar PDF
-          </button>
           <button mat-stroked-button (click)="downloadPipelineReport()" [disabled]="!selectedPipelineId || isLoading">
             <mat-icon>download</mat-icon>
             Baixar PDF
@@ -183,7 +175,7 @@
   </mat-card>
 
   <app-error-viewer
-    *ngIf="errorSummary && !isLoading"
+    *ngIf="errorSummary && !isLoading && errorSummary.total_errors > 0"
     [pipelineId]="selectedPipelineId"
     [errorSummary]="errorSummary">
   </app-error-viewer>

@@ -86,7 +86,7 @@ export class JobsComponent implements OnInit, OnDestroy {
           return;
         }
         updateJobsWithStatus(jobs);
-        this.jobs = jobs_;
+        this.jobs = [...jobs_];
         this.scheduleRender();
       });
 
@@ -122,7 +122,7 @@ export class JobsComponent implements OnInit, OnDestroy {
 
       const hasRunning = jobs_.some((job) => job.status === 'running');
       this.isRunning = hasRunning;
-      this.jobs = jobs_;
+      this.jobs = [...jobs_];
       this.scheduleRender();
     });
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,9 +9,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { forkJoin } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { ErrorViewerComponent } from '../../shared/components/error-viewer/error-viewer.component';
 import { ErrorService, ErrorSummary, PipelineLog, PipelineStats } from '../../core/services/error.service';
+import { ProjectService } from '../../core/services/project.service';
+import { Project } from '../../core/models/project.model';
 
 @Component({
   selector: 'app-errors',
@@ -32,29 +34,51 @@ import { ErrorService, ErrorSummary, PipelineLog, PipelineStats } from '../../co
   templateUrl: './errors.component.html',
   styleUrls: ['./errors.component.scss']
 })
-export class ErrorsComponent implements OnInit {
+export class ErrorsComponent implements OnInit, OnDestroy {
   selectedPipelineId: string = '';
   availablePipelines: string[] = [];
+  formattedPipelines: Array<{ id: string; label: string; sortKey: number }> = [];
   errorSummary: ErrorSummary | null = null;
   pipelineStats: PipelineStats | null = null;
   pipelineLog: PipelineLog | null = null;
   isLoading: boolean = false;
+  private projectSub?: Subscription;
+  private selectedProjectId: string | null = null;
 
   constructor(
     private errorService: ErrorService,
     private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private projectService: ProjectService
   ) {}
 
   ngOnInit() {
-    this.loadAvailablePipelines();
+    this.projectSub = this.projectService.selectedProject$.subscribe((project: Project | null) => {
+      this.selectedProjectId = project?.id || null;
+      this.selectedPipelineId = '';
+      this.errorSummary = null;
+      this.pipelineStats = null;
+      this.pipelineLog = null;
+      if (this.selectedProjectId) {
+        this.loadAvailablePipelines(this.selectedProjectId);
+      } else {
+        this.availablePipelines = [];
+        this.formattedPipelines = [];
+      }
+      this.cdr.detectChanges();
+    });
   }
 
-  loadAvailablePipelines() {
+  ngOnDestroy() {
+    this.projectSub?.unsubscribe();
+  }
+
+  loadAvailablePipelines(projectId?: string | null) {
     this.isLoading = true;
-    this.errorService.listPipelines().subscribe({
+    this.errorService.listPipelines(projectId).subscribe({
       next: (pipelines) => {
         this.availablePipelines = pipelines;
+        this.formattedPipelines = this.normalizePipelines(pipelines);
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -118,6 +142,24 @@ export class ErrorsComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  private normalizePipelines(pipelines: string[]): Array<{ id: string; label: string; sortKey: number }> {
+    return (pipelines || [])
+      .map((id) => {
+        const match = id.match(/(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})/);
+        const sortKey = match ? Date.parse(`${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}`) : 0;
+        const cleaned = id
+          .replace(/^pipeline[_-]?/i, '')
+          .replace(/_/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const label = match
+          ? `${cleaned.replace(match[0].replace(/_/g, ' '), '').trim()} • ${match[3]}/${match[2]}/${match[1]} ${match[4]}:${match[5]}`
+          : cleaned;
+        return { id, label: label || id, sortKey };
+      })
+      .sort((a, b) => b.sortKey - a.sortKey);
   }
 
   openPipelineReportPreview() {

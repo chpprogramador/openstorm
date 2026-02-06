@@ -111,6 +111,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   showLogs = false;
   visualElements: VisualElement[] = [];
   selectedVisualElement: VisualElement | null = null;
+  snapEnabled = true;
+  lastSavedAt: Date | null = null;
+  showShortcuts = true;
   private draggingElementId: string | null = null;
   private dragStartX = 0;
   private dragStartY = 0;
@@ -119,6 +122,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   private dragOriginX2 = 0;
   private dragOriginY2 = 0;
   private snapToGrid(x: number, y: number): [number, number] {
+    if (!this.snapEnabled) return [x, y];
     return [Math.round(x / this.gridX) * this.gridX, Math.round(y / this.gridY) * this.gridY];
   }
   private activeMoveHandler: ((e: MouseEvent) => void) | null = null;
@@ -246,6 +250,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       this.zoom = +storedZoom;
       this.instance.setZoom(this.zoom);
     }
+    const storedSnap = localStorage.getItem('diagramSnap');
+    if (storedSnap) {
+      this.snapEnabled = storedSnap === 'true';
+    }
 
     this.wheelHandler = (event: WheelEvent) => {
       if (this.isEditableTarget(event.target)) {
@@ -338,7 +346,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     if (!this.isBrowser || !this.instance) return;
 
     const projectChanged = !!changes['project'] && this.project?.id !== this.lastProjectId;
-    const jobsChanged = !!changes['jobs'] && !changes['jobs'].firstChange;
+    const jobsChange = changes['jobs'];
+    const jobsChanged = !!jobsChange && !jobsChange.firstChange;
 
     if (projectChanged) {
       this.lastProjectId = this.project?.id ?? null;
@@ -360,6 +369,13 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
     if (projectChanged) {
       this.scheduleRebuild('project-change');
+      return;
+    }
+
+    if (jobsChange && jobsChange.firstChange) {
+      if ((this.jobs?.length ?? 0) > 0) {
+        this.scheduleRebuild('jobs-first-load');
+      }
       return;
     }
 
@@ -587,18 +603,11 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       endpoint: 'Blank'
     });
 
-    const gridX = 100;
-    const gridY = 60;
-
-    const snapToGrid = (x: number, y: number): [number, number] => {
-      return [Math.round(x / gridX) * gridX, Math.round(y / gridY) * gridY];
-    };
-
     this.instance.draggable(id, {
       stop: (params: any) => {
         this.isSaving = true;
         const el = params.el;
-        const [x, y] = snapToGrid(
+        const [x, y] = this.snapToGrid(
           parseInt(el.style.left || '0', 10),
           parseInt(el.style.top || '0', 10)
         );
@@ -749,6 +758,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   isSaved() {
     of(null).pipe(delay(200)).subscribe(() => {
       this.isSaving = false;
+      this.lastSavedAt = new Date();
     });
   }
 
@@ -1598,6 +1608,100 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   showHideLogs() {
     this.showLogs = !this.showLogs;
+  }
+
+  toggleSnap() {
+    this.snapEnabled = !this.snapEnabled;
+    if (this.isBrowser) {
+      localStorage.setItem('diagramSnap', this.snapEnabled.toString());
+    }
+  }
+
+  fitToScreen() {
+    const container = this.scrollContainer?.nativeElement;
+    if (!container) return;
+
+    const bounds = this.getContentBounds();
+    if (!bounds) {
+      this.removeZoom();
+      this.viewOffsetX = 0;
+      this.viewOffsetY = 0;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const padding = 80;
+    const width = Math.max(1, bounds.maxX - bounds.minX);
+    const height = Math.max(1, bounds.maxY - bounds.minY);
+    const availableW = Math.max(1, container.clientWidth - padding * 2);
+    const availableH = Math.max(1, container.clientHeight - padding * 2);
+    const nextZoom = Math.min(this.maxZoom, Math.max(this.minZoom, Math.min(availableW / width, availableH / height)));
+
+    const centerX = bounds.minX + width / 2;
+    const centerY = bounds.minY + height / 2;
+    this.zoom = nextZoom;
+    if (this.instance) {
+      this.instance.setZoom(this.zoom);
+    }
+    this.viewOffsetX = container.clientWidth / 2 - this.zoom * centerX;
+    this.viewOffsetY = container.clientHeight / 2 - this.zoom * centerY;
+    if (this.isBrowser) {
+      localStorage.setItem('diagramZoom', this.zoom.toString());
+      localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
+    }
+    this.cdr.detectChanges();
+  }
+
+  private getContentBounds(): { minX: number; minY: number; maxX: number; maxY: number } | null {
+    const items: Array<{ minX: number; minY: number; maxX: number; maxY: number }> = [];
+
+    this.jobs.forEach((job) => {
+      const left = job.left ?? 0;
+      const top = job.top ?? 0;
+      items.push({
+        minX: left,
+        minY: top,
+        maxX: left + this.jobBoxWidth,
+        maxY: top + this.jobBoxHeight
+      });
+    });
+
+    this.visualElements.forEach((el) => {
+      const bounds = this.getElementBounds(el);
+      items.push({
+        minX: bounds.left,
+        minY: bounds.top,
+        maxX: bounds.right,
+        maxY: bounds.bottom
+      });
+    });
+
+    if (!items.length) return null;
+
+    return items.reduce(
+      (acc, curr) => ({
+        minX: Math.min(acc.minX, curr.minX),
+        minY: Math.min(acc.minY, curr.minY),
+        maxX: Math.max(acc.maxX, curr.maxX),
+        maxY: Math.max(acc.maxY, curr.maxY)
+      }),
+      { minX: items[0].minX, minY: items[0].minY, maxX: items[0].maxX, maxY: items[0].maxY }
+    );
+  }
+
+  formatSavedAt(): string {
+    if (!this.lastSavedAt) return '';
+    return this.lastSavedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  getStatusCounts() {
+    const jobs = this.jobs ?? [];
+    const running = jobs.filter(j => j.status === 'running').length;
+    const done = jobs.filter(j => j.status === 'done').length;
+    const error = jobs.filter(j => j.status === 'error').length;
+    const pending = jobs.filter(j => !j.status || j.status === 'pending').length;
+    const total = jobs.length;
+    return { running, done, error, pending, total };
   }
 
   onMouseDown(e: MouseEvent): void {

@@ -54,12 +54,15 @@ pre.log-container {
   border-radius: 0;
   background-color: transparent;
   box-shadow: none;
+  height: 100%;
+  min-height: 0;
 }
 
 .log-viewer-container.embedded pre.log-container {
   flex: 1 1 auto;
   max-height: none;
   height: 100%;
+  min-height: 0;
   border-radius: 0;
-  padding: 12px 16px;
+  padding: 8px 14px;
 }

@@ -6,7 +6,7 @@
 </div>
 
 <div class="toolbar">
-  <div class="toolbar-section status-section">
+  <div class="toolbar-group status-section" aria-label="Status do projeto">
     @if(isSaving == true) {
       <div class="status-indicator saving">
         <mat-icon class="status-icon spin">sync</mat-icon>
@@ -17,87 +17,142 @@
       <div class="status-indicator saved">
         <mat-icon class="status-icon">cloud_done</mat-icon>
         <span class="status-text">Salvo</span>
+        <span class="status-meta" *ngIf="formatSavedAt() as savedAt">· {{ savedAt }}</span>
       </div>
     }
   </div>
 
-  <div class="toolbar-section actions-section">
+  <div class="toolbar-separator" aria-hidden="true"></div>
+
+  <div class="toolbar-group actions-section" aria-label="Execucao">
     @if(isRunning == false) {
-      <button mat-icon-button class="action-btn icon-btn run-btn" (click)="runProject()">
+      <button mat-icon-button class="action-btn icon-btn run-btn" (click)="runProject()" aria-label="Executar">
         <mat-icon>play_arrow</mat-icon>
       </button>
     }
     @if(isRunning == true) {
-      <button mat-icon-button class="action-btn icon-btn stop-btn" (click)="stopProject()">
+      <button mat-icon-button class="action-btn icon-btn stop-btn" (click)="stopProject()" aria-label="Parar">
         <mat-icon>stop</mat-icon>
       </button>
     }
+  </div>
 
-    <button
-      mat-stroked-button
-      class="action-btn add-btn"
-      (click)="addNewJob()"
-      draggable="true"
-      (dragstart)="onToolbarDragStart($event, { kind: 'job' })"
-    >
-      <mat-icon>add_box</mat-icon>
-      <span>Novo Job SQL</span>
-    </button>
+  <div class="toolbar-separator" aria-hidden="true"></div>
 
-    <button
-      mat-stroked-button
-      class="action-btn add-btn"
-      (click)="addVisualElement('rect')"
-      draggable="true"
-      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'rect' })"
-    >
-      <mat-icon>crop_square</mat-icon>
-      <span>Retangulo</span>
-    </button>
-
-    <button
-      mat-stroked-button
-      class="action-btn add-btn"
-      (click)="addVisualElement('circle')"
-      draggable="true"
-      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'circle' })"
-    >
-      <mat-icon>circle</mat-icon>
-      <span>Circulo</span>
-    </button>
-
-    <button
-      mat-stroked-button
-      class="action-btn add-btn"
-      (click)="addVisualElement('line')"
-      draggable="true"
-      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'line' })"
-    >
-      <mat-icon>horizontal_rule</mat-icon>
-      <span>Linha</span>
-    </button>
-
-    <button
-      mat-stroked-button
-      class="action-btn add-btn"
-      (click)="addVisualElement('text')"
-      draggable="true"
-      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'text' })"
-    >
-      <mat-icon>text_fields</mat-icon>
-      <span>Texto</span>
-    </button>
-
-    <button mat-stroked-button class="action-btn logs-btn" (click)="showHideLogs()">
+  <div class="toolbar-group utility-section" aria-label="Utilitarios">
+    <button mat-stroked-button class="action-btn logs-btn toggle-btn" [class.active]="showLogs" (click)="showHideLogs()">
       <mat-icon>terminal</mat-icon>
       <span>Logs</span>
     </button>
 
-    <button mat-stroked-button class="action-btn zoom" (click)="removeZoom()">
+    <button mat-stroked-button class="action-btn zoom" (click)="removeZoom()" aria-label="Resetar zoom">
       <mat-icon>zoom_in</mat-icon>
       <span>{{(zoom * 100 | number:'1.0-0')}}%</span>
     </button>
   </div>
+</div>
+
+<div class="side-toolbar" aria-label="Adicionar elementos">
+  <button
+    mat-stroked-button
+    class="action-btn add-btn primary"
+    (click)="addNewJob()"
+    draggable="true"
+    (dragstart)="onToolbarDragStart($event, { kind: 'job' })"
+    matTooltip="Novo Job"
+    matTooltipPosition="left"
+  >
+    <mat-icon>add_box</mat-icon>
+    <span>Novo Job</span>
+  </button>
+
+  <button
+    mat-stroked-button
+    class="action-btn add-btn"
+    (click)="addVisualElement('rect')"
+    draggable="true"
+    (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'rect' })"
+    matTooltip="Retangulo"
+    matTooltipPosition="left"
+  >
+    <mat-icon>crop_square</mat-icon>
+    <span>Retangulo</span>
+  </button>
+
+  <button
+    mat-stroked-button
+    class="action-btn add-btn"
+    (click)="addVisualElement('circle')"
+    draggable="true"
+    (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'circle' })"
+    matTooltip="Circulo"
+    matTooltipPosition="left"
+  >
+    <mat-icon>circle</mat-icon>
+    <span>Circulo</span>
+  </button>
+
+  <button
+    mat-stroked-button
+    class="action-btn add-btn"
+    (click)="addVisualElement('line')"
+    draggable="true"
+    (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'line' })"
+    matTooltip="Linha"
+    matTooltipPosition="left"
+  >
+    <mat-icon>horizontal_rule</mat-icon>
+    <span>Linha</span>
+  </button>
+
+  <button
+    mat-stroked-button
+    class="action-btn add-btn"
+    (click)="addVisualElement('text')"
+    draggable="true"
+    (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'text' })"
+    matTooltip="Texto"
+    matTooltipPosition="left"
+  >
+    <mat-icon>text_fields</mat-icon>
+    <span>Texto</span>
+  </button>
+
+  <div class="side-separator" aria-hidden="true"></div>
+
+  <button
+    mat-stroked-button
+    class="action-btn toggle-btn"
+    [class.active]="snapEnabled"
+    (click)="toggleSnap()"
+    aria-label="Alternar grade"
+    matTooltip="Grade"
+    matTooltipPosition="left"
+  >
+    <mat-icon>grid_on</mat-icon>
+    <span>Grade</span>
+  </button>
+
+  <button
+    mat-stroked-button
+    class="action-btn"
+    (click)="fitToScreen()"
+    aria-label="Ajustar ao conteudo"
+    matTooltip="Ajustar"
+    matTooltipPosition="left"
+  >
+    <mat-icon>fit_screen</mat-icon>
+    <span>Ajustar</span>
+  </button>
+</div>
+
+<div class="toolbar-legend" *ngIf="getStatusCounts() as counts">
+  <span class="legend-title">Status</span>
+  <span class="legend-pill total">Total {{ counts.total }}</span>
+  <span class="legend-pill running">Em execucao {{ counts.running }}</span>
+  <span class="legend-pill done">Concluido {{ counts.done }}</span>
+  <span class="legend-pill error">Erro {{ counts.error }}</span>
+  <span class="legend-pill pending">Pendente {{ counts.pending }}</span>
 </div>
 
 <div class="diagram-layout" [class.with-logs]="showLogs">
