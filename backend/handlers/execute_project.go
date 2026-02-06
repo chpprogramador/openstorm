@@ -147,6 +147,107 @@ func RunProject(c *gin.Context) {
 	log.Printf("Execução do projeto %s iniciada com %d jobs", project.ProjectName, len(startJobs))
 }
 
+
+func ResumeJob(c *gin.Context) {
+	status.ClearJobLogs()
+
+	projectID := c.Param("id")
+	jobID := c.Param("jobId")
+	projectPath := filepath.Join("data", "projects", projectID, "project.json")
+	project, err := loadProjectFile(projectPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao ler project.json"})
+		log.Println("Erro ao ler project.json:", err)
+		return
+	}
+	log.Printf("Projeto %s carregado com sucesso", project.ProjectName)
+
+	decryptProjectFields(&project)
+
+	dialect, err := dialects.NewDialect(project.SourceDatabase.Type)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Println("Erro ao criar dialeto:", err)
+		return
+	}
+	log.Printf("Dialeto %s criado com sucesso", project.SourceDatabase.Type)
+
+	sourceDB, err := sql.Open(project.SourceDatabase.Type, buildDSN(project.SourceDatabase))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao conectar no banco de origem"})
+		log.Println("Erro ao conectar no banco de origem:", err)
+		return
+	}
+	log.Printf("Conex??o com o banco de origem %s estabelecida", project.SourceDatabase.Database)
+
+	destDB, err := sql.Open(project.DestinationDatabase.Type, buildDSN(project.DestinationDatabase))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao conectar no banco de destino"})
+		log.Println("Erro ao conectar no banco de destino:", err)
+		return
+	}
+	log.Printf("Conex??o com o banco de destino %s estabelecida", project.DestinationDatabase.Database)
+
+	runner := jobrunner.NewJobRunner(sourceDB, destDB, buildDSN(project.SourceDatabase), buildDSN(project.DestinationDatabase), dialect, project.Concurrency, project.ProjectName, projectID)
+	jobrunner.SetActiveRunner(runner)
+
+	// Carregar os jobs
+	jobCount := 0
+	for _, jobPath := range project.Jobs {
+		fullPath := filepath.Join("data", "projects", projectID, jobPath)
+		jobBytes, err := os.ReadFile(fullPath)
+		if err != nil {
+			log.Printf("Erro ao ler job %s: %v", jobPath, err)
+			continue
+		}
+
+		var job models.Job
+		if err := json.Unmarshal(jobBytes, &job); err == nil {
+			runner.JobMap[job.ID] = job
+			log.Printf("Job %s carregado do caminho %s", job.ID, fullPath)
+			jobCount++
+		} else {
+			log.Printf("Erro ao interpretar job %s: %v", jobPath, err)
+		}
+	}
+	if jobCount == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Nenhum job foi carregado"})
+		log.Println("Nenhum job foi carregado do projeto")
+		return
+	}
+
+	if _, ok := runner.JobMap[jobID]; !ok {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Job n??o encontrado no projeto"})
+		return
+	}
+
+	// Carregar conex??es
+	for _, conn := range project.Connections {
+		runner.ConnMap[conn.Source] = append(runner.ConnMap[conn.Source], conn.Target)
+		log.Printf("Conex??o adicionada: %s -> %s", conn.Source, conn.Target)
+	}
+
+	// Marca apenas o job inicial e seus dependentes como pendentes
+	reachable := collectDownstreamJobs(jobID, runner.ConnMap)
+	for id := range reachable {
+		status.UpdateJobStatus(id, func(js *status.JobStatus) {
+			js.Status = "pending"
+			js.StartedAt = nil
+			js.EndedAt = nil
+			js.Processed = 0
+			js.Total = 0
+			js.Progress = 0
+			js.Error = ""
+			status.NotifySubscribers()
+		})
+	}
+
+	startJobs := []string{jobID}
+	go runner.Run(startJobs)
+	c.JSON(http.StatusAccepted, gin.H{"message": "Retomada iniciada", "startJobs": startJobs})
+	log.Printf("Retomada do job %s iniciada para o projeto %s", jobID, project.ProjectName)
+}
+
 func StopProject(c *gin.Context) {
 	projectID := c.Param("id")
 	stopped := jobrunner.StopActiveRunner(projectID, "interrompido via endpoint")
@@ -166,4 +267,23 @@ func buildDSN(cfg models.DatabaseConfig) string {
 	default:
 		return ""
 	}
+}
+
+func collectDownstreamJobs(startID string, connMap map[string][]string) map[string]struct{} {
+	visited := make(map[string]struct{})
+	stack := []string{startID}
+	for len(stack) > 0 {
+		id := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		if _, ok := visited[id]; ok {
+			continue
+		}
+		visited[id] = struct{}{}
+		for _, next := range connMap[id] {
+			if _, ok := visited[next]; !ok {
+				stack = append(stack, next)
+			}
+		}
+	}
+	return visited
 }

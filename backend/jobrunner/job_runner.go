@@ -177,8 +177,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			log.Printf("Total (%d) menor que batchSize (%d), usando apenas 1 worker", total, job.RecordsPerPage)
 		}
 
-		// Workers de escrita
-		var writersWG sync.WaitGroup
+		// Controle de execucao do job
 		var processed int64
 		var jobHadError atomic.Bool
 		var lastErr atomic.Value
@@ -195,100 +194,112 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			status.AppendLog(fmt.Sprintf("%s - Job: %s falhou: %s", jr.PipelineLog.Project, job.JobName, errMsg))
 		}
 
+		jobCtx, jobCancel := context.WithCancel(jr.ctx)
+		defer jobCancel()
+
 		closeOnce := &sync.Once{}
 		closeBatch := func() {
 			closeOnce.Do(func() {
 				close(batchChan)
 			})
 		}
+
+		// Writer unico com transacao unica por job
+		var writerWG sync.WaitGroup
+		writerWG.Add(1)
 		go func() {
-			<-jr.ctx.Done()
-			closeBatch()
-		}()
+			defer writerWG.Done()
 
-		for w := 0; w < concurrency; w++ {
-			writersWG.Add(1)
-			go func(workerID int) {
-				defer writersWG.Done()
-				for batch := range batchChan {
-					if jr.shouldStop() {
-						return
-					}
-					batchStart := time.Now()
-					startOffset := int(atomic.LoadInt64(&processed))
-					batchLog := logger.BatchLog{
-						Offset:    startOffset,
-						Limit:     len(batch),
-						Status:    "running",
-						StartedAt: batchStart,
-					}
+			tx, err := jr.DestinationDB.Begin()
+			if err != nil {
+				jobHadError.Store(true)
+				lastErr.Store(err.Error())
+				reportJobError(err.Error())
+				jobCancel()
+				// Drena batches ate o canal fechar
+				for range batchChan {
+				}
+				return
+			}
 
-					insertSQL, args := jr.Dialect.BuildInsertQuery(job, batch)
-					log.Printf("INSERT SQL (job=%s): %s", job.ID, insertSQL)
+			committed := false
+			defer func() {
+				if !committed {
+					_ = tx.Rollback()
+				}
+			}()
 
-					tx, err := jr.DestinationDB.Begin()
-					if err != nil {
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
-						batchLog.Status = "error"
-						batchLog.Error = err.Error()
-						batchLog.EndedAt = time.Now()
-						logger.AddBatch(jr.PipelineLog, jobID, batchLog)
-						jr.savePipelineLog()
-						continue
-					}
+			discard := false
+			for batch := range batchChan {
+				if discard {
+					continue
+				}
+				if jr.shouldStop() || jobCtx.Err() != nil {
+					discard = true
+					continue
+				}
+				batchStart := time.Now()
+				startOffset := int(atomic.LoadInt64(&processed))
+				batchLog := logger.BatchLog{
+					Offset:    startOffset,
+					Limit:     len(batch),
+					Status:    "running",
+					StartedAt: batchStart,
+				}
 
-					if _, err := tx.Exec(insertSQL, args...); err != nil {
-						tx.Rollback()
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
+				insertSQL, args := jr.Dialect.BuildInsertQuery(job, batch)
+				log.Printf("INSERT SQL (job=%s): %s", job.ID, insertSQL)
 
-						analyzer := &logger.ErrorAnalyzer{}
-						errorType, errorCode, _ := analyzer.AnalyzeError(err)
+				if _, err := tx.Exec(insertSQL, args...); err != nil {
+					jobHadError.Store(true)
+					lastErr.Store(err.Error())
+					reportJobError(err.Error())
 
-						batchLog.Status = "error"
-						batchLog.Error = err.Error()
-						batchLog.ErrorType = errorType
-						batchLog.ErrorCode = errorCode
-						batchLog.EndedAt = time.Now()
-						logger.AddBatch(jr.PipelineLog, jobID, batchLog)
-						jr.savePipelineLog()
-						continue
-					}
+					analyzer := &logger.ErrorAnalyzer{}
+					errorType, errorCode, _ := analyzer.AnalyzeError(err)
 
-					if err := tx.Commit(); err != nil {
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
-						batchLog.Status = "error"
-						batchLog.Error = err.Error()
-						batchLog.EndedAt = time.Now()
-						logger.AddBatch(jr.PipelineLog, jobID, batchLog)
-						jr.savePipelineLog()
-						continue
-					}
-
-					atomic.AddInt64(&processed, int64(len(batch)))
-					// Mantém o contador do job sincronizado com o log do pipeline
-					logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
-						jl.Processed = int(atomic.LoadInt64(&processed))
-					})
-					batchLog.Status = "done"
-					batchLog.Rows = len(batch)
+					batchLog.Status = "error"
+					batchLog.Error = err.Error()
+					batchLog.ErrorType = errorType
+					batchLog.ErrorCode = errorCode
 					batchLog.EndedAt = time.Now()
 					logger.AddBatch(jr.PipelineLog, jobID, batchLog)
 					jr.savePipelineLog()
-
-					status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
-						js.Processed = int(processed)
-						js.Progress = float64(processed) / float64(total) * 100
-						status.NotifySubscribers()
-					})
+					jobCancel()
+					discard = true
+					continue
 				}
-			}(w)
-		}
+
+				atomic.AddInt64(&processed, int64(len(batch)))
+				// Mantem o contador do job sincronizado com o log do pipeline
+				logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
+					jl.Processed = int(atomic.LoadInt64(&processed))
+				})
+				batchLog.Status = "done"
+				batchLog.Rows = len(batch)
+				batchLog.EndedAt = time.Now()
+				logger.AddBatch(jr.PipelineLog, jobID, batchLog)
+				jr.savePipelineLog()
+
+				status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+					js.Processed = int(processed)
+					js.Progress = float64(processed) / float64(total) * 100
+					status.NotifySubscribers()
+				})
+			}
+
+			if jobHadError.Load() || jr.shouldStop() || jobCtx.Err() != nil {
+				return
+			}
+
+			if err := tx.Commit(); err != nil {
+				jobHadError.Store(true)
+				lastErr.Store(err.Error())
+				reportJobError(err.Error())
+				return
+			}
+			committed = true
+		}()
 
 		// Leitura paralela por bucket (cada worker lê o seu)
 		var readersWG sync.WaitGroup
@@ -296,7 +307,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			readersWG.Add(1)
 			go func(workerID int) {
 				defer readersWG.Done()
-				if jr.shouldStop() {
+				if jr.shouldStop() || jobCtx.Err() != nil {
 					return
 				}
 
@@ -328,6 +339,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					jobHadError.Store(true)
 					lastErr.Store(err.Error())
 					reportJobError(err.Error())
+					jobCancel()
 					return
 				}
 				defer rows.Close()
@@ -337,7 +349,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 				buffer := make([]map[string]interface{}, 0, batchSize)
 
 				for rows.Next() {
-					if jr.shouldStop() {
+					if jr.shouldStop() || jobCtx.Err() != nil {
 						return
 					}
 					values := make([]interface{}, len(cols))
@@ -349,6 +361,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
 						reportJobError(err.Error())
+						jobCancel()
 						return
 					}
 
@@ -361,30 +374,31 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					if len(buffer) == batchSize {
 						select {
 						case batchChan <- buffer:
-						case <-jr.ctx.Done():
+						case <-jobCtx.Done():
 							return
 						}
 						buffer = make([]map[string]interface{}, 0, batchSize)
 					}
 				}
 
-					if len(buffer) > 0 {
-						select {
-						case batchChan <- buffer:
-						case <-jr.ctx.Done():
-							return
-						}
-					}
-
-					if err := rows.Err(); err != nil {
-						log.Printf("Erro ao iterar rows no bucket %d: %v", workerID, err)
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
+				if len(buffer) > 0 {
+					select {
+					case batchChan <- buffer:
+					case <-jobCtx.Done():
 						return
 					}
-				}(w)
-			}
+				}
+
+				if err := rows.Err(); err != nil {
+					log.Printf("Erro ao iterar rows no bucket %d: %v", workerID, err)
+					jobHadError.Store(true)
+					lastErr.Store(err.Error())
+					reportJobError(err.Error())
+					jobCancel()
+					return
+				}
+			}(w)
+		}
 
 		// Fecha o canal quando todos leitores terminarem
 		go func() {
@@ -392,14 +406,24 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			closeBatch()
 		}()
 
-		writersWG.Wait()
+		writerWG.Wait()
 
 		end := time.Now()
 		finalProcessed := int(atomic.LoadInt64(&processed))
+		if jobHadError.Load() {
+			finalProcessed = 0
+		}
 		logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
 			jl.Processed = finalProcessed
 		})
 		jr.savePipelineLog()
+		if jobHadError.Load() {
+			status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+				js.Processed = 0
+				js.Progress = 0
+				status.NotifySubscribers()
+			})
+		}
 		if !jobHadError.Load() && finalProcessed < total {
 			jobHadError.Store(true)
 			lastErr.Store(fmt.Sprintf("processados %d de %d registros", finalProcessed, total))

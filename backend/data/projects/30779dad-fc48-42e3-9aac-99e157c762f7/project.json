@@ -410,19 +410,19 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "98vNelIbFngcV+UaffZQg1h1DkDhTmM=",
-    "password": "MIGnWf5FR9hQf6SU/m5e74R9z2LvKmCfKyOwfXTRrSc=",
+    "user": "1ty0/MM2KvDLSxbpxdrEEQHRSGZZx/U=",
+    "password": "GKUKFm7Cor83zX2GrM4ghoX+HOARgF0OimCGyGIPVgY=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "gmOTePYqqGgTc1e4UyfiIBsAYQ==",
-    "password": "NesLtqTrhRCuuulANMbOQEC/FUzM/w==",
+    "user": "wRJEcvbHA1c01hU/aomi0+6oeg==",
+    "password": "PPANP6HC28/4zObwK4OEBP2SVPjo4A==",
     "database": "vzmsaneamento"
   },
-  "concurrency": 5,
+  "concurrency": 10,
   "variables": [
     {
       "name": "SCHEMA",

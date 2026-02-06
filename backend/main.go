@@ -27,6 +27,7 @@ func main() {
 	router.POST("/projects/:id/jobs", handlers.AddJob)
 	router.PUT("/projects/:id/jobs/:jobId", handlers.UpdateJob)
 	router.DELETE("/projects/:id/jobs/:jobId", handlers.DeleteJob)
+	router.POST("/projects/:id/jobs/:jobId/resume", handlers.ResumeJob)
 	router.POST("/jobs/validate", handlers.ValidateJobHandler)
 
 	// Variáveis
