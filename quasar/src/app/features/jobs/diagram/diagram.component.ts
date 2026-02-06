@@ -497,11 +497,18 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
     this.instance.bind('connection', (info: any) => {
       if (!this.isLoading && !this.suppressConnectionEvents && this.project) {
-        this.project.connections = this.project.connections || [];
-        this.project.connections.push({
+        const conns = this.project.connections || [];
+        const exists = conns.some(
+          (conn) => conn.source === info.sourceId && conn.target === info.targetId
+        );
+        if (exists) {
+          return;
+        }
+        conns.push({
           source: info.sourceId,
           target: info.targetId
         });
+        this.project.connections = conns;
         this.saveProject();
       }
     });
@@ -509,11 +516,11 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     this.instance.bind('connectionDetached', (info: any) => {
       if (this.suppressConnectionEvents || this.isLoading) return;
       if (!this.project || !this.project.connections) return;
-      const index = this.project.connections.findIndex(
-        (conn) => conn.source === info.sourceId && conn.target === info.targetId
+      const original = this.project.connections.length;
+      this.project.connections = this.project.connections.filter(
+        (conn) => !(conn.source === info.sourceId && conn.target === info.targetId)
       );
-      if (index >= 0) {
-        this.project.connections.splice(index, 1);
+      if (this.project.connections.length !== original) {
         this.saveProject();
       }
     });
@@ -600,7 +607,13 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       return;
     }
 
-    const conns = this.project.connections.slice();
+    const seen = new Set<string>();
+    const conns = (this.project.connections || []).filter((conn) => {
+      const key = `${conn.source}->${conn.target}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
     const chunkSize = 25;
     let index = 0;
 
