@@ -762,6 +762,20 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     });
   }
 
+  resumeJob(job: JobExtended | null) {
+    if (!job || !this.project?.id) return;
+    this.isSaving = true;
+    this.jobService.resumeJob(this.project.id, job.id).subscribe({
+      next: () => {
+        this.isSaved();
+      },
+      error: (error) => {
+        this.notifyPersistError('Erro ao retomar o job.', error);
+        this.isSaved();
+      }
+    });
+  }
+
   openEditDialog(job: Job | null) {
     const dialogRef = this.dialog.open(DialogJobs, {
       panelClass: 'custom-dialog-container',

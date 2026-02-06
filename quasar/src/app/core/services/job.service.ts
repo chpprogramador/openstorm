@@ -46,6 +46,10 @@ export class JobService {
     return this.http.delete(`${this.apiUrl}/projects/${projectId}/jobs/${jobId}`);
   }
 
+  resumeJob(projectId: string, jobId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/projects/${projectId}/jobs/${jobId}/resume`, {});
+  }
+
   validate(validateJob: ValidateJob): Observable<Job> {
     return this.http.post<Job>(`${this.apiUrl}/jobs/validate`, validateJob);
   }

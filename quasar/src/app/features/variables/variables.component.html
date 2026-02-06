@@ -31,18 +31,7 @@
           >
             <mat-icon>add</mat-icon>
             Nova variável
-          </button>
-
-          <button
-            mat-stroked-button
-            color="primary"
-            (click)="loadVariables()"
-            [disabled]="loading"
-          >
-            <mat-icon>refresh</mat-icon>
-            Atualizar
-          </button>
-        </div>
+          </button></div>
       </div>
 
       <div class="info-panel" *ngIf="variables.length === 0 && !loading">
@@ -130,3 +119,4 @@
     </mat-card-content>
   </mat-card>
 </div>
+

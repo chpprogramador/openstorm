@@ -8,6 +8,7 @@
   background: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
+  box-shadow: 0 8px 20px var(--shadow-secondary);
 }
 
 .page-header {
@@ -42,10 +43,10 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
+    padding: 10px 14px;
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: 12px;
     color: var(--text-secondary);
 
     mat-icon {
@@ -68,7 +69,14 @@
   }
 
   .primary-action {
-    box-shadow: 0 10px 20px rgba(34, 211, 238, 0.2);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+    color: #0b1a2b;
+    border: 1px solid rgba(34, 211, 238, 0.45);
+    box-shadow: 0 10px 20px rgba(34, 211, 238, 0.25);
+  }
+
+  .primary-action:hover {
+    filter: brightness(1.05);
   }
 
   .info-panel {
@@ -101,10 +109,25 @@
 
   .variables-table {
     width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-card);
 
     .mat-mdc-header-cell {
       color: var(--text-muted);
       font-weight: 600;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .mat-mdc-row {
+      background: transparent;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .mat-mdc-row:hover {
+      background: var(--bg-tertiary);
     }
 
     .variable-name {
@@ -129,7 +152,7 @@
 
     .variable-value {
       code {
-        background-color: var(--bg-primary);
+        background-color: var(--bg-tertiary);
         padding: 4px 8px;
         border-radius: 6px;
         font-family: var(--font-mono);

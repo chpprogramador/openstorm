@@ -321,6 +321,9 @@
       <ng-template #contextMenu>
         <div class="context-menu" cdkMenu cdkMenuPanel>
           <button class="context-menu-item" cdkMenuItem (click)="openEditDialog(selectedJob)"><mat-icon>edit_outline</mat-icon> Editar</button>
+          @if (selectedJob?.status === 'error') {
+            <button class="context-menu-item" cdkMenuItem (click)="resumeJob(selectedJob)"><mat-icon>play_circle</mat-icon> Retomar</button>
+          }
           <button class="context-menu-item" cdkMenuItem (click)="removeJob(selectedJob)"><mat-icon>delete_outline</mat-icon> Excluir</button>
         </div>
       </ng-template>
