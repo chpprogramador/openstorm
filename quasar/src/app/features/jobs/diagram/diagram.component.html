@@ -1,4 +1,4 @@
-<div class="jobs-header">
+﻿<div class="jobs-header">
   <div class="jobs-title-section">
     <h1 class="jobs-title">Pipeline Visual</h1>
     <p class="jobs-subtitle">Configure e monitore seus processos ETL</p>
@@ -17,7 +17,7 @@
       <div class="status-indicator saved">
         <mat-icon class="status-icon">cloud_done</mat-icon>
         <span class="status-text">Salvo</span>
-        <span class="status-meta" *ngIf="formatSavedAt() as savedAt">· {{ savedAt }}</span>
+        <span class="status-meta" *ngIf="formatSavedAt() as savedAt">Â· {{ savedAt }}</span>
       </div>
     }
   </div>
@@ -168,7 +168,7 @@
     (dragover)="onDiagramDragOver($event)"
     (drop)="onDiagramDrop($event)"
   >
-    <div id="diagramContainer" class="diagram-content" [style.transform]="getDiagramTransform()">
+    <div id="diagramContainer" class="diagram-content" [style.transform]="getDiagramTransform()" [style.--handle-scale]="1 / zoom">
       <svg class="visual-lines" *ngIf="visualElements.length > 0">
         <line
           *ngFor="let el of visualElements"
@@ -188,7 +188,7 @@
           *ngFor="let el of visualElements"
           [attr.cx]="el.x"
           [attr.cy]="el.y"
-          r="6"
+          [attr.r]="8 / zoom"
           class="line-handle"
           [style.display]="el.type === 'line' && selectedVisualElement?.id === el.id ? 'block' : 'none'"
           (mousedown)="onLineHandleMouseDown($event, el, 'start')"
@@ -197,7 +197,7 @@
           *ngFor="let el of visualElements"
           [attr.cx]="el.x2"
           [attr.cy]="el.y2"
-          r="6"
+          [attr.r]="8 / zoom"
           class="line-handle"
           [style.display]="el.type === 'line' && selectedVisualElement?.id === el.id ? 'block' : 'none'"
           (mousedown)="onLineHandleMouseDown($event, el, 'end')"
@@ -259,17 +259,7 @@
           class="resize-handle se"
           *ngIf="selectedVisualElement?.id === el.id && el.type !== 'line'"
           (mousedown)="onResizeMouseDown($event, el, 'se')"
-        ></div>
-        <button
-          class="visual-delete"
-          type="button"
-          (mousedown)="$event.stopPropagation()"
-          (click)="$event.stopPropagation(); deleteVisualElement(el)"
-          aria-label="Remover elemento"
-        >
-          ×
-        </button>
-      </div>
+        ></div></div>
 
       @for (job of jobs; track job.id) {
         <div
@@ -450,3 +440,4 @@
     </div>
   </div>
 </div>
+

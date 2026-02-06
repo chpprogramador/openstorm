@@ -139,36 +139,38 @@
 
 .resize-handle {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #60a5fa;
   border: 2px solid #0f172a;
   box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.6);
   cursor: nwse-resize;
+  transform: scale(var(--handle-scale, 1));
+  transform-origin: center;
 }
 
 .resize-handle.nw {
-  top: -6px;
-  left: -6px;
+  top: -9px;
+  left: -9px;
   cursor: nwse-resize;
 }
 
 .resize-handle.ne {
-  top: -6px;
-  right: -6px;
+  top: -9px;
+  right: -9px;
   cursor: nesw-resize;
 }
 
 .resize-handle.sw {
-  bottom: -6px;
-  left: -6px;
+  bottom: -9px;
+  left: -9px;
   cursor: nesw-resize;
 }
 
 .resize-handle.se {
-  bottom: -6px;
-  right: -6px;
+  bottom: -9px;
+  right: -9px;
   cursor: nwse-resize;
 }
 
@@ -371,22 +373,25 @@
   flex-direction: column;
   min-width: 180px;
   max-width: 280px;
-  background-color: var(--bg-primary);
-  padding: 6px 0;
-  border: 1px solid #010912;
+  background-color: rgba(15, 23, 42, 0.95);
+  padding: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
 .context-menu-item {
-  //background-color: transparent;
   cursor: pointer;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
 
   user-select: none;
   min-width: 64px;
   line-height: 36px;
-  padding: 0 16px;
+  padding: 0 12px;
   margin: 2px;
+  color: var(--text-primary);
+  background: transparent;
 
   display: flex;
   align-items: center;
@@ -394,16 +399,17 @@
   flex: 1;
 }
 
-.context-menu-item mat-icon:hover {
-  background-color: var(--bg-secundary);
+.context-menu-item:hover {
+  background: rgba(59, 130, 246, 0.12);
 }
 
 .context-menu-item:active {
-  background-color: #08386e;
+  background-color: rgba(59, 130, 246, 0.22);
 }
 
 .context-menu-item mat-icon {
   margin-right: 12px;
+  color: var(--text-secondary);
 }
 
 // Toolbar Styles

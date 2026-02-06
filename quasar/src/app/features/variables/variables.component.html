@@ -1,52 +1,56 @@
-<div class="variables-container">
-  <mat-card>
+﻿<div class="variables-page-container">
+  <mat-card class="page-header">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>settings</mat-icon>
-        Variaveis do Projeto
+        <mat-icon color="primary">tune</mat-icon>
+        Variáveis do Projeto
       </mat-card-title>
       <mat-card-subtitle>
-        Gerencie as variaveis que podem ser utilizadas nos scripts SQL
+        Gerencie variáveis para uso em scripts SQL e parâmetros do pipeline
       </mat-card-subtitle>
     </mat-card-header>
+  </mat-card>
 
+  <mat-card class="variables-card">
     <mat-card-content>
-      <div class="actions-toolbar">
-        <button
-          mat-raised-button
-          color="primary"
-          class="mat-raised-button add-variable-button"
-          (click)="openVariableDialog()"
-          [disabled]="!appState.project"
-        >
-          <mat-icon>add</mat-icon>
-          Nova Variavel
-        </button>
+      <div class="toolbar-row">
+        <div class="toolbar-info" *ngIf="variables.length > 0">
+          <mat-icon>code</mat-icon>
+          <span>
+            Use as variáveis com a sintaxe:
+            <code>${{ '{nome_da_variavel}' }}</code>
+          </span>
+        </div>
+        <div class="toolbar-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            class="primary-action"
+            (click)="openVariableDialog()"
+            [disabled]="!appState.project"
+          >
+            <mat-icon>add</mat-icon>
+            Nova variável
+          </button>
 
-        <button
-          mat-button
-          (click)="loadVariables()"
-          [disabled]="loading"
-        >
-          <mat-icon>refresh</mat-icon>
-          Atualizar
-        </button>
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="loadVariables()"
+            [disabled]="loading"
+          >
+            <mat-icon>refresh</mat-icon>
+            Atualizar
+          </button>
+        </div>
       </div>
 
       <div class="info-panel" *ngIf="variables.length === 0 && !loading">
         <mat-icon class="info-icon">info</mat-icon>
-        <p>Nenhuma variavel encontrada.</p>
+        <h3>Nenhuma variável encontrada</h3>
         <p class="info-subtitle">
-          Clique em "Nova Variavel" para criar sua primeira variavel.
+          Clique em “Nova variável” para criar sua primeira entrada.
         </p>
-      </div>
-
-      <div class="usage-info" *ngIf="variables.length > 0">
-        <mat-icon>lightbulb</mat-icon>
-        <span>
-          Use as variaveis em suas queries SQL com a sintaxe:
-          <code>${{ '{nome_da_variavel}' }}</code>
-        </span>
       </div>
 
       <mat-table [dataSource]="variables" class="variables-table" *ngIf="variables.length > 0">
@@ -57,7 +61,7 @@
               <strong>{{variable.name}}</strong>
               <button
                 mat-icon-button
-                matTooltip="Copiar referencia da variavel"
+                matTooltip="Copiar referência da variável"
                 (click)="copyToClipboard(variable.name)"
                 class="copy-button"
               >
@@ -86,26 +90,26 @@
         </ng-container>
 
         <ng-container matColumnDef="description">
-          <mat-header-cell *matHeaderCellDef>Descricao</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef>Descrição</mat-header-cell>
           <mat-cell *matCellDef="let variable">
-            <span class="description-text">{{variable.description || 'Sem descricao'}}</span>
+            <span class="description-text">{{variable.description || 'Sem descrição'}}</span>
           </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef>Acoes</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
           <mat-cell *matCellDef="let variable">
             <div class="action-buttons">
               <button
                 mat-icon-button
-                matTooltip="Editar variavel"
+                matTooltip="Editar variável"
                 (click)="openVariableDialog(variable)"
               >
                 <mat-icon>edit</mat-icon>
               </button>
               <button
                 mat-icon-button
-                matTooltip="Excluir variavel"
+                matTooltip="Excluir variável"
                 color="warn"
                 (click)="deleteVariable(variable)"
               >
@@ -121,7 +125,7 @@
 
       <div class="loading-indicator" *ngIf="loading">
         <mat-icon class="spinning">autorenew</mat-icon>
-        <span>Carregando variaveis...</span>
+        <span>Carregando variáveis...</span>
       </div>
     </mat-card-content>
   </mat-card>

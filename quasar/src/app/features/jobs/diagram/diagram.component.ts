@@ -983,6 +983,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       this.startPanning(event);
       return;
     }
+    if (event.ctrlKey) {
+      this.toggleElementSelection(element, true);
+      return;
+    }
     const alreadySelected = this.isElementSelected(element);
     if (!alreadySelected) {
       this.setSelection([element]);
@@ -1230,6 +1234,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   selectElement(element: VisualElement, event: MouseEvent) {
     event.stopPropagation();
+    if (event.ctrlKey) {
+      this.toggleElementSelection(element, true);
+      return;
+    }
     this.setSelection([element]);
   }
 
@@ -1238,6 +1246,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     event.stopPropagation();
     if (this.isSpacePressed) {
       this.startPanning(event);
+      return;
+    }
+    if (event.ctrlKey) {
+      this.toggleJobSelection(job, true);
       return;
     }
     const alreadySelected = this.isJobSelected(job);
@@ -1262,19 +1274,51 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     if (!preserveJobs) {
       this.selectedJobs = [];
     }
-    if (elements.length === 1) {
-      this.selectedVisualElement = elements[0];
-    } else {
-      this.selectedVisualElement = null;
-    }
+    this.updateSelectedVisualElement();
   }
 
   private setJobSelection(jobs: JobExtended[], preserveVisuals = false) {
     this.selectedJobs = jobs;
     if (!preserveVisuals) {
       this.selectedVisualElements = [];
-      this.selectedVisualElement = null;
     }
+    this.updateSelectedVisualElement();
+  }
+
+  private toggleElementSelection(element: VisualElement, preserveJobs = false) {
+    const id = this.getElementId(element);
+    if (!id) return;
+    const exists = this.selectedVisualElements.some((el) => this.getElementId(el) === id);
+    if (exists) {
+      this.selectedVisualElements = this.selectedVisualElements.filter((el) => this.getElementId(el) !== id);
+    } else {
+      this.selectedVisualElements = [...this.selectedVisualElements, element];
+    }
+    if (!preserveJobs) {
+      this.selectedJobs = [];
+    }
+    this.updateSelectedVisualElement();
+  }
+
+  private toggleJobSelection(job: JobExtended, preserveVisuals = false) {
+    const exists = this.selectedJobs.some((j) => j.id === job.id);
+    if (exists) {
+      this.selectedJobs = this.selectedJobs.filter((j) => j.id !== job.id);
+    } else {
+      this.selectedJobs = [...this.selectedJobs, job];
+    }
+    if (!preserveVisuals) {
+      this.selectedVisualElements = [];
+    }
+    this.updateSelectedVisualElement();
+  }
+
+  private updateSelectedVisualElement() {
+    if (this.selectedVisualElements.length === 1 && this.selectedJobs.length === 0) {
+      this.selectedVisualElement = this.selectedVisualElements[0];
+      return;
+    }
+    this.selectedVisualElement = null;
   }
 
   isElementSelected(element: VisualElement): boolean {
