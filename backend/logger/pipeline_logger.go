@@ -41,6 +41,7 @@ type JobLog struct {
 
 type PipelineLog struct {
 	PipelineID string    `json:"pipeline_id"`
+	ProjectID  string    `json:"project_id,omitempty"`
 	Project    string    `json:"project"`
 	Status     string    `json:"status"`
 	StartedAt  time.Time `json:"started_at"`
@@ -185,7 +186,14 @@ func GetPipelineStats(pipelineID string) (map[string]interface{}, error) {
 	for _, job := range log.Jobs {
 		jobStats[job.Status]++
 		totalBatches += len(job.Batches)
-		totalProcessed += job.Processed
+		if job.Processed > 0 {
+			totalProcessed += job.Processed
+		} else {
+			// Fallback: soma linhas dos batches quando o contador do job não estiver preenchido
+			for _, batch := range job.Batches {
+				totalProcessed += batch.Rows
+			}
+		}
 	}
 
 	stats["job_stats"] = jobStats

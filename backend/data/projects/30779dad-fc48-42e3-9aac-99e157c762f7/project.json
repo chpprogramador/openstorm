@@ -1,6 +1,6 @@
 {
   "id": "30779dad-fc48-42e3-9aac-99e157c762f7",
-  "projectName": "Flexsan (Cópia)",
+  "projectName": "Flexsan (Atualizado)",
   "jobs": [
     "jobs/c261e485-8fd1-42af-bbc7-eebb02be84c5.json",
     "jobs/9587a320-098a-46db-8bd1-29c4e6ffa10d.json",
@@ -410,16 +410,16 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "+xyYO0UM9wOMgKpEgoGHazhrpcFA7ns=",
-    "password": "dZV1+HGhIW73rEUe7JODiHWy/zEKICdbESUeFrHC/qY=",
+    "user": "98vNelIbFngcV+UaffZQg1h1DkDhTmM=",
+    "password": "MIGnWf5FR9hQf6SU/m5e74R9z2LvKmCfKyOwfXTRrSc=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "3+DeT+PU12PbqcVWYf3++yXCRg==",
-    "password": "EqDVrWLXJ0tM6umKlF/KseV4nTQeCg==",
+    "user": "gmOTePYqqGgTc1e4UyfiIBsAYQ==",
+    "password": "NesLtqTrhRCuuulANMbOQEC/FUzM/w==",
     "database": "vzmsaneamento"
   },
   "concurrency": 5,

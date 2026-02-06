@@ -2,8 +2,11 @@ package logger
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 	"unicode"
@@ -201,6 +204,14 @@ func (e *PDFExporter) generateReport(log *PipelineLog) error {
 
 // ListPipelineReportsHandler endpoint para listar todos os pipelines disponíveis
 func ListPipelineReportsHandler(c *gin.Context) {
+	projectID := strings.TrimSpace(c.Query("projectId"))
+	var projectName string
+	if projectID != "" {
+		if name, err := loadProjectName(projectID); err == nil {
+			projectName = name
+		}
+	}
+
 	logs, err := ListPipelineLogs()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -209,7 +220,29 @@ func ListPipelineReportsHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, logs)
+	if projectName == "" && projectID == "" {
+		c.JSON(http.StatusOK, logs)
+		return
+	}
+
+	filtered := make([]string, 0, len(logs))
+	for _, pipelineID := range logs {
+		log, err := LoadPipelineLog(pipelineID)
+		if err != nil {
+			continue
+		}
+		if log.ProjectID != "" {
+			if log.ProjectID == projectID {
+				filtered = append(filtered, pipelineID)
+			}
+			continue
+		}
+		if projectName != "" && log.Project == projectName {
+			filtered = append(filtered, pipelineID)
+		}
+	}
+
+	c.JSON(http.StatusOK, filtered)
 
 	// // Formata a lista com informações básicas
 	// var pipelines []map[string]interface{}
@@ -236,6 +269,26 @@ func ListPipelineReportsHandler(c *gin.Context) {
 	// 	"pipelines": pipelines,
 	// 	"total":     len(pipelines),
 	// })
+}
+
+func loadProjectName(projectID string) (string, error) {
+	projectPath := filepath.Join("data", "projects", projectID, "project.json")
+	data, err := os.ReadFile(projectPath)
+	if err != nil {
+		return "", err
+	}
+
+	var payload struct {
+		ProjectName string `json:"projectName"`
+	}
+	if err := json.Unmarshal(data, &payload); err != nil {
+		return "", err
+	}
+	if strings.TrimSpace(payload.ProjectName) == "" {
+		return "", fmt.Errorf("projectName vazio")
+	}
+
+	return payload.ProjectName, nil
 }
 
 // Funções auxiliares para geração do PDF
@@ -420,8 +473,12 @@ func (e *PDFExporter) addJobCard(index int, job *JobLog) {
 
 	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
 
+	processed := job.Processed
+	if processed == 0 && len(job.Batches) > 0 {
+		processed = e.countBatchRows(job.Batches)
+	}
 	details := fmt.Sprintf("Job ID: %s | Duracao: %v | Processados: %d registros",
-		job.JobID[:8]+"...", formattedDuration, job.Processed)
+		job.JobID[:8]+"...", formattedDuration, processed)
 	e.pdf.CellFormat(150, 4, details, "", 1, "L", false, 0, "")
 
 	e.pdf.SetXY(22, startY+15)
@@ -608,7 +665,11 @@ func (e *PDFExporter) calculateStats(log *PipelineLog) pipelineStats {
 			stats.jobsWithStopOnError++
 		}
 		stats.totalBatches += len(job.Batches)
-		stats.totalProcessed += job.Processed
+		if job.Processed > 0 {
+			stats.totalProcessed += job.Processed
+		} else {
+			stats.totalProcessed += e.countBatchRows(job.Batches)
+		}
 	}
 
 	if stats.totalJobs > 0 {

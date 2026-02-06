@@ -42,6 +42,7 @@ func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect d
 	// Inicializa o log do pipeline
 	pipelineLog := &logger.PipelineLog{
 		PipelineID: logger.GeneratePipelineID(project),
+		ProjectID:  projectID,
 		Project:    project,
 		Status:     "running",
 		StartedAt:  time.Now(),
@@ -214,8 +215,9 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 						return
 					}
 					batchStart := time.Now()
+					startOffset := int(atomic.LoadInt64(&processed))
 					batchLog := logger.BatchLog{
-						Offset:    int(processed),
+						Offset:    startOffset,
 						Limit:     len(batch),
 						Status:    "running",
 						StartedAt: batchStart,
@@ -269,6 +271,10 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					}
 
 					atomic.AddInt64(&processed, int64(len(batch)))
+					// Mantém o contador do job sincronizado com o log do pipeline
+					logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
+						jl.Processed = int(atomic.LoadInt64(&processed))
+					})
 					batchLog.Status = "done"
 					batchLog.Rows = len(batch)
 					batchLog.EndedAt = time.Now()
@@ -390,6 +396,10 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 		end := time.Now()
 		finalProcessed := int(atomic.LoadInt64(&processed))
+		logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
+			jl.Processed = finalProcessed
+		})
+		jr.savePipelineLog()
 		if !jobHadError.Load() && finalProcessed < total {
 			jobHadError.Store(true)
 			lastErr.Store(fmt.Sprintf("processados %d de %d registros", finalProcessed, total))

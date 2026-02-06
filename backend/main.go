@@ -72,6 +72,12 @@ func main() {
 
 		// Lista de pipelines disponíveis
 		api.GET("/pipelines/reports", logger.ListPipelineReportsHandler)
+		api.GET("/projects/:id/pipelines/reports", func(c *gin.Context) {
+			q := c.Request.URL.Query()
+			q.Set("projectId", c.Param("id"))
+			c.Request.URL.RawQuery = q.Encode()
+			logger.ListPipelineReportsHandler(c)
+		})
 
 		// Estatísticas de um pipeline específico (JSON)
 		api.GET("/pipeline/:pipelineId/stats", func(c *gin.Context) {
