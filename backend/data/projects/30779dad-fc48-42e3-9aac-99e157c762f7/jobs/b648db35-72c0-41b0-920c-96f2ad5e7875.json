@@ -1,0 +1,16 @@
+{
+  "id": "b648db35-72c0-41b0-920c-96f2ad5e7875",
+  "jobName": "Fatura Motivo Recálculo",
+  "selectSql": "select\n\tm.id id,\n\tm.motivorecalculo nome_motivo_recalculo\nfrom motivorecalculo m",
+  "insertSql": "insert\n\tinto\n\t${SCHEMA}.fatura_motivo_recalculo (\n\tid,\n\tnome_motivo_recalculo)",
+  "columns": [
+    "id",
+    "nome_motivo_recalculo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 6540
+}

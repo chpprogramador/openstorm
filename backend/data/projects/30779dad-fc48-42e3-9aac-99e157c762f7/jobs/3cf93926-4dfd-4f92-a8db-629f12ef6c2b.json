@@ -1,0 +1,32 @@
+{
+  "id": "3cf93926-4dfd-4f92-a8db-629f12ef6c2b",
+  "jobName": "Medição Crítica",
+  "selectSql": "SELECT\n  src.id AS id,\n  case when src.analisecritica = 'S' then true else false end as analise_critica,\n  case when src.ativo = 'S' then true else false end as ativo,\n  case when src.confirmarleitura = 'S' then true else false end as confirmar_leitura,\n  src.consmaximo AS consumo_maximo,\n  src.consminimo AS consumo_minimo,\n  case when src.consumozero = 'S' then true else false end as consumo_zero,\n  case when src.inversaohm = 'S' then true else false end as inversaohm,\n  case when src.leituramenoranterior = 'S' then true else false end as leitura_menor_anterior,\n  case when src.leituranaoefetuada = 'S' then true else false end AS leitura_nao_realizada,\n  case when src.ligacaonova = 'S' then true else false end as ligacao_nova,\n  left(src.mensagemavisoretencao,255) AS mensagem_aviso_retencao,\n  src.criticamedicao AS nome_medicao_critica,\n  src.percvarconsmax::int AS percentual_variacao_maximo,\n  src.percvarconsmin::int AS percentual_variacao_minimo,\n  case when src.residuoinconsistente = 'S' then true else false end as residuo_inconsistente,\n  case when src.retencaoforcada = 'S' then true else false end as retencao_forcada,\n  null AS valor_maximo_excedido\nFROM criticamedicao src",
+  "insertSql": "INSERT INTO\n  ${SCHEMA}.medicao_critica (\n    id,\n    analise_critica,\n    ativo,\n    confirmar_leitura,\n    consumo_maximo,\n    consumo_minimo,\n    consumo_zero,\n    inversaohm,\n    leitura_menor_anterior,\n    leitura_nao_realizada,\n    ligacao_nova,\n    mensagem_aviso_retencao,\n    nome_medicao_critica,\n    percentual_variacao_maximo,\n    percentual_variacao_minimo,\n    residuo_inconsistente,\n    retencao_forcada,\n    valor_maximo_excedido\n  )",
+  "columns": [
+    "id",
+    "analise_critica",
+    "ativo",
+    "confirmar_leitura",
+    "consumo_maximo",
+    "consumo_minimo",
+    "consumo_zero",
+    "inversaohm",
+    "leitura_menor_anterior",
+    "leitura_nao_realizada",
+    "ligacao_nova",
+    "mensagem_aviso_retencao",
+    "nome_medicao_critica",
+    "percentual_variacao_maximo",
+    "percentual_variacao_minimo",
+    "residuo_inconsistente",
+    "retencao_forcada",
+    "valor_maximo_excedido"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 2300,
+  "top": 4440
+}

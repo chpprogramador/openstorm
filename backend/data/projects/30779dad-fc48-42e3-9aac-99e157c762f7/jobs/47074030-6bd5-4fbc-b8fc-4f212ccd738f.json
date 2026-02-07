@@ -1,0 +1,21 @@
+{
+  "id": "47074030-6bd5-4fbc-b8fc-4f212ccd738f",
+  "jobName": "Fatura Detalhe",
+  "selectSql": "SELECT\n  src.id AS id,\n  src.valor AS valor,\n  src.idfatura AS id_fatura,\n  src.idproduto AS id_produto,\n  NULL AS id_regra,\n  src.idrubrica AS id_rubrica,\n  src.idvendadetalheparcela AS id_rubrica_venda_detalhe_parcela\nFROM faturadetalhe src",
+  "insertSql": "INSERT INTO\n  ${SCHEMA}.fatura_detalhe (\n    id,\n    valor,\n    id_fatura,\n    id_produto,\n    id_regra,\n    id_rubrica,\n    id_rubrica_venda_detalhe_parcela\n  )",
+  "columns": [
+    "id",
+    "valor",
+    "id_fatura",
+    "id_produto",
+    "id_regra",
+    "id_rubrica",
+    "id_rubrica_venda_detalhe_parcela"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 6540
+}

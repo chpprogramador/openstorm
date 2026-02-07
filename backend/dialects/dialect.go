@@ -56,9 +56,8 @@ func AnalyzeAndModifySQL(query string) (bool, string) {
 	// Detecta se há WHERE
 	hasWhere := hasWhereAtTopLevel(lowerQuery)
 
-	// Remove LIMIT
-	reLimit := regexp.MustCompile(`(?i)\blimit\s+\d+(\s*,\s*\d+)?\b`)
-	queryNoLimit := reLimit.ReplaceAllString(query, "")
+	// Remove LIMIT apenas no nível principal
+	queryNoLimit := removeLimitAtTopLevel(query, lowerQuery)
 
 	// Remove ORDER BY somente no nível principal
 	queryNoOrder := removeOrderByAtTopLevel(queryNoLimit)
@@ -110,6 +109,158 @@ func hasWhereAtTopLevel(lowerQuery string) bool {
 
 func isIdentChar(b byte) bool {
 	return (b >= 'a' && b <= 'z') || (b >= '0' && b <= '9') || b == '_'
+}
+
+// removeLimitAtTopLevel remove LIMIT apenas fora de subqueries/CTEs e strings.
+func removeLimitAtTopLevel(query, lower string) string {
+	depth := 0
+	inSingle := false
+	inDouble := false
+
+	for i := 0; i < len(lower)-5; i++ {
+		ch := lower[i]
+
+		if inSingle {
+			if ch == '\'' {
+				if i+1 < len(lower) && lower[i+1] == '\'' {
+					i++
+					continue
+				}
+				inSingle = false
+			}
+			continue
+		}
+		if inDouble {
+			if ch == '"' {
+				if i+1 < len(lower) && lower[i+1] == '"' {
+					i++
+					continue
+				}
+				inDouble = false
+			}
+			continue
+		}
+
+		switch ch {
+		case '\'':
+			inSingle = true
+			continue
+		case '"':
+			inDouble = true
+			continue
+		case '(':
+			depth++
+			continue
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+			continue
+		}
+
+		if depth == 0 && strings.HasPrefix(lower[i:], "limit") {
+			prev := i == 0 || !isIdentChar(lower[i-1])
+			next := i+5 == len(lower) || !isIdentChar(lower[i+5])
+			if prev && next {
+				end := findLimitClauseEnd(lower, i+5)
+				trimmed := strings.TrimSpace(query[:i] + " " + query[end:])
+				return trimmed
+			}
+		}
+	}
+
+	return query
+}
+
+func findLimitClauseEnd(lower string, start int) int {
+	i := skipSpaces(lower, start)
+	if hasTokenAt(lower, i, "all") {
+		i += 3
+		return skipSpaces(lower, i)
+	}
+
+	i = skipNumberOrParameter(lower, i)
+	i = skipSpaces(lower, i)
+
+	if i < len(lower) && lower[i] == ',' {
+		i++
+		i = skipSpaces(lower, i)
+		i = skipNumberOrParameter(lower, i)
+		return skipSpaces(lower, i)
+	}
+
+	if hasTokenAt(lower, i, "offset") {
+		i += 6
+		i = skipSpaces(lower, i)
+		i = skipNumberOrParameter(lower, i)
+		i = skipSpaces(lower, i)
+	}
+
+	if hasTokenAt(lower, i, "fetch") {
+		i += 5
+		i = skipSpaces(lower, i)
+		if hasTokenAt(lower, i, "first") {
+			i += 5
+		} else if hasTokenAt(lower, i, "next") {
+			i += 4
+		}
+		i = skipSpaces(lower, i)
+		i = skipNumberOrParameter(lower, i)
+		i = skipSpaces(lower, i)
+		if hasTokenAt(lower, i, "row") {
+			i += 3
+		} else if hasTokenAt(lower, i, "rows") {
+			i += 4
+		}
+		i = skipSpaces(lower, i)
+		if hasTokenAt(lower, i, "only") {
+			i += 4
+		}
+		i = skipSpaces(lower, i)
+	}
+
+	return i
+}
+
+func skipSpaces(lower string, i int) int {
+	for i < len(lower) {
+		switch lower[i] {
+		case ' ', '\t', '\n', '\r':
+			i++
+		default:
+			return i
+		}
+	}
+	return i
+}
+
+func skipNumberOrParameter(lower string, i int) int {
+	if i >= len(lower) {
+		return i
+	}
+	if lower[i] == '$' {
+		i++
+		for i < len(lower) && lower[i] >= '0' && lower[i] <= '9' {
+			i++
+		}
+		return i
+	}
+	if lower[i] == '?' {
+		return i + 1
+	}
+	for i < len(lower) && lower[i] >= '0' && lower[i] <= '9' {
+		i++
+	}
+	return i
+}
+
+func hasTokenAt(lower string, i int, token string) bool {
+	if i+len(token) > len(lower) || !strings.HasPrefix(lower[i:], token) {
+		return false
+	}
+	prev := i == 0 || !isIdentChar(lower[i-1])
+	next := i+len(token) == len(lower) || !isIdentChar(lower[i+len(token)])
+	return prev && next
 }
 
 // removeOrderByAtTopLevel remove ORDER BY apenas fora de subqueries/CTEs.

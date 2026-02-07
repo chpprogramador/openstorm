@@ -1,0 +1,21 @@
+{
+  "id": "3f091b61-9eaf-4081-bee8-a10c33447235",
+  "jobName": "Medição Detalhe Produto",
+  "selectSql": "SELECT\n  src.id AS id,\n  src.creditoutilizado AS credito_utilizado,\n  src.volfat AS volume_faturado,\n  src.volfatori AS volume_faturado_retornado,\n  src.idtipocalculo AS id_calculo_tipo,\n  src.idmedicaodetalhe AS id_medicao_detalhe,\n  src.idproduto AS id_produto\nFROM medicaodetalheproduto src",
+  "insertSql": "INSERT INTO\n  ${SCHEMA}.medicao_detalhe_produto (\n    id,\n    credito_utilizado,\n    volume_faturado,\n    volume_faturado_retornado,\n    id_calculo_tipo,\n    id_medicao_detalhe,\n    id_produto\n  )",
+  "columns": [
+    "id",
+    "credito_utilizado",
+    "volume_faturado",
+    "volume_faturado_retornado",
+    "id_calculo_tipo",
+    "id_medicao_detalhe",
+    "id_produto"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 3500,
+  "top": 4620
+}

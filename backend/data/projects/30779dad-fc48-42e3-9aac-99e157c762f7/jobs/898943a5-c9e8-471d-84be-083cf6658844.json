@@ -1,0 +1,23 @@
+{
+  "id": "898943a5-c9e8-471d-84be-083cf6658844",
+  "jobName": "Medição Código Leitura",
+  "selectSql": "select\n\tc.id id,\n\tcase when c.aceitaleitura = 'S' then true else false end aceita_leitura,\n\tcase when c.repassesimultanea = 'S' then true else false end enviar_para_critica,\n\tcase when c.repassesimultanea = 'S' then true else false end exige_foto,\n\ttrue fraude,\n\tc.codigoleitura nome_codigo_leitura,\n\tcase when c.padrao = 'S' then true else false end padrao_leitura,\n\tc.idcriteriofat id_faturamento_criterio,\n\tnull id_medicao_critica\nfrom codigoleitura c \t",
+  "insertSql": "insert\n\tinto\n\t${SCHEMA}.medicao_codigo_leitura (\n\tid,\n\taceita_leitura,\n\tenviar_para_critica,\n\texige_foto,\n\tfraude,\n\tnome_codigo_leitura,\n\tpadrao_leitura,\n\tid_faturamento_criterio,\n\tid_medicao_critica)",
+  "columns": [
+    "id",
+    "aceita_leitura",
+    "enviar_para_critica",
+    "exige_foto",
+    "fraude",
+    "nome_codigo_leitura",
+    "padrao_leitura",
+    "id_faturamento_criterio",
+    "id_medicao_critica"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 2700,
+  "top": 4440
+}

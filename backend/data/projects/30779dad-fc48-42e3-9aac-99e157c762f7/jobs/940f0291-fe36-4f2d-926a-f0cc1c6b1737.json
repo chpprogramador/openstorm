@@ -1,0 +1,28 @@
+{
+  "id": "940f0291-fe36-4f2d-926a-f0cc1c6b1737",
+  "jobName": "Medição",
+  "selectSql": "SELECT\n  src.id AS id,\n  case when src.carregadocoletor = 'S' then true else false end as carregado_coletor,\n  to_date(nullif(src.dataenviocoletor,''),'YYYYMMDD') AS data_envio_coletor,\n  to_date(src.datageracaoarquivo,'YYYYMMDD') AS data_geracao,\n  to_timestamp(src.datahoraretorno, 'YYYYMMDD HH24:MI:SS') as data_hora_retorno,\n  case when src.devolvidoparcial = 'S' then true else false end as devolvido_parcialmente,\n  case when src.enviadocoletor = 'S' then true else false end as enviado_coletor,\n  case when src.leituramanual = 'S' then true else false end as leitura_manual,\n  src.nrleiturasrealizadas AS numero_leituras,\n  src.seqseprota AS sequencia_rota,\n  src.idleiturista AS id_agente_comercial,\n  src.idgrupo AS id_grupo_medicao,\n  src.idtipoenvioleitura AS id_leitura_tipo,\n  src.idperiodo AS id_periodo\nFROM medicao src",
+  "insertSql": "INSERT INTO\n  ${SCHEMA}.medicao (\n    id,\n    carregado_coletor,\n    data_envio_coletor,\n    data_geracao,\n    data_hora_retorno,\n    devolvido_parcialmente,\n    enviado_coletor,\n    leitura_manual,\n    numero_leituras,\n    sequencia_rota,\n    id_agente_comercial,\n    id_grupo_medicao,\n    id_leitura_tipo,\n    id_periodo\n  )",
+  "columns": [
+    "id",
+    "carregado_coletor",
+    "data_envio_coletor",
+    "data_geracao",
+    "data_hora_retorno",
+    "devolvido_parcialmente",
+    "enviado_coletor",
+    "leitura_manual",
+    "numero_leituras",
+    "sequencia_rota",
+    "id_agente_comercial",
+    "id_grupo_medicao",
+    "id_leitura_tipo",
+    "id_periodo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 2300,
+  "top": 4620
+}
