@@ -44,8 +44,21 @@
         <input type="hidden" formControlName="columns">
     </form>
 
-    <div class="lineFull editors" [class.three]="form.get('type')?.value === 'insert'">
-        <div class="editor" *ngIf="form.get('type')?.value === 'insert'">
+    <div
+        class="lineFull editors"
+        [class.three]="isInsertType()"
+        [class.active-insert]="isInsertType() && activeEditor === 'insert'"
+        [class.active-pos-insert]="isInsertType() && activeEditor === 'pos-insert'"
+        [class.active-select]="isInsertType() && activeEditor === 'select'"
+    >
+        <div
+            class="editor editor-insert"
+            *ngIf="isInsertType()"
+            tabindex="0"
+            (click)="setActiveEditor('insert')"
+            (focusin)="setActiveEditor('insert')"
+            [class.is-active]="isInsertType() && activeEditor === 'insert'"
+        >
             <h2>insert</h2>
             <app-sql-editor
             [initialSql]="sqlInsert"
@@ -53,7 +66,14 @@
             </app-sql-editor>
         </div>
 
-        <div class="editor" *ngIf="form.get('type')?.value === 'insert'">
+        <div
+            class="editor editor-pos-insert"
+            *ngIf="isInsertType()"
+            tabindex="0"
+            (click)="setActiveEditor('pos-insert')"
+            (focusin)="setActiveEditor('pos-insert')"
+            [class.is-active]="isInsertType() && activeEditor === 'pos-insert'"
+        >
             <h2>pos-insert</h2>
             <app-sql-editor
             [initialSql]="sqlPosInsert"
@@ -61,9 +81,15 @@
             </app-sql-editor>
         </div>
 
-        <div class="editor">
-            <h2 *ngIf="form.get('type')?.value === 'insert'">Select</h2>
-            <h2 *ngIf="form.get('type')?.value != 'insert'">Query</h2>
+        <div
+            class="editor editor-select"
+            tabindex="0"
+            (click)="setActiveEditor('select')"
+            (focusin)="setActiveEditor('select')"
+            [class.is-active]="isInsertType() && activeEditor === 'select'"
+        >
+            <h2 *ngIf="isInsertType()">Select</h2>
+            <h2 *ngIf="!isInsertType()">Query</h2>
             <app-sql-editor
             [initialSql]="sqlSelect"
             (sqlChanged)="onSelectAtualizado($event)">

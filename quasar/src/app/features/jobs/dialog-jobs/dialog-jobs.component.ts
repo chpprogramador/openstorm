@@ -42,6 +42,7 @@ export class DialogJobs {
   selectAtualizado = '';
   insertAtualizado = '';
   posInsertAtualizado = '';
+  activeEditor: 'insert' | 'pos-insert' | 'select' = 'select';
   private localJob: Job;
 
   constructor(
@@ -131,5 +132,13 @@ export class DialogJobs {
   onPosInsertAtualizado(novoSql: string) {
     this.posInsertAtualizado = novoSql;
     this.form.patchValue({ posInsertSql: novoSql });
+  }
+
+  setActiveEditor(editor: 'insert' | 'pos-insert' | 'select') {
+    this.activeEditor = editor;
+  }
+
+  isInsertType(): boolean {
+    return this.form.get('type')?.value === 'insert';
   }
 }

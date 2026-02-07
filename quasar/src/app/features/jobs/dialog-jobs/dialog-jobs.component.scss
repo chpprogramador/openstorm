@@ -62,6 +62,7 @@
   flex-grow: 1;
   height: 100%;
   min-height: 0;
+  transition: flex 180ms ease, min-width 180ms ease;
 }
 
 /* Faz o app-sql-editor crescer e ocupar todo o espaço disponível */
@@ -71,8 +72,20 @@
   min-height: 0;
 }
 
+.editors.three {
+  --editor-active-flex: 2.2;
+  --editor-inactive-flex: 1;
+}
+
 .editors.three .editor {
-  width: 33.3333%;
+  flex: var(--editor-inactive-flex) 1 0;
+  min-width: 220px;
+}
+
+.editors.three.active-insert .editor-insert,
+.editors.three.active-pos-insert .editor-pos-insert,
+.editors.three.active-select .editor-select {
+  flex: var(--editor-active-flex) 1 0;
 }
 
 .w50 {
