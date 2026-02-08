@@ -1,0 +1,16 @@
+{
+  "id": "cbb50960-c3a4-4859-b45e-0f4503da437f",
+  "jobName": "Faturamento Critério",
+  "selectSql": "select\n\tc.id id,\n\tc.criteriofat nome_faturamento_criterio\nfrom criteriofat c",
+  "insertSql": "insert\n\tinto\n\t${SCHEMA}.faturamento_criterio (\n\tid,\n\tnome_faturamento_criterio)",
+  "columns": [
+    "id",
+    "nome_faturamento_criterio"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 3540
+}

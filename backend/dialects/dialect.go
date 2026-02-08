@@ -51,13 +51,14 @@ func (d PostgresDialect) BuildExplainSelectQueryByHash(job models.Job) string {
 
 // AnalyzeAndModifySQL detecta se a query tem WHERE e remove LIMIT e ORDER BY (considerando subqueries).
 func AnalyzeAndModifySQL(query string) (bool, string) {
-	lowerQuery := strings.ToLower(query)
+	queryNoComments := stripSQLComments(query)
+	lowerQuery := strings.ToLower(queryNoComments)
 
 	// Detecta se há WHERE
 	hasWhere := hasWhereAtTopLevel(lowerQuery)
 
 	// Remove LIMIT apenas no nível principal
-	queryNoLimit := removeLimitAtTopLevel(query, lowerQuery)
+	queryNoLimit := removeLimitAtTopLevel(queryNoComments, lowerQuery)
 
 	// Remove ORDER BY somente no nível principal
 	queryNoOrder := removeOrderByAtTopLevel(queryNoLimit)
@@ -69,6 +70,93 @@ func AnalyzeAndModifySQL(query string) (bool, string) {
 	fmt.Printf("Possui WHERE: %v\n", hasWhere)
 
 	return hasWhere, queryModified
+}
+
+// stripSQLComments remove comentários de linha (--) e bloco (/* */),
+// preservando conteúdo dentro de strings literais.
+func stripSQLComments(sql string) string {
+	var b strings.Builder
+	inSingle := false
+	inDouble := false
+	inLineComment := false
+	inBlockComment := false
+
+	for i := 0; i < len(sql); i++ {
+		ch := sql[i]
+
+		if inLineComment {
+			if ch == '\n' || ch == '\r' {
+				inLineComment = false
+				b.WriteByte(' ')
+				if ch == '\r' && i+1 < len(sql) && sql[i+1] == '\n' {
+					i++
+				}
+			}
+			continue
+		}
+
+		if inBlockComment {
+			if ch == '*' && i+1 < len(sql) && sql[i+1] == '/' {
+				inBlockComment = false
+				b.WriteByte(' ')
+				i++
+			}
+			continue
+		}
+
+		if inSingle {
+			if ch == '\'' {
+				if i+1 < len(sql) && sql[i+1] == '\'' {
+					b.WriteByte(ch)
+					b.WriteByte(sql[i+1])
+					i++
+					continue
+				}
+				inSingle = false
+			}
+			b.WriteByte(ch)
+			continue
+		}
+
+		if inDouble {
+			if ch == '"' {
+				if i+1 < len(sql) && sql[i+1] == '"' {
+					b.WriteByte(ch)
+					b.WriteByte(sql[i+1])
+					i++
+					continue
+				}
+				inDouble = false
+			}
+			b.WriteByte(ch)
+			continue
+		}
+
+		if ch == '\'' {
+			inSingle = true
+			b.WriteByte(ch)
+			continue
+		}
+		if ch == '"' {
+			inDouble = true
+			b.WriteByte(ch)
+			continue
+		}
+		if ch == '-' && i+1 < len(sql) && sql[i+1] == '-' {
+			inLineComment = true
+			i++
+			continue
+		}
+		if ch == '/' && i+1 < len(sql) && sql[i+1] == '*' {
+			inBlockComment = true
+			i++
+			continue
+		}
+
+		b.WriteByte(ch)
+	}
+
+	return b.String()
 }
 
 // hasWhereAtTopLevel detecta WHERE apenas no nível principal (fora de subqueries/CTEs e strings).

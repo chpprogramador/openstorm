@@ -49,7 +49,11 @@ type PipelineLog struct {
 	Jobs       []JobLog  `json:"jobs"`
 }
 
-var mu sync.Mutex
+var (
+	mu                   sync.Mutex
+	lastSaveAt           = make(map[string]time.Time)
+	minSaveInterval      = 2 * time.Second
+)
 
 func GeneratePipelineID(project string) string {
 	return fmt.Sprintf("%s_%s", project, time.Now().Format("2006-01-02_15-04-05"))
@@ -58,6 +62,10 @@ func GeneratePipelineID(project string) string {
 func SavePipelineLog(log *PipelineLog) error {
 	mu.Lock()
 	defer mu.Unlock()
+
+	if shouldThrottleSave(log) {
+		return nil
+	}
 
 	// Cria o diretório logs se não existir
 	logsDir := "logs"
@@ -76,7 +84,24 @@ func SavePipelineLog(log *PipelineLog) error {
 	}
 
 	fmt.Printf("Log salvo em: %s\n", path)
+	if log != nil && log.PipelineID != "" {
+		lastSaveAt[log.PipelineID] = time.Now()
+	}
 	return nil
+}
+
+func shouldThrottleSave(log *PipelineLog) bool {
+	if log == nil || log.PipelineID == "" {
+		return false
+	}
+	if log.Status != "running" || !log.EndedAt.IsZero() {
+		return false
+	}
+	last, ok := lastSaveAt[log.PipelineID]
+	if !ok {
+		return false
+	}
+	return time.Since(last) < minSaveInterval
 }
 
 func LoadPipelineLog(pipelineID string) (*PipelineLog, error) {

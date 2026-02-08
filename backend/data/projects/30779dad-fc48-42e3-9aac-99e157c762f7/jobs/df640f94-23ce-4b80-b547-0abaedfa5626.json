@@ -1,0 +1,23 @@
+{
+  "id": "df640f94-23ce-4b80-b547-0abaedfa5626",
+  "jobName": "Parcelamento Detalhe",
+  "selectSql": "select\n\tvdp.id id,\n\tf.datavencimento data_vencimento_parcela,\n\tcase when vdp.faturaavulsa = 'S' then true else false end as entrada,\n\tvdp.parcela numero_parcela,\n\tcase when vdp.cancelado = 'S' then true else false end as parcela_cancelada,\n\tcase when f.id is null then true else false end as parcela_incorporada,\n\tvdp.valor valor_parcela,\n\tf.id id_fatura_incorporada,\n\tv.idparcelamento id_parcelameto\nfrom venda v\njoin vendadetalhe vd on (v.id = vd.idvenda)\njoin vendadetalheparcela vdp on (vd.id = vdp.idvendadetalhe)\nleft join fatura f on (f.id = vdp.idfatura)",
+  "insertSql": "insert into ${SCHEMA}.parcelamento_detalhe (\n\tid,\n\tdata_vencimento_parcela,\n\tentrada,\n\tnumero_parcela,\n\tparcela_cancelada,\n\tparcela_incorporada,\n\tvalor_parcela,\n\tid_fatura_incorporada,\n\tid_parcelameto)",
+  "columns": [
+    "id",
+    "data_vencimento_parcela",
+    "entrada",
+    "numero_parcela",
+    "parcela_cancelada",
+    "parcela_incorporada",
+    "valor_parcela",
+    "id_fatura_incorporada",
+    "id_parcelameto"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 5880
+}

@@ -1,7 +1,7 @@
 {
   "id": "47074030-6bd5-4fbc-b8fc-4f212ccd738f",
   "jobName": "Fatura Detalhe",
-  "selectSql": "SELECT\n  src.id AS id,\n  src.valor AS valor,\n  src.idfatura AS id_fatura,\n  src.idproduto AS id_produto,\n  NULL AS id_regra,\n  src.idrubrica AS id_rubrica,\n  src.idvendadetalheparcela AS id_rubrica_venda_detalhe_parcela\nFROM faturadetalhe src",
+  "selectSql": "WITH base AS (\n  SELECT\n    src.id,\n    src.valor,\n    src.idfatura,\n    src.idproduto,\n    src.idrubrica,\n    NULLIF(vdp.id, 0) AS vdp_id_norm,\n    src.ctid\n  FROM faturadetalhe src\n  left join vendadetalheparcela vdp on (vdp.id = src.idvendadetalheparcela)\n),\nranked AS (\n  SELECT\n    b.*,\n    row_number() OVER (\n      PARTITION BY b.vdp_id_norm\n      ORDER BY b.id DESC\n    ) AS rn\n  FROM base b\n)\nSELECT\n  r.id,\n  r.valor,\n  r.idfatura AS id_fatura,\n  r.idproduto AS id_produto,\n  NULL AS id_regra,\n  r.idrubrica AS id_rubrica,\n  CASE\n    WHEN r.vdp_id_norm IS NULL THEN NULL\n    WHEN r.rn = 1 THEN r.vdp_id_norm\n    ELSE NULL\n  END AS id_rubrica_venda_detalhe_parcela\nFROM ranked r",
   "insertSql": "INSERT INTO\n  ${SCHEMA}.fatura_detalhe (\n    id,\n    valor,\n    id_fatura,\n    id_produto,\n    id_regra,\n    id_rubrica,\n    id_rubrica_venda_detalhe_parcela\n  )",
   "columns": [
     "id",
@@ -16,6 +16,6 @@
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 1300,
-  "top": 6540
+  "left": 100,
+  "top": 6780
 }

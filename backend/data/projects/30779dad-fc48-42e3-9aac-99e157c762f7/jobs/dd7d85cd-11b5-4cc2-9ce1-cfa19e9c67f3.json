@@ -1,7 +1,7 @@
 {
   "id": "dd7d85cd-11b5-4cc2-9ce1-cfa19e9c67f3",
   "jobName": "Rota leitura",
-  "selectSql": "select l.id, l.rotaleit, l.idgrupoleit\r\nfrom \r\n\t(select l.id, l.rotaleit, l.idgrupoleit, max(l.ctid) ctid\r\n\tfrom \r\n\t\t(select \r\n\t\t\tl.rotaleit id,\r\n\t\t\tl.rotaleit,\r\n\t\t\tl.idgrupoleit,\r\n\t\t\tl.ctid\r\n\t\tfrom ligacao l\r\n\t\tunion\r\n\t\tselect \r\n\t\t\tl.rotaent id,\r\n\t\t\tl.rotaent,\r\n\t\t\tl.idgrupoleit,\r\n\t\t\tl.ctid\r\n\t\tfrom ligacao l\r\n\t\t) l\r\n\tgroup by \r\n\t\tl.id,\r\n\t\tl.rotaleit,\r\n\t\tl.idgrupoleit) l\r\nwhere l.rotaleit is not null",
+  "selectSql": "select l.id, l.rotaleit, l.idgrupoleit\r\nfrom \r\n\t(select l.id, l.rotaleit, l.idgrupoleit, max(l.ctid) ctid\r\n\tfrom \r\n\t\t(select \r\n\t\t\tl.rotaleit id,\r\n\t\t\tl.rotaleit,\r\n\t\t\tl.idgrupoleit,\r\n\t\t\tl.ctid\r\n\t\tfrom ligacao l\r\n\t\tunion\r\n\t\tselect \r\n\t\t\tl.rotaent id,\r\n\t\t\tl.rotaent,\r\n\t\t\tl.idgrupoleit,\r\n\t\t\tl.ctid\r\n\t\tfrom ligacao l\r\n\t\tunion\r\n\t\tselect \r\n\t\t\tmd.rotaleit id,\r\n\t\t\tmd.rotaleit,\r\n\t\t\tmd.idgrupoentrega,\r\n\t\t\tmd.ctid\r\n\t\tfrom medicaodetalhe md\r\n\t\t) l\r\n\tgroup by \r\n\t\tl.id,\r\n\t\tl.rotaleit,\r\n\t\tl.idgrupoleit) l\r\nwhere l.rotaleit is not null",
   "insertSql": "INSERT INTO ${SCHEMA}.rota_leitura (id, numero_rota_leitura, id_grupo_medicao)",
   "posInsertSql": "ON CONFLICT (id) DO NOTHING",
   "posInsert": "ON CONFLICT (id) DO NOTHING",
@@ -14,6 +14,6 @@
   "recordsPerPage": 1000,
   "type": "insert",
   "stopOnError": true,
-  "left": 3500,
-  "top": 4440
+  "left": 100,
+  "top": 3720
 }

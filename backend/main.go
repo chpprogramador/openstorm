@@ -63,6 +63,16 @@ func main() {
 		status.LogsWS(c.Writer, c.Request)
 	})
 
+	// Progresso de counts via WebSocket
+	router.GET("/ws/counts", func(c *gin.Context) {
+		status.CountStatusWS(c.Writer, c.Request)
+	})
+
+	// Uso de workers via WebSocket
+	router.GET("/ws/workers", func(c *gin.Context) {
+		status.WorkerStatusWS(c.Writer, c.Request)
+	})
+
 	api := router.Group("/api")
 	{
 		// Download do PDF

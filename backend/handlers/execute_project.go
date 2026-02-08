@@ -22,6 +22,8 @@ import (
 func RunProject(c *gin.Context) {
 
 	status.ClearJobLogs()
+	status.ResetCountStatus()
+	status.ResetWorkerStatus()
 
 	//l? o JSON do projeto
 	projectID := c.Param("id")
@@ -84,6 +86,7 @@ func RunProject(c *gin.Context) {
 		if err := json.Unmarshal(jobBytes, &job); err == nil {
 			runner.JobMap[job.ID] = job
 			log.Printf("Job %s carregado do caminho %s", job.ID, fullPath)
+			runner.JobOrder = append(runner.JobOrder, job.ID)
 
 			// Atualizar status de todos os jobs para pendente
 			status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
@@ -122,7 +125,7 @@ func RunProject(c *gin.Context) {
 	log.Printf("Jobs usados como destino: %v", usedTargets)
 
 	var startJobs []string
-	for id := range runner.JobMap {
+	for _, id := range runner.JobOrder {
 		if !usedTargets[id] {
 			startJobs = append(startJobs, id)
 		}
@@ -131,9 +134,7 @@ func RunProject(c *gin.Context) {
 	// Fallback: se nenhuma conexão definida, executa todos
 	if len(startJobs) == 0 {
 		log.Println("Nenhum job raiz detectado — executando todos os jobs.")
-		for id := range runner.JobMap {
-			startJobs = append(startJobs, id)
-		}
+		startJobs = append(startJobs, runner.JobOrder...)
 	}
 
 	if len(startJobs) == 0 {
@@ -150,6 +151,8 @@ func RunProject(c *gin.Context) {
 
 func ResumeJob(c *gin.Context) {
 	status.ClearJobLogs()
+	status.ResetCountStatus()
+	status.ResetWorkerStatus()
 
 	projectID := c.Param("id")
 	jobID := c.Param("jobId")
@@ -205,6 +208,7 @@ func ResumeJob(c *gin.Context) {
 		if err := json.Unmarshal(jobBytes, &job); err == nil {
 			runner.JobMap[job.ID] = job
 			log.Printf("Job %s carregado do caminho %s", job.ID, fullPath)
+			runner.JobOrder = append(runner.JobOrder, job.ID)
 			jobCount++
 		} else {
 			log.Printf("Erro ao interpretar job %s: %v", jobPath, err)

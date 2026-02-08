@@ -276,35 +276,113 @@ func ValidateJobHandler(c *gin.Context) {
 }
 
 func cleanSQLNewlines(sql string) string {
-	// Preserva quebras de linha em strings literais (entre aspas simples)
-	// mas normaliza quebras de linha fora de strings literais
+	// Preserva quebras de linha em comentários de linha (--) para não comentar o restante da query.
+	// Normaliza quebras de linha fora de strings/comentários.
 
 	var result strings.Builder
 	inString := false
+	inDouble := false
+	inLineComment := false
+	inBlockComment := false
 
 	for i := 0; i < len(sql); i++ {
 		char := sql[i]
 
-		// Verifica se estamos dentro ou fora de uma string literal
-		if char == '\'' {
-			// Verifica se a aspa não está escapada
-			if i == 0 || sql[i-1] != '\\' {
-				inString = !inString
+		if inLineComment {
+			if char == '\r' || char == '\n' {
+				if char == '\r' && i+1 < len(sql) && sql[i+1] == '\n' {
+					i++
+				}
+				inLineComment = false
+				result.WriteByte('\n')
+				continue
 			}
+			result.WriteByte(char)
+			continue
 		}
 
-		// Trata quebras de linha
-		if (char == '\n' || char == '\r') && !inString {
-			// Substitui quebras de linha por espaço fora de strings literais
-			result.WriteByte(' ')
+		if inBlockComment {
+			if char == '*' && i+1 < len(sql) && sql[i+1] == '/' {
+				inBlockComment = false
+				result.WriteByte(char)
+				result.WriteByte(sql[i+1])
+				i++
+				continue
+			}
+			if char == '\r' || char == '\n' {
+				if char == '\r' && i+1 < len(sql) && sql[i+1] == '\n' {
+					i++
+				}
+				result.WriteByte(' ')
+				continue
+			}
+			result.WriteByte(char)
+			continue
+		}
 
-			// Pula o \n em sequências \r\n
+		// Verifica se estamos dentro ou fora de uma string literal (aspas simples)
+		if inString {
+			if char == '\'' {
+				if i+1 < len(sql) && sql[i+1] == '\'' {
+					result.WriteByte(char)
+					result.WriteByte(sql[i+1])
+					i++
+					continue
+				}
+				inString = false
+			}
+			result.WriteByte(char)
+			continue
+		}
+
+		if inDouble {
+			if char == '"' {
+				if i+1 < len(sql) && sql[i+1] == '"' {
+					result.WriteByte(char)
+					result.WriteByte(sql[i+1])
+					i++
+					continue
+				}
+				inDouble = false
+			}
+			result.WriteByte(char)
+			continue
+		}
+
+		if char == '\'' {
+			inString = true
+			result.WriteByte(char)
+			continue
+		}
+		if char == '"' {
+			inDouble = true
+			result.WriteByte(char)
+			continue
+		}
+		if char == '-' && i+1 < len(sql) && sql[i+1] == '-' {
+			inLineComment = true
+			result.WriteByte(char)
+			result.WriteByte(sql[i+1])
+			i++
+			continue
+		}
+		if char == '/' && i+1 < len(sql) && sql[i+1] == '*' {
+			inBlockComment = true
+			result.WriteByte(char)
+			result.WriteByte(sql[i+1])
+			i++
+			continue
+		}
+
+		if char == '\n' || char == '\r' {
 			if char == '\r' && i+1 < len(sql) && sql[i+1] == '\n' {
 				i++
 			}
-		} else {
-			result.WriteByte(char)
+			result.WriteByte(' ')
+			continue
 		}
+
+		result.WriteByte(char)
 	}
 
 	return result.String()

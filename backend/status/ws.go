@@ -30,6 +30,18 @@ type LogEntry struct {
 	Message   string    `json:"message"`
 }
 
+type CountStatus struct {
+	Done  int `json:"done"`
+	Total int `json:"total"`
+}
+
+type WorkerStatus struct {
+	ReadActive  int `json:"readActive"`
+	ReadTotal   int `json:"readTotal"`
+	WriteActive int `json:"writeActive"`
+	WriteTotal  int `json:"writeTotal"`
+}
+
 var (
 	currentStatus   = &ProjectStatus{Status: "stop"}
 	projectSubs     = make(map[*websocket.Conn]chan struct{})
@@ -46,12 +58,82 @@ var (
 
 	jobLogs   = make(map[string][]LogEntry)
 	jobLogsMu sync.Mutex
+
+	countStatus   = &CountStatus{}
+	countSubs     = make(map[*websocket.Conn]chan struct{})
+	countSubsMu   sync.Mutex
+	countStatusMu sync.Mutex
+
+	workerStatus   = &WorkerStatus{}
+	workerSubs     = make(map[*websocket.Conn]chan struct{})
+	workerSubsMu   sync.Mutex
+	workerStatusMu sync.Mutex
 )
 
 func ClearJobLogs() {
 	jobLogsMu.Lock()
 	defer jobLogsMu.Unlock()
 	jobLogs = make(map[string][]LogEntry)
+}
+
+func ResetCountStatus() {
+	countStatusMu.Lock()
+	countStatus.Done = 0
+	countStatus.Total = 0
+	countStatusMu.Unlock()
+	notifyCountSubscribers()
+}
+
+func SetCountTotal(total int) {
+	countStatusMu.Lock()
+	countStatus.Total = total
+	countStatusMu.Unlock()
+	notifyCountSubscribers()
+}
+
+func IncCountDone() {
+	countStatusMu.Lock()
+	countStatus.Done++
+	countStatusMu.Unlock()
+	notifyCountSubscribers()
+}
+
+func ResetWorkerStatus() {
+	workerStatusMu.Lock()
+	workerStatus.ReadActive = 0
+	workerStatus.ReadTotal = 0
+	workerStatus.WriteActive = 0
+	workerStatus.WriteTotal = 0
+	workerStatusMu.Unlock()
+	notifyWorkerSubscribers()
+}
+
+func AddWorkerTotals(readDelta, writeDelta int) {
+	workerStatusMu.Lock()
+	workerStatus.ReadTotal += readDelta
+	if workerStatus.ReadTotal < 0 {
+		workerStatus.ReadTotal = 0
+	}
+	workerStatus.WriteTotal += writeDelta
+	if workerStatus.WriteTotal < 0 {
+		workerStatus.WriteTotal = 0
+	}
+	workerStatusMu.Unlock()
+	notifyWorkerSubscribers()
+}
+
+func AddWorkerActive(readDelta, writeDelta int) {
+	workerStatusMu.Lock()
+	workerStatus.ReadActive += readDelta
+	if workerStatus.ReadActive < 0 {
+		workerStatus.ReadActive = 0
+	}
+	workerStatus.WriteActive += writeDelta
+	if workerStatus.WriteActive < 0 {
+		workerStatus.WriteActive = 0
+	}
+	workerStatusMu.Unlock()
+	notifyWorkerSubscribers()
 }
 
 func UpdateProjectStatus(status string) {
@@ -102,6 +184,30 @@ func notifyLogSubscribers() {
 	defer logConnsMu.Unlock()
 
 	for _, ch := range logConns {
+		select {
+		case ch <- struct{}{}:
+		default:
+		}
+	}
+}
+
+func notifyCountSubscribers() {
+	countSubsMu.Lock()
+	defer countSubsMu.Unlock()
+
+	for _, ch := range countSubs {
+		select {
+		case ch <- struct{}{}:
+		default:
+		}
+	}
+}
+
+func notifyWorkerSubscribers() {
+	workerSubsMu.Lock()
+	defer workerSubsMu.Unlock()
+
+	for _, ch := range workerSubs {
 		select {
 		case ch <- struct{}{}:
 		default:
@@ -217,6 +323,74 @@ func LogsWS(w http.ResponseWriter, r *http.Request) {
 		jobLogsMu.Unlock()
 
 		if data, err := json.Marshal(logCopy); err == nil {
+			if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
+				break
+			}
+		}
+	}
+}
+
+func CountStatusWS(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+
+	ch := make(chan struct{}, 1)
+	countSubsMu.Lock()
+	countSubs[conn] = ch
+	countSubsMu.Unlock()
+
+	defer func() {
+		countSubsMu.Lock()
+		delete(countSubs, conn)
+		countSubsMu.Unlock()
+	}()
+
+	// Envia o status inicial
+	ch <- struct{}{}
+
+	for range ch {
+		countStatusMu.Lock()
+		statusCopy := *countStatus
+		countStatusMu.Unlock()
+
+		if data, err := json.Marshal(statusCopy); err == nil {
+			if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
+				break
+			}
+		}
+	}
+}
+
+func WorkerStatusWS(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+
+	ch := make(chan struct{}, 1)
+	workerSubsMu.Lock()
+	workerSubs[conn] = ch
+	workerSubsMu.Unlock()
+
+	defer func() {
+		workerSubsMu.Lock()
+		delete(workerSubs, conn)
+		workerSubsMu.Unlock()
+	}()
+
+	// Envia o status inicial
+	ch <- struct{}{}
+
+	for range ch {
+		workerStatusMu.Lock()
+		statusCopy := *workerStatus
+		workerStatusMu.Unlock()
+
+		if data, err := json.Marshal(statusCopy); err == nil {
 			if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
 				break
 			}

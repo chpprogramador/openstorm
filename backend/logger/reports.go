@@ -310,7 +310,7 @@ func (e *PDFExporter) addStatusSummary(log *PipelineLog) {
 	minutes := int(duration.Minutes()) % 60
 	seconds := int(duration.Seconds()) % 60
 
-	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
+	formattedDuration := fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 
 	e.pdf.SetFont("Arial", "", 11)
 	e.pdf.SetXY(22, currentY+14)
@@ -336,7 +336,7 @@ func (e *PDFExporter) addGeneralInfo(log *PipelineLog) {
 	minutes := int(duration.Minutes()) % 60
 	seconds := int(duration.Seconds()) % 60
 
-	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
+	formattedDuration := fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 
 	e.addInfoCard("Pipeline ID", removeAccents(log.PipelineID), 86)
 
@@ -437,7 +437,7 @@ func (e *PDFExporter) addJobCard(index int, job *JobLog) {
 	minutes := int(duration.Minutes()) % 60
 	seconds := int(duration.Seconds()) % 60
 
-	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
+	formattedDuration := fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 
 	processed := job.Processed
 	if processed == 0 && len(job.Batches) > 0 {
@@ -508,7 +508,7 @@ func (e *PDFExporter) addConclusions(log *PipelineLog) {
 	minutes := int(duration.Minutes()) % 60
 	seconds := int(duration.Seconds()) % 60
 
-	formattedDuration := fmt.Sprintf("%02dh %02dm %02ds", hours, minutes, seconds)
+	formattedDuration := fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 
 	points := []string{
 		fmt.Sprintf("Execucao: Concluido em %v", formattedDuration),

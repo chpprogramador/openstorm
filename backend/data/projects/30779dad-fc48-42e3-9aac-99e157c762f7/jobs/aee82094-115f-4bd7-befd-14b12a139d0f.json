@@ -1,0 +1,24 @@
+{
+  "id": "aee82094-115f-4bd7-befd-14b12a139d0f",
+  "jobName": "Rubrica Venda Detalhe Parcela",
+  "selectSql": "select\n\tvdp.id id,\n\tcase when vdp.faturaavulsa = 'S' then true else false end as fatura_avulsa,\n\tvdp.parcela parcela,\n\tcase when vdp.cancelado = 'S' then true else false end as parcela_cancelada,\n\tvdp.valor valor_parcela,\n\tvdp.idfatura id_fatura_incorporacao,\n\tvdp.idperiodofat id_periodo_faturamento_incorporacao,\n\tvdp.idperiodofatorigem id_periodo_origem_incorporacao,\n\tvdp.idrubrica id_rubrica_venda_detalhe,\n\tnull id_usuario_cancelamento\nfrom vendadetalheparcela vdp",
+  "insertSql": "insert into ${SCHEMA}.rubrica_venda_detalhe_parcela (\n\tid,\n\tfatura_avulsa,\n\tparcela,\n\tparcela_cancelada,\n\tvalor_parcela,\n\tid_fatura_incorporacao,\n\tid_periodo_faturamento_incorporacao,\n\tid_periodo_origem_incorporacao,\n\tid_rubrica_venda_detalhe,\n\tid_usuario_cancelamento)",
+  "columns": [
+    "id",
+    "fatura_avulsa",
+    "parcela",
+    "parcela_cancelada",
+    "valor_parcela",
+    "id_fatura_incorporacao",
+    "id_periodo_faturamento_incorporacao",
+    "id_periodo_origem_incorporacao",
+    "id_rubrica_venda_detalhe",
+    "id_usuario_cancelamento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 6060
+}
