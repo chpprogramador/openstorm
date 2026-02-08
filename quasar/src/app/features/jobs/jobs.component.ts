@@ -8,8 +8,10 @@ import { of, Subject } from 'rxjs';
 import { auditTime, catchError, distinctUntilChanged, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { AppState } from '../../core/services/app-state';
 import { Job, JobService } from '../../core/services/job.service';
+import { CountsProgress, CountsStatusService } from '../../core/services/counts-status.service';
 import { ProjectStatusService } from '../../core/services/project-status.service';
 import { StatusService } from '../../core/services/status.service';
+import { WorkersStatusService, WorkersUsage } from '../../core/services/workers-status.service';
 import { ProjectService } from '../../core/services/project.service';
 import { isRunning_, jobs_, updateJobsWithStatus } from '../../core/services/job-state.service';
 import { Diagram } from './diagram/diagram.component';
@@ -35,13 +37,15 @@ export interface JobExtended extends Job {
     FormsModule,
     Diagram
   ],
-  template: `<app-diagram [jobs]="jobs" [project]="appState.project" [isRunning]="isRunning"></app-diagram>`,
+  template: `<app-diagram [jobs]="jobs" [project]="appState.project" [isRunning]="isRunning" [countsProgress]="countsProgress" [workersUsage]="workersUsage"></app-diagram>`,
   styleUrls: ['./jobs.component.scss']
 })
 export class JobsComponent implements OnInit, OnDestroy {
   jobs: JobExtended[] = jobs_;
   isRunning = isRunning_;
   selectedJob: JobExtended | null = null;
+  countsProgress: CountsProgress | null = null;
+  workersUsage: WorkersUsage | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -49,6 +53,8 @@ export class JobsComponent implements OnInit, OnDestroy {
     public appState: AppState,
     public statusService: StatusService,
     private projectStatusService: ProjectStatusService,
+    private countsStatusService: CountsStatusService,
+    private workersStatusService: WorkersStatusService,
     private projectService: ProjectService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -135,6 +141,26 @@ export class JobsComponent implements OnInit, OnDestroy {
         this.isRunning = false;
       }
     });
+
+    this.countsStatusService.listen()
+      .pipe(
+        takeUntil(this.destroy$),
+        auditTime(250)
+      )
+      .subscribe(progress => {
+        this.countsProgress = progress;
+        this.scheduleRender();
+      });
+
+    this.workersStatusService.listen()
+      .pipe(
+        takeUntil(this.destroy$),
+        auditTime(250)
+      )
+      .subscribe(usage => {
+        this.workersUsage = usage;
+        this.scheduleRender();
+      });
   }
 
   ngOnDestroy() {

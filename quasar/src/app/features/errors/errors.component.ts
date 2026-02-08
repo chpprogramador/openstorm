@@ -208,15 +208,46 @@ export class ErrorsComponent implements OnInit, OnDestroy {
     return this.errorService.formatDateTime(dateString);
   }
 
+  formatDuration(value?: string | null, startedAt?: string | null, endedAt?: string | null): string {
+    const resolved = this.computeDurationFromDates(startedAt, endedAt);
+    if (resolved !== null) {
+      return resolved;
+    }
+    if (!value) return '—';
+    if (value.includes(':')) {
+      const parts = value.split(':').map(p => p.trim());
+      if (parts.length === 3) {
+        return parts.map(p => p.padStart(2, '0')).join(':');
+      }
+    }
+    const h = /([0-9]+)h/.exec(value);
+    const m = /([0-9]+)m/.exec(value);
+    const s = /([0-9]+(?:\.[0-9]+)?)s/.exec(value);
+    const hours = h ? parseInt(h[1], 10) : 0;
+    const minutes = m ? parseInt(m[1], 10) : 0;
+    const seconds = s ? Math.floor(parseFloat(s[1])) : 0;
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    return this.formatSeconds(totalSeconds);
+  }
+
   getDuration(startedAt: string, endedAt: string): string {
-    if (!startedAt || !endedAt) return '';
+    return this.formatDuration(null, startedAt, endedAt);
+  }
+
+  private computeDurationFromDates(startedAt?: string | null, endedAt?: string | null): string | null {
+    if (!startedAt || !endedAt) return null;
     const start = new Date(startedAt).getTime();
     const end = new Date(endedAt).getTime();
-    if (Number.isNaN(start) || Number.isNaN(end)) return '';
-    const diffMs = Math.max(0, end - start);
-    const totalSeconds = Math.floor(diffMs / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}m ${seconds}s`;
+    if (Number.isNaN(start) || Number.isNaN(end) || end < start) return null;
+    const totalSeconds = Math.floor((end - start) / 1000);
+    return this.formatSeconds(totalSeconds);
+  }
+
+  private formatSeconds(totalSeconds: number): string {
+    const safeSeconds = Math.max(0, totalSeconds);
+    const hh = Math.floor(safeSeconds / 3600).toString().padStart(2, '0');
+    const mm = Math.floor((safeSeconds % 3600) / 60).toString().padStart(2, '0');
+    const ss = Math.floor(safeSeconds % 60).toString().padStart(2, '0');
+    return `${hh}:${mm}:${ss}`;
   }
 }

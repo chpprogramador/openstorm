@@ -61,7 +61,7 @@
         </div>
         <div class="summary-item">
           <span class="summary-label">Duracao</span>
-          <span class="summary-value">{{ pipelineStats.duration }}</span>
+          <span class="summary-value">{{ formatDuration(pipelineStats.duration, pipelineStats.started_at, pipelineStats.ended_at) }}</span>
         </div>
       </div>
 
@@ -75,7 +75,7 @@
           <div class="stat-label">Registros Processados</div>
         </div>
         <div class="stat-item">
-          <div class="stat-value">{{ pipelineStats.duration }}</div>
+          <div class="stat-value">{{ formatDuration(pipelineStats.duration, pipelineStats.started_at, pipelineStats.ended_at) }}</div>
           <div class="stat-label">Duracao</div>
         </div>
         <div class="stat-item">

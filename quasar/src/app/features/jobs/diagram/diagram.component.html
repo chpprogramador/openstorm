@@ -17,7 +17,7 @@
       <div class="status-indicator saved">
         <mat-icon class="status-icon">cloud_done</mat-icon>
         <span class="status-text">Salvo</span>
-        <span class="status-meta" *ngIf="formatSavedAt() as savedAt">Â· {{ savedAt }}</span>
+        <span class="status-meta" *ngIf="formatSavedAt() as savedAt">· {{ savedAt }}</span>
       </div>
     }
   </div>
@@ -147,12 +147,46 @@
 </div>
 
 <div class="toolbar-legend" *ngIf="getStatusCounts() as counts">
-  <span class="legend-title">Status</span>
-  <span class="legend-pill total">Total {{ counts.total }}</span>
-  <span class="legend-pill running">Em execucao {{ counts.running }}</span>
-  <span class="legend-pill done">Concluido {{ counts.done }}</span>
-  <span class="legend-pill error">Erro {{ counts.error }}</span>
-  <span class="legend-pill pending">Pendente {{ counts.pending }}</span>
+  <div class="legend-group status-chart">
+    <div
+      class="status-bar"
+      role="img"
+      [attr.aria-label]="'Status: Total ' + counts.total + ', em execucao ' + counts.running + ', concluido ' + counts.done + ', erro ' + counts.error + ', pendente ' + counts.pending"
+    >
+      <span class="status-segment running" [style.width.%]="getPercent(counts.running, counts.total)"></span>
+      <span class="status-segment done" [style.width.%]="getPercent(counts.done, counts.total)"></span>
+      <span class="status-segment error" [style.width.%]="getPercent(counts.error, counts.total)"></span>
+      <span class="status-segment pending" [style.width.%]="getPercent(counts.pending, counts.total)"></span>
+    </div>
+    <div class="status-legend">
+      <span class="legend-pill running">Em execucao {{ counts.running }}</span>
+      <span class="legend-pill done">Concluido {{ counts.done }}</span>
+      <span class="legend-pill error">Erro {{ counts.error }}</span>
+      <span class="legend-pill pending">Pendente {{ counts.pending }}</span>
+      <span class="legend-pill total">Total {{ counts.total }}</span>
+    </div>
+  </div>
+  <span class="legend-separator" aria-hidden="true"></span>
+  <div class="legend-group exec-group">
+    <div class="exec-item counts">
+      <span class="exec-bar" [class.is-empty]="isEmptyProgress(countsProgress?.done, countsProgress?.total)" aria-hidden="true">
+        <span class="exec-fill" [style.width.%]="getPercent(countsProgress?.done, countsProgress?.total)"></span>
+      </span>
+      <span class="legend-pill exec-card counts">Counts {{ countsProgress?.done ?? '--' }}/{{ countsProgress?.total ?? '--' }}</span>
+    </div>
+    <div class="exec-item read">
+      <span class="exec-bar" [class.is-empty]="isEmptyProgress(workersUsage?.readActive, workersUsage?.readTotal)" aria-hidden="true">
+        <span class="exec-fill" [style.width.%]="getPercent(workersUsage?.readActive, workersUsage?.readTotal)"></span>
+      </span>
+      <span class="legend-pill exec-card read">Leitura {{ workersUsage?.readActive ?? '--' }}/{{ workersUsage?.readTotal ?? '--' }}</span>
+    </div>
+    <div class="exec-item write">
+      <span class="exec-bar" [class.is-empty]="isEmptyProgress(workersUsage?.writeActive, workersUsage?.writeTotal)" aria-hidden="true">
+        <span class="exec-fill" [style.width.%]="getPercent(workersUsage?.writeActive, workersUsage?.writeTotal)"></span>
+      </span>
+      <span class="legend-pill exec-card write">Escrita {{ workersUsage?.writeActive ?? '--' }}/{{ workersUsage?.writeTotal ?? '--' }}</span>
+    </div>
+  </div>
 </div>
 
 <div class="diagram-layout" [class.with-logs]="showLogs">
@@ -165,6 +199,7 @@
     (mousemove)="onMouseMove($event)"
     (mouseup)="onMouseUp()"
     (mouseleave)="onMouseUp()"
+    (wheel)="onWheel($event)"
     (dragover)="onDiagramDragOver($event)"
     (drop)="onDiagramDrop($event)"
   >
@@ -183,6 +218,7 @@
           [class.is-selected]="isElementSelected(el)"
           (mousedown)="onElementMouseDown($event, el)"
           (click)="selectElement(el, $event)"
+          (dblclick)="openElementPanel(el, $event)"
         ></line>
         <circle
           *ngFor="let el of visualElements"
@@ -233,6 +269,7 @@
         [style.display]="el.type === 'line' ? 'none' : 'flex'"
         (mousedown)="onElementMouseDown($event, el)"
         (click)="selectElement(el, $event)"
+        (dblclick)="openElementPanel(el, $event)"
       >
         <span
           class="visual-text"
@@ -330,7 +367,7 @@
     </div>
   </div>
 
-  <div class="visual-panel" *ngIf="selectedVisualElement as el" (click)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
+  <div class="visual-panel" *ngIf="panelElement as el" (click)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
     <div class="panel-header">
       <span>Elemento Visual</span>
       <button type="button" class="panel-close" (click)="clearSelection()">
@@ -443,4 +480,3 @@
     </div>
   </div>
 </div>
-

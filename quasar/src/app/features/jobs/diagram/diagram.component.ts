@@ -7,7 +7,6 @@ import {
   HostListener,
   Inject,
   Input,
-  NgZone,
   OnChanges,
   OnDestroy,
   PLATFORM_ID,
@@ -32,12 +31,14 @@ import { Subscription, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { LogViewerComponent } from '../../../shared/components/log-viewer/log-viewer.component';
-import { JobExtended } from '../../../core/services/job-state.service';
+import { JobExtended, jobs_ } from '../../../core/services/job-state.service';
 import { Job, JobService } from '../../../core/services/job.service';
+import { CountsProgress } from '../../../core/services/counts-status.service';
 import { Project } from '../../../core/models/project.model';
 import { ProjectService } from '../../../core/services/project.service';
 import { VisualElement } from '../../../core/models/visual-element.model';
 import { VisualElementService } from '../../../core/services/visual-element.service';
+import { WorkersUsage } from '../../../core/services/workers-status.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { DialogJobs } from '../dialog-jobs/dialog-jobs.component';
 
@@ -67,6 +68,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   @Input() jobs: JobExtended[] = [];
   @Input() project: Project | null = null;
   @Input() isRunning = false;
+  @Input() countsProgress: CountsProgress | null = null;
+  @Input() workersUsage: WorkersUsage | null = null;
   @ViewChildren('jobEl') jobElements!: QueryList<ElementRef>;
   @ViewChild('diagramContainer') containerRef!: ElementRef;
   @ViewChild('scrollContainer', { static: true }) scrollContainer!: ElementRef;
@@ -102,6 +105,17 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   selectedJob: JobExtended | null = null;
   selectedVisualElements: VisualElement[] = [];
   selectedJobs: JobExtended[] = [];
+  panelElement: VisualElement | null = null;
+  private undoStack: Array<{
+    jobs: Array<{ id: string; before: { left: number; top: number }; after: { left: number; top: number } }>;
+    visuals: Array<{
+      id: string;
+      before: { x: number; y: number; x2?: number; y2?: number; width?: number; height?: number };
+      after: { x: number; y: number; x2?: number; y2?: number; width?: number; height?: number };
+    }>;
+  }> = [];
+  private maxUndoEntries = 5;
+  private isApplyingUndo = false;
   isLoading = false;
   isSaving = false;
   isBrowser: boolean;
@@ -148,13 +162,11 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   private pendingRebuild = false;
   private pendingRebuildKey: string | null = null;
   private lastRebuildKey: string | null = null;
-  private wheelHandler: ((event: WheelEvent) => void) | null = null;
   private blurHandler: (() => void) | null = null;
   private visibilityHandler: (() => void) | null = null;
   private suppressConnectionEvents = false;
   private repaintTimer: ReturnType<typeof setTimeout> | null = null;
   private jobElementsSub: Subscription | null = null;
-  private rebuildAttempts = 0;
   fontOptions: string[] = [
     'Space Grotesk, sans-serif',
     'IBM Plex Sans, sans-serif',
@@ -176,6 +188,28 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onGlobalKeyDown(event: KeyboardEvent) {
+    const isEditable = this.isEditableTarget(event.target);
+    const isModifier = event.ctrlKey || event.metaKey;
+    if (isModifier && !event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
+      if (!isEditable) {
+        const handled = this.undoLast();
+        if (handled) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }
+      return;
+    }
+    if (isModifier && (event.key === 'd' || event.key === 'D')) {
+      if (!isEditable) {
+        const handled = this.duplicateSelection();
+        if (handled) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }
+      return;
+    }
     if (event.code === 'Space') {
       if (!this.isSpacePressed) {
         this.isSpacePressed = true;
@@ -223,7 +257,6 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     private dialog: MatDialog,
     private visualElementService: VisualElementService,
     private snackBar: MatSnackBar,
-    private ngZone: NgZone,
     private cdr: ChangeDetectorRef
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -254,49 +287,6 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     if (storedSnap) {
       this.snapEnabled = storedSnap === 'true';
     }
-
-    this.wheelHandler = (event: WheelEvent) => {
-      if (this.isEditableTarget(event.target)) {
-        return;
-      }
-      this.ngZone.run(() => {
-        if (event.ctrlKey) {
-          event.preventDefault();
-
-          const rect = container.getBoundingClientRect();
-          const mouseX = event.clientX - rect.left;
-          const mouseY = event.clientY - rect.top;
-          const prevZoom = this.zoom;
-
-          this.zoom += event.deltaY < 0 ? this.zoomStep : -this.zoomStep;
-          this.zoom = Math.min(Math.max(this.zoom, this.minZoom), this.maxZoom);
-
-          if (this.instance) {
-            this.viewOffsetX = mouseX - ((mouseX - this.viewOffsetX) * (this.zoom / prevZoom));
-            this.viewOffsetY = mouseY - ((mouseY - this.viewOffsetY) * (this.zoom / prevZoom));
-            this.instance.setZoom(this.zoom);
-            this.instance.repaintEverything();
-            localStorage.setItem('diagramZoom', this.zoom.toString());
-            localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
-          }
-          this.cdr.detectChanges();
-          return;
-        }
-
-        event.preventDefault();
-        let deltaX = event.deltaX;
-        let deltaY = event.deltaY;
-        if (event.shiftKey && !deltaX) {
-          deltaX = deltaY;
-          deltaY = 0;
-        }
-        this.viewOffsetX -= deltaX;
-        this.viewOffsetY -= deltaY;
-        localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
-        this.cdr.detectChanges();
-      });
-    };
-    container.addEventListener('wheel', this.wheelHandler, { passive: false });
 
     this.blurHandler = () => this.flushVisualElementInteraction('blur');
     this.visibilityHandler = () => {
@@ -408,16 +398,56 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       this.jobElementsSub = null;
     }
 
-    const container = this.scrollContainer?.nativeElement;
-    if (container && this.wheelHandler) {
-      container.removeEventListener('wheel', this.wheelHandler);
-    }
     if (this.blurHandler) {
       window.removeEventListener('blur', this.blurHandler);
     }
     if (this.visibilityHandler) {
       document.removeEventListener('visibilitychange', this.visibilityHandler);
     }
+  }
+
+  onWheel(event: WheelEvent) {
+    if (this.isEditableTarget(event.target)) {
+      return;
+    }
+
+    const container = this.scrollContainer?.nativeElement as HTMLElement | undefined;
+    if (!container) return;
+
+    if (event.ctrlKey) {
+      event.preventDefault();
+
+      const rect = container.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+      const prevZoom = this.zoom;
+
+      this.zoom += event.deltaY < 0 ? this.zoomStep : -this.zoomStep;
+      this.zoom = Math.min(Math.max(this.zoom, this.minZoom), this.maxZoom);
+
+      if (this.instance) {
+        this.viewOffsetX = mouseX - ((mouseX - this.viewOffsetX) * (this.zoom / prevZoom));
+        this.viewOffsetY = mouseY - ((mouseY - this.viewOffsetY) * (this.zoom / prevZoom));
+        this.instance.setZoom(this.zoom);
+        this.instance.repaintEverything();
+        localStorage.setItem('diagramZoom', this.zoom.toString());
+        localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
+      }
+      this.cdr.detectChanges();
+      return;
+    }
+
+    event.preventDefault();
+    let deltaX = event.deltaX;
+    let deltaY = event.deltaY;
+    if (event.shiftKey && !deltaX) {
+      deltaX = deltaY;
+      deltaY = 0;
+    }
+    this.viewOffsetX -= deltaX;
+    this.viewOffsetY -= deltaY;
+    localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
+    this.cdr.detectChanges();
   }
 
   private scheduleRebuild(reason: string, force = false) {
@@ -483,13 +513,11 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
     const rendered = this.jobElements?.length ?? 0;
     if (rendered < this.jobs.length) {
-      if (this.rebuildAttempts < 10) {
-        this.rebuildAttempts += 1;
-        this.scheduleRebuild(`wait-dom-${reason}`, true);
-        return;
-      }
+      // Aguarde o DOM renderizar os jobs e deixe o watcher disparar o rebuild.
+      this.pendingRebuild = true;
+      this.pendingRebuildKey = expectedKey;
+      return;
     }
-    this.rebuildAttempts = 0;
 
     // Clear existing endpoints and connections to avoid cross-project artifacts.
     this.suppressConnectionEvents = true;
@@ -617,8 +645,17 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
         const movedJob = this.jobs.find(j => j.id === el.id);
         if (movedJob) {
+          const before = this.getJobState(movedJob);
           movedJob.left = x;
           movedJob.top = y;
+          const after = this.getJobState(movedJob);
+          const globalIndex = jobs_.findIndex(j => j.id === movedJob.id);
+          if (globalIndex !== -1) {
+            jobs_[globalIndex] = { ...jobs_[globalIndex], left: movedJob.left, top: movedJob.top };
+          }
+          if (this.hasJobChanged(before, after)) {
+            this.pushUndoEntry({ jobs: [{ id: movedJob.id, before, after }], visuals: [] });
+          }
 
           this.jobService.updateJob(this.project?.id || '', movedJob.id, movedJob).subscribe({
             next: () => {
@@ -736,6 +773,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
         this.jobService.deleteJob(this.project?.id || '', job.id).subscribe({
           next: () => {
             this.jobs = this.jobs.filter(j => j.id !== job.id);
+            const remaining = jobs_.filter(j => j.id !== job.id);
+            jobs_.length = 0;
+            jobs_.push(...remaining);
             if (this.project?.jobs) {
               const index = this.project.jobs.indexOf(`jobs/${job.id}.json`);
               if (index >= 0) {
@@ -792,6 +832,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
               const index = this.jobs.findIndex(j => j.id === updatedJob.id);
               if (index !== -1) {
                 this.jobs[index] = { ...this.jobs[index], ...updatedJob };
+              }
+              const globalIndex = jobs_.findIndex(j => j.id === updatedJob.id);
+              if (globalIndex !== -1) {
+                jobs_[globalIndex] = { ...jobs_[globalIndex], ...updatedJob };
               }
               this.selectedJob = this.jobs[index] ?? updatedJob;
               this.saveProject();
@@ -1055,6 +1099,17 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
             updated.y = sy;
           }
           this.normalizeElement(updated);
+          const before = this.getVisualStateWithOverrides(updated, {
+            x: this.dragOriginX,
+            y: this.dragOriginY,
+            x2: updated.type === 'line' ? this.dragOriginX2 : undefined,
+            y2: updated.type === 'line' ? this.dragOriginY2 : undefined
+          });
+          const after = this.getVisualState(updated);
+          const elementId = this.getElementId(updated);
+          if (elementId && this.hasVisualChanged(before, after)) {
+            this.pushUndoEntry({ jobs: [], visuals: [{ id: elementId, before, after }] });
+          }
           this.persistVisualElement(updated, 'arraste');
         }
       }
@@ -1155,6 +1210,17 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
             }
           }
           this.normalizeElement(updated);
+          const elementId = this.getElementId(updated);
+          const before = this.getVisualStateWithOverrides(updated, {
+            x: this.resizeOriginX,
+            y: this.resizeOriginY,
+            width: this.resizeOriginW,
+            height: this.resizeOriginH
+          });
+          const after = this.getVisualState(updated);
+          if (elementId && this.hasVisualChanged(before, after)) {
+            this.pushUndoEntry({ jobs: [], visuals: [{ id: elementId, before, after }] });
+          }
           this.persistVisualElement(updated, 'redimensionamento');
         }
       }
@@ -1229,6 +1295,17 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
             updated.y2 = sy2;
           }
           this.normalizeElement(updated);
+          const elementId = this.getElementId(updated);
+          const before = this.getVisualStateWithOverrides(updated, {
+            x: this.dragOriginX,
+            y: this.dragOriginY,
+            x2: this.dragOriginX2,
+            y2: this.dragOriginY2
+          });
+          const after = this.getVisualState(updated);
+          if (elementId && this.hasVisualChanged(before, after)) {
+            this.pushUndoEntry({ jobs: [], visuals: [{ id: elementId, before, after }] });
+          }
           this.persistVisualElement(updated, 'ajuste de linha');
         }
       }
@@ -1253,6 +1330,12 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       return;
     }
     this.setSelection([element]);
+  }
+
+  openElementPanel(element: VisualElement, event: MouseEvent) {
+    event.stopPropagation();
+    this.setSelection([element]);
+    this.panelElement = element;
   }
 
   onJobMouseDown(event: MouseEvent, job: JobExtended) {
@@ -1281,6 +1364,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     this.selectedVisualElement = null;
     this.selectedVisualElements = [];
     this.selectedJobs = [];
+    this.panelElement = null;
   }
 
   private setSelection(elements: VisualElement[], preserveJobs = false) {
@@ -1328,6 +1412,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private updateSelectedVisualElement() {
+    this.panelElement = null;
     if (this.selectedVisualElements.length === 1 && this.selectedJobs.length === 0) {
       this.selectedVisualElement = this.selectedVisualElements[0];
       return;
@@ -1342,6 +1427,197 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   isJobSelected(job: JobExtended): boolean {
     return !!this.selectedJobs.find((j) => j.id === job.id);
+  }
+
+  private pushUndoEntry(entry: {
+    jobs: Array<{ id: string; before: { left: number; top: number }; after: { left: number; top: number } }>;
+    visuals: Array<{
+      id: string;
+      before: { x: number; y: number; x2?: number; y2?: number; width?: number; height?: number };
+      after: { x: number; y: number; x2?: number; y2?: number; width?: number; height?: number };
+    }>;
+  }) {
+    if (this.isApplyingUndo) return;
+    if (!entry.jobs.length && !entry.visuals.length) return;
+    this.undoStack.push(entry);
+    if (this.undoStack.length > this.maxUndoEntries) {
+      this.undoStack.shift();
+    }
+  }
+
+  private getJobState(job: JobExtended): { left: number; top: number } {
+    return { left: job.left ?? 0, top: job.top ?? 0 };
+  }
+
+  private getVisualState(element: VisualElement): { x: number; y: number; x2?: number; y2?: number; width?: number; height?: number } {
+    return {
+      x: element.x,
+      y: element.y,
+      x2: element.x2,
+      y2: element.y2,
+      width: element.width,
+      height: element.height
+    };
+  }
+
+  private getVisualStateWithOverrides(
+    element: VisualElement,
+    overrides: Partial<{ x: number; y: number; x2?: number; y2?: number; width?: number; height?: number }>
+  ) {
+    return { ...this.getVisualState(element), ...overrides };
+  }
+
+  private hasJobChanged(before: { left: number; top: number }, after: { left: number; top: number }): boolean {
+    return before.left !== after.left || before.top !== after.top;
+  }
+
+  private hasVisualChanged(
+    before: { x: number; y: number; x2?: number; y2?: number; width?: number; height?: number },
+    after: { x: number; y: number; x2?: number; y2?: number; width?: number; height?: number }
+  ): boolean {
+    return (
+      before.x !== after.x ||
+      before.y !== after.y ||
+      before.x2 !== after.x2 ||
+      before.y2 !== after.y2 ||
+      before.width !== after.width ||
+      before.height !== after.height
+    );
+  }
+
+  private undoLast(): boolean {
+    const entry = this.undoStack.pop();
+    if (!entry) return false;
+    this.isApplyingUndo = true;
+    this.isSaving = true;
+
+    entry.visuals.forEach((change) => {
+      const element = this.visualElements.find((el) => this.getElementId(el) === change.id);
+      if (!element) return;
+      element.x = change.before.x;
+      element.y = change.before.y;
+      if (change.before.x2 !== undefined) element.x2 = change.before.x2;
+      if (change.before.y2 !== undefined) element.y2 = change.before.y2;
+      if (change.before.width !== undefined) element.width = change.before.width;
+      if (change.before.height !== undefined) element.height = change.before.height;
+      this.normalizeElement(element);
+      this.persistVisualElement(element, 'undo');
+    });
+
+    entry.jobs.forEach((change) => {
+      const job = this.jobs.find((j) => j.id === change.id);
+      if (!job) return;
+      job.left = change.before.left;
+      job.top = change.before.top;
+      const globalIndex = jobs_.findIndex(j => j.id === job.id);
+      if (globalIndex !== -1) {
+        jobs_[globalIndex] = { ...jobs_[globalIndex], left: job.left, top: job.top };
+      }
+      this.instance?.revalidate(job.id);
+      this.jobService.updateJob(this.project?.id || '', job.id, job).subscribe({
+        next: () => {
+          this.isSaved();
+        },
+        error: () => {
+          this.isSaved();
+        }
+      });
+    });
+
+    this.instance?.repaintEverything();
+    this.cdr.detectChanges();
+    this.isApplyingUndo = false;
+    return true;
+  }
+
+  private getDuplicateOffsets(): { x: number; y: number } {
+    if (this.snapEnabled) {
+      return { x: this.gridX, y: this.gridY };
+    }
+    return { x: 24, y: 24 };
+  }
+
+  private duplicateSelection(): boolean {
+    if (!this.project?.id) {
+      this.notifyPersistError('Projeto ainda nao esta carregado. Nao foi possivel duplicar.');
+      return false;
+    }
+    if (this.selectedVisualElements.length === 1 && this.selectedJobs.length === 0) {
+      this.duplicateVisualElement(this.selectedVisualElements[0]);
+      return true;
+    }
+    if (this.selectedJobs.length === 1 && this.selectedVisualElements.length === 0) {
+      this.duplicateJob(this.selectedJobs[0]);
+      return true;
+    }
+    return false;
+  }
+
+  private duplicateVisualElement(element: VisualElement) {
+    if (!this.project?.id) return;
+    const offset = this.getDuplicateOffsets();
+    const cloned: VisualElement = {
+      ...element,
+      id: undefined,
+      elementId: undefined,
+      x: element.x + offset.x,
+      y: element.y + offset.y,
+      x2: element.x2 !== undefined ? element.x2 + offset.x : undefined,
+      y2: element.y2 !== undefined ? element.y2 + offset.y : undefined
+    };
+    this.isSaving = true;
+    const payload = this.toPayload(cloned);
+    this.visualElementService.create(this.project.id, payload).subscribe({
+      next: (created) => {
+        const normalized = this.normalizeElement(created);
+        this.visualElements = [...this.visualElements, normalized];
+        this.setSelection([normalized]);
+        this.panelElement = null;
+        this.isSaved();
+      },
+      error: (error) => {
+        this.notifyPersistError('Erro ao duplicar elemento visual.', error);
+        this.isSaved();
+      }
+    });
+  }
+
+  private duplicateJob(job: JobExtended) {
+    if (!this.project?.id) return;
+    const offset = this.getDuplicateOffsets();
+    const newJob: Job = {
+      id: uuidv4(),
+      jobName: job.jobName,
+      selectSql: job.selectSql,
+      insertSql: job.insertSql,
+      posInsertSql: job.posInsertSql,
+      columns: Array.isArray(job.columns) ? [...job.columns] : [],
+      recordsPerPage: job.recordsPerPage,
+      type: job.type,
+      stopOnError: job.stopOnError,
+      top: (job.top ?? 0) + offset.y,
+      left: (job.left ?? 0) + offset.x
+    };
+
+    this.isSaving = true;
+    this.jobs.push(newJob as JobExtended);
+    jobs_.push(newJob as JobExtended);
+    if (this.project) {
+      this.project.jobs = this.jobs.map(j => `jobs/${j.id}.json`);
+    }
+    this.scheduleJobPlumbAttach(newJob.id);
+    this.setJobSelection([newJob as JobExtended]);
+    this.selectedJob = newJob as JobExtended;
+
+    this.jobService.addJob(this.project.id, newJob).subscribe({
+      next: () => {
+        this.saveProject();
+      },
+      error: (error) => {
+        this.notifyPersistError('Erro ao duplicar job.', error);
+        this.isSaved();
+      }
+    });
   }
 
   private toDiagramPoint(event: MouseEvent): { x: number; y: number } {
@@ -1497,6 +1773,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
         this.visualElements = this.visualElements.filter(e => this.getElementId(e) !== elementId);
         if (this.selectedVisualElement && this.getElementId(this.selectedVisualElement) === elementId) {
           this.selectedVisualElement = null;
+        }
+        if (this.panelElement && this.getElementId(this.panelElement) === elementId) {
+          this.panelElement = null;
         }
         this.isSaved();
       },
@@ -1762,6 +2041,17 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     return { running, done, error, pending, total };
   }
 
+  getPercent(value?: number | null, total?: number | null): number {
+    if (value == null || total == null || total <= 0) return 0;
+    const percent = (value / total) * 100;
+    if (!Number.isFinite(percent)) return 0;
+    return Math.min(100, Math.max(0, percent));
+  }
+
+  isEmptyProgress(value?: number | null, total?: number | null): boolean {
+    return (value ?? 0) <= 0 && (total ?? 0) <= 0;
+  }
+
   onMouseDown(e: MouseEvent): void {
     const target = e.target as HTMLElement | null;
     if (target && (target.closest('.visual-element, .resize-handle, .line-handle, .box, .visual-panel, .context-menu, .mat-mdc-form-field') || target.tagName === 'line')) {
@@ -1919,6 +2209,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
           const [sx, sy] = this.snapToGrid(job.left ?? 0, job.top ?? 0);
           job.left = sx;
           job.top = sy;
+          const globalIndex = jobs_.findIndex(j => j.id === job.id);
+          if (globalIndex !== -1) {
+            jobs_[globalIndex] = { ...jobs_[globalIndex], left: job.left, top: job.top };
+          }
           this.instance?.revalidate(job.id);
           this.jobService.updateJob(this.project?.id || '', job.id, job).subscribe({
             next: () => {
@@ -1929,6 +2223,44 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
             }
           });
         });
+
+        const visualChanges: Array<{
+          id: string;
+          before: { x: number; y: number; x2?: number; y2?: number; width?: number; height?: number };
+          after: { x: number; y: number; x2?: number; y2?: number; width?: number; height?: number };
+        }> = [];
+        const jobChanges: Array<{ id: string; before: { left: number; top: number }; after: { left: number; top: number } }> = [];
+
+        this.selectedVisualElements.forEach((el) => {
+          const id = this.getElementId(el);
+          if (!id) return;
+          const origin = this.groupDragOrigins.get(id);
+          if (!origin) return;
+          const before = this.getVisualStateWithOverrides(el, {
+            x: origin.x,
+            y: origin.y,
+            x2: origin.x2,
+            y2: origin.y2
+          });
+          const after = this.getVisualState(el);
+          if (this.hasVisualChanged(before, after)) {
+            visualChanges.push({ id, before, after });
+          }
+        });
+
+        this.selectedJobs.forEach((job) => {
+          const origin = this.groupJobOrigins.get(job.id);
+          if (!origin) return;
+          const before = { left: origin.left, top: origin.top };
+          const after = this.getJobState(job);
+          if (this.hasJobChanged(before, after)) {
+            jobChanges.push({ id: job.id, before, after });
+          }
+        });
+
+        if (visualChanges.length || jobChanges.length) {
+          this.pushUndoEntry({ jobs: jobChanges, visuals: visualChanges });
+        }
 
         if (this.instance) {
           this.instance.repaintEverything();
