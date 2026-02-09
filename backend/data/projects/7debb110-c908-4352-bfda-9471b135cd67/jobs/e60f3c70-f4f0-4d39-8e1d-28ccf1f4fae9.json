@@ -1,0 +1,13 @@
+{
+  "id": "e60f3c70-f4f0-4d39-8e1d-28ccf1f4fae9",
+  "jobName": "Fatura Situação",
+  "selectSql": "INSERT INTO ${SCHEMA}.fatura_situacao (id, nome_fatura_situacao) VALUES(1, 'Débito');\r\nINSERT INTO ${SCHEMA}.fatura_situacao (id, nome_fatura_situacao) VALUES(2, 'Pago');\r\nINSERT INTO ${SCHEMA}.fatura_situacao (id, nome_fatura_situacao) VALUES(3, 'Parcelado');\r\nINSERT INTO ${SCHEMA}.fatura_situacao (id, nome_fatura_situacao) VALUES(4, 'Recalculado');\r\nINSERT INTO ${SCHEMA}.fatura_situacao (id, nome_fatura_situacao) VALUES(5, 'Cancelado');\r\nINSERT INTO ${SCHEMA}.fatura_situacao (id, nome_fatura_situacao) VALUES(6, 'Aguardando Aprovação');",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 100,
+  "top": 4800
+}

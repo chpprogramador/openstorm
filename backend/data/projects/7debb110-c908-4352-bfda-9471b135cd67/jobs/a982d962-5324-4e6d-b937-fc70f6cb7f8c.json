@@ -1,0 +1,19 @@
+{
+  "id": "a982d962-5324-4e6d-b937-fc70f6cb7f8c",
+  "jobName": "Condomínio",
+  "selectSql": "select\n\tc.id id,\n\tl.nomeinquilino nome_condominio,\n\tc.nreconomias numero_economias,\n\tc.idtipomacromedidor id_condominio_cobranca,\n\tl.id id_ligacao_imovel\nfrom condominio c\njoin ligacao l on (c.idligacaomacro = l.id)",
+  "insertSql": "insert into ${SCHEMA}.condominio (\n\tid,\n\tnome_condominio,\n\tnumero_economias,\n\tid_condominio_cobranca,\n\tid_ligacao_imovel)",
+  "columns": [
+    "id",
+    "nome_condominio",
+    "numero_economias",
+    "id_condominio_cobranca",
+    "id_ligacao_imovel"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 7560
+}

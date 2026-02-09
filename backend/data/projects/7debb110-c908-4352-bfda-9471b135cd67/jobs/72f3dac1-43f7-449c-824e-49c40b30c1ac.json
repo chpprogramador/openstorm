@@ -1,0 +1,13 @@
+{
+  "id": "72f3dac1-43f7-449c-824e-49c40b30c1ac",
+  "jobName": "Cobrança Fase",
+  "selectSql": "INSERT INTO ${SCHEMA}.cobranca_fase (id, nome_fase) VALUES\r\n(1, 'NOTIFICADO'),\r\n(2, 'CORTADO'),\r\n(99, 'NORMAL'),\r\n(3, 'EM PROC. CORTE'),\r\n(97, 'EM COBRANÇA'),\r\n(98, 'EM NOTIFICAÇÃO'),\r\n(100, 'OUTRO');",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 500,
+  "top": 660
+}

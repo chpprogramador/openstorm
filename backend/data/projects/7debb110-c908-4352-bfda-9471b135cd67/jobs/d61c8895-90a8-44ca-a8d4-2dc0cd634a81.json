@@ -1,0 +1,13 @@
+{
+  "id": "d61c8895-90a8-44ca-a8d4-2dc0cd634a81",
+  "jobName": "Cobrança Processo Tipo",
+  "selectSql": "INSERT INTO ${SCHEMA}.cobranca_processo_tipo (id, nome_tipo_processo) VALUES(1, 'Corte');\r\nINSERT INTO ${SCHEMA}.cobranca_processo_tipo (id, nome_tipo_processo) VALUES(2, 'Negativação');",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 900,
+  "top": 4620
+}

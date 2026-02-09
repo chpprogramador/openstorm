@@ -1,0 +1,16 @@
+{
+  "id": "804c64d6-4791-4306-9062-8da2a6fd5ed4",
+  "jobName": "Grupo Usuário",
+  "selectSql": "SELECT\n  src.id AS id,\n  src.grupousuario AS nome_grupo_usuario\nFROM grupousuario src",
+  "insertSql": "INSERT INTO\n  ${SCHEMA}.grupo_usuario (id, nome_grupo_usuario)",
+  "columns": [
+    "id",
+    "nome_grupo_usuario"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 1560
+}

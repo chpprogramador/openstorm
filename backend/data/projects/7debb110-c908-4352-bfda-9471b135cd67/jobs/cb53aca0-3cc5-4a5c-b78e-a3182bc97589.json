@@ -1,0 +1,16 @@
+{
+  "id": "cb53aca0-3cc5-4a5c-b78e-a3182bc97589",
+  "jobName": "Categoria Subcategoria",
+  "selectSql": "select \n\tcs.idcategoria id_categoria,\n\tcs.idsubcategoria id_subcategoria\nfrom categoriasubcategoria cs",
+  "insertSql": "insert into ${SCHEMA}.categoria_subcategoria (\n\tid_categoria,\n\tid_subcategoria)",
+  "columns": [
+    "id_categoria",
+    "id_subcategoria"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 2460
+}

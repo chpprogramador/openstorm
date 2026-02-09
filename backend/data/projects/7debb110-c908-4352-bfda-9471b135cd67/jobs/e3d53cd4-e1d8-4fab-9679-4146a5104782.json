@@ -1,0 +1,20 @@
+{
+  "id": "e3d53cd4-e1d8-4fab-9679-4146a5104782",
+  "jobName": "Arrecadador",
+  "selectSql": "select\n\ta.id id,\n\tcase when a.ativo = 'S' then true else false end ativo,\n\ta.arrecadador nome_arrecadador,\n\ta.numerobanco numero_banco,\n\ta.taxaarrecadador taxa_arrecadador,\n\ta.versaolayoutdebauto versao_layout_debito_automatico\nfrom arrecadador a",
+  "insertSql": "insert into ${SCHEMA}.arrecadador (\n\tid,\n\tativo,\n\tnome_arrecadador,\n\tnumero_banco,\n\ttaxa_arrecadador,\n\tversao_layout_debito_automatico)",
+  "columns": [
+    "id",
+    "ativo",
+    "nome_arrecadador",
+    "numero_banco",
+    "taxa_arrecadador",
+    "versao_layout_debito_automatico"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 4440
+}

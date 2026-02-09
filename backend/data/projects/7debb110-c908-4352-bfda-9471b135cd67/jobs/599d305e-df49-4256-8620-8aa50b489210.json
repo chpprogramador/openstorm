@@ -1,0 +1,18 @@
+{
+  "id": "599d305e-df49-4256-8620-8aa50b489210",
+  "jobName": "Alçada Recalculo",
+  "selectSql": "SELECT\n  src.id AS id,\n  descricao AS nome_alcada_recalculo,\n  src.valormaximorecalculo AS valor_maximo_recalculo,\n  src.idgrupousuario AS id_grupo_usuario\nFROM grupousuarioalcadarecalculo src",
+  "insertSql": "INSERT INTO ${SCHEMA}.alcada_recalculo (\n    id, \n    nome_alcada_recalculo, valor_maximo_recalculo, \n    id_grupo_usuario)",
+  "columns": [
+    "id",
+    "nome_alcada_recalculo",
+    "valor_maximo_recalculo",
+    "id_grupo_usuario"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 8400
+}

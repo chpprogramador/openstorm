@@ -1,0 +1,13 @@
+{
+  "id": "80315a4b-50e8-4784-9de9-9948bff2d8b3",
+  "jobName": "Ligacao Tipo",
+  "selectSql": "INSERT INTO ${SCHEMA}.ligacao_tipo (id, nome_ligacao_tipo) VALUES(1, 'Hidrometrado');\r\nINSERT INTO ${SCHEMA}.ligacao_tipo (id, nome_ligacao_tipo) VALUES(2, 'Hidrometrado Isento');\r\nINSERT INTO ${SCHEMA}.ligacao_tipo (id, nome_ligacao_tipo) VALUES(3, 'Consumo Fixo');\r\nINSERT INTO ${SCHEMA}.ligacao_tipo (id, nome_ligacao_tipo) VALUES(4, 'Sem Consumo');",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 100,
+  "top": 300
+}

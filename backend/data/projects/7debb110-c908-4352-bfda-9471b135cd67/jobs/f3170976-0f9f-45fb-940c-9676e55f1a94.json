@@ -1,0 +1,22 @@
+{
+  "id": "f3170976-0f9f-45fb-940c-9676e55f1a94",
+  "jobName": "Análise Água",
+  "selectSql": "SELECT\n  src.id AS id,\n  (\nCASE\n  WHEN src.nramostrasforapadrao IS NULL THEN NULL\n  WHEN trim(src.nramostrasforapadrao::text) = '' THEN NULL\n  WHEN replace(replace(trim(src.nramostrasforapadrao::text),'.',''),',','.') ~ '^[-+]?[0-9]+(\\.[0-9]+)?$'\n    THEN (replace(replace(trim(src.nramostrasforapadrao::text),'.',''),',','.'))::integer\n  WHEN trim(src.nramostrasforapadrao::text) ~ '^[-+]?[0-9]+(\\.[0-9]+)?$'\n    THEN (trim(src.nramostrasforapadrao::text))::integer\n  ELSE NULL\nEND) AS numero_amostras_fora_padrao,\n  (\nCASE\n  WHEN src.nramostrasrealizadas IS NULL THEN NULL\n  WHEN trim(src.nramostrasrealizadas::text) = '' THEN NULL\n  WHEN replace(replace(trim(src.nramostrasrealizadas::text),'.',''),',','.') ~ '^[-+]?[0-9]+(\\.[0-9]+)?$'\n    THEN (replace(replace(trim(src.nramostrasrealizadas::text),'.',''),',','.'))::integer\n  WHEN trim(src.nramostrasrealizadas::text) ~ '^[-+]?[0-9]+(\\.[0-9]+)?$'\n    THEN (trim(src.nramostrasrealizadas::text))::integer\n  ELSE NULL\nEND) AS numero_amostras_realizadas,\n  src.valmaximodetectado AS valor_maximo_detectado,\n  src.valminimodetectado AS valor_minimo_detectado,\n  src.idanaliseaguaparametros AS id_analise_agua_parametros,\n  src.idperiodo AS id_periodo_aplicacao,\n  src.idperiodoreferencia AS id_periodo_referencia\nFROM analiseaguaresultados src",
+  "insertSql": "INSERT INTO\n  ${SCHEMA}.analise_agua (\n    id,\n    numero_amostras_fora_padrao,\n    numero_amostras_realizadas,\n    valor_maximo_detectado,\n    valor_minimo_detectado,\n    id_analise_agua_parametros,\n    id_periodo_aplicacao,\n    id_periodo_referencia\n  )",
+  "columns": [
+    "id",
+    "numero_amostras_fora_padrao",
+    "numero_amostras_realizadas",
+    "valor_maximo_detectado",
+    "valor_minimo_detectado",
+    "id_analise_agua_parametros",
+    "id_periodo_aplicacao",
+    "id_periodo_referencia"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 6120
+}

@@ -1,0 +1,13 @@
+{
+  "id": "badff19a-19bb-479e-8a93-7a9fe36de7f2",
+  "jobName": "Desabilita Trigger Fatura",
+  "selectSql": "ALTER TABLE ${SCHEMA}.fatura DISABLE TRIGGER ALL;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 100,
+  "top": 7020
+}

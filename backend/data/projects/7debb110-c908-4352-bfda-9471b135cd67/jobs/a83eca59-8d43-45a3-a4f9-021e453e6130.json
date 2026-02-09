@@ -1,0 +1,16 @@
+{
+  "id": "a83eca59-8d43-45a3-a4f9-021e453e6130",
+  "jobName": "Cálculo Tipo",
+  "selectSql": "select\n\tt.id id,\n\tt.tipocalculo nome_calculo_tipo\nfrom tipocalculo t",
+  "insertSql": "insert\n\tinto\n\t${SCHEMA}.calculo_tipo (\n\tid,\n\tnome_calculo_tipo)",
+  "columns": [
+    "id",
+    "nome_calculo_tipo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 1020
+}

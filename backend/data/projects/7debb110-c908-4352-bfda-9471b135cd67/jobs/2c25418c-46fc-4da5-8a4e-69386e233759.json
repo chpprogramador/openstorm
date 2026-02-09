@@ -1,0 +1,21 @@
+{
+  "id": "2c25418c-46fc-4da5-8a4e-69386e233759",
+  "jobName": "Consolidação Guia",
+  "selectSql": "select\n\tc.id id,\n\tto_date(nullif(c.dataimpressao,''),'YYYYMMDD') data_impressao,\n\tc.idguia guia_impressa,\n\tc.idconsolidacaoarrecadacao id_consolidacao,\n\tc.idguia id_guia,\n\tc.idciclo id_periodo,\n\tnull id_usuario_impressao\nfrom consolidacaoarrecadacaohist c ",
+  "insertSql": "insert into ${SCHEMA}.consolidacao_guia (\n\tid,\n\tdata_impressao,\n\tguia_impressa,\n\tid_consolidacao,\n\tid_guia,\n\tid_periodo,\n\tid_usuario_impressao)",
+  "columns": [
+    "id",
+    "data_impressao",
+    "guia_impressa",
+    "id_consolidacao",
+    "id_guia",
+    "id_periodo",
+    "id_usuario_impressao"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 7980
+}

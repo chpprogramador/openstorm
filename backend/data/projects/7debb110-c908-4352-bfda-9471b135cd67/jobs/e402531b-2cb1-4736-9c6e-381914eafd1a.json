@@ -1,0 +1,16 @@
+{
+  "id": "e402531b-2cb1-4736-9c6e-381914eafd1a",
+  "jobName": "Pavimento Tipo",
+  "selectSql": "select id, tipopavimento from tipopavimento",
+  "insertSql": "INSERT INTO ${SCHEMA}.pavimento_tipo (id, nome_tipo_pavimento)",
+  "columns": [
+    "id",
+    "tipopavimento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": -60
+}
