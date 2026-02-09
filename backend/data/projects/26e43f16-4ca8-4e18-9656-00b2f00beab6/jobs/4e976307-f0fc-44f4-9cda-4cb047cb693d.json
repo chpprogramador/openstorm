@@ -1,0 +1,17 @@
+{
+  "id": "4e976307-f0fc-44f4-9cda-4cb047cb693d",
+  "jobName": "Acordo Detalhe",
+  "selectSql": "SELECT\n  src.id AS id,\n  src.idacordo AS id_acordo,\n  src.idfatura AS id_fatura\nFROM acordodetalhe src",
+  "insertSql": "INSERT INTO ${SCHEMA}.acordo_detalhe (\n    id, \n    id_acordo, id_fatura)",
+  "columns": [
+    "id",
+    "id_acordo",
+    "id_fatura"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 5340
+}

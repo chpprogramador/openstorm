@@ -1,0 +1,22 @@
+{
+  "id": "3b235423-d4fb-4bd7-b264-b12e5422bdba",
+  "jobName": "Cobrança Processo Fatura",
+  "selectSql": "select \n\tp.id id,\n\tcase when p.enviadaexclusaonegativacao = 'S' then true else false end as enviado_exclusao_negativacao,\n\tcase when p.enviadainclusaonegativacao  = 'S' then true else false end as enviado_inclusao_negativacao,\n\tcase when p.enviadaexclusaonegativacao = 'S' then true else false end as enviar_cancelamento_negativacao,\n\tcase when f.datapagto is not null then true else false end as fatura_paga,\n\tf.valor valor_fatura,\n\tp.idligacaoprocessocorte id_cobranca_processo_ligacao,\n\tf.id id_fatura\nfrom processocortefaturas p \njoin fatura f on (f.id = p.idfatura)",
+  "insertSql": "insert into ${SCHEMA}.cobranca_processo_fatura (\n\tid,\n\tenviado_exclusao_negativacao,\n\tenviado_inclusao_negativacao,\n\tenviar_cancelamento_negativacao,\n\tfatura_paga,\n\tvalor_fatura,\n\tid_cobranca_processo_ligacao,\n\tid_fatura)",
+  "columns": [
+    "id",
+    "enviado_exclusao_negativacao",
+    "enviado_inclusao_negativacao",
+    "enviar_cancelamento_negativacao",
+    "fatura_paga",
+    "valor_fatura",
+    "id_cobranca_processo_ligacao",
+    "id_fatura"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 5520
+}

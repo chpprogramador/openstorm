@@ -1,0 +1,21 @@
+{
+  "id": "cd2b37ad-927a-4d97-91f4-6ae93ff7f73b",
+  "jobName": "Analise Água Parâmetros",
+  "selectSql": "SELECT\n  src.id AS id,\n  (\nCASE\n  WHEN src.ativo IS NULL THEN NULL\n  WHEN trim(src.ativo::text) = '' THEN NULL\n  WHEN upper(trim(src.ativo::text)) IN ('S','SIM','Y','YES','T','TRUE','1') THEN TRUE\n  WHEN upper(trim(src.ativo::text)) IN ('N','NAO','NÃO','NO','F','FALSE','0') THEN FALSE\n  ELSE NULL\nEND) AS ativo,\n  src.parametro AS nome_parametro,\n  src.ordemexib AS ordem_exibicao,\n  src.unidademedida AS unidade_medida,\n  src.valmaxpermitido AS valor_maximo_permitido,\n  src.idfonteabastecimento AS id_fonte_abastecimento\nFROM analiseaguaparametros src",
+  "insertSql": "INSERT INTO\n  ${SCHEMA}.analise_agua_parametros (\n    id,\n    ativo,\n    nome_parametro,\n    ordem_exibicao,\n    unidade_medida,\n    valor_maximo_permitido,\n    id_fonte_abastecimento\n  )",
+  "columns": [
+    "id",
+    "ativo",
+    "nome_parametro",
+    "ordem_exibicao",
+    "unidade_medida",
+    "valor_maximo_permitido",
+    "id_fonte_abastecimento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 6120
+}

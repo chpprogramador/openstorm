@@ -1,0 +1,24 @@
+{
+  "id": "787d504c-55fa-4c53-b390-4c7a0c0e2ab6",
+  "jobName": "Condomínio Histórico",
+  "selectSql": "select\n\th.id id,\n\th.dtaprovada data_analise_critica_realizada,\n\th.nreconomias numero_economias,\n\th.volfatmacro volume_faturado_macro,\n\th.volmedmacro volume_medido_macro,\n\tc.id id_condominio,\n\tc.idtipomacromedidor id_condominio_cobranca,\n\th.idligacaomacromedidor id_ligacao_imovel,\n\th.idperiodo id_periodo,\n\tnull id_usuario_analise_critica\nfrom historicocondominio h\njoin condominio c on (h.idligacaomacromedidor = c.idligacaomacro)",
+  "insertSql": "insert into ${SCHEMA}.condominio_historico (\n\tid,\n\tdata_analise_critica_realizada,\n\tnumero_economias,\n\tvolume_faturado_macro,\n\tvolume_medido_macro,\n\tid_condominio,\n\tid_condominio_cobranca,\n\tid_ligacao_imovel,\n\tid_periodo,\n\tid_usuario_analise_critica)",
+  "columns": [
+    "id",
+    "data_analise_critica_realizada",
+    "numero_economias",
+    "volume_faturado_macro",
+    "volume_medido_macro",
+    "id_condominio",
+    "id_condominio_cobranca",
+    "id_ligacao_imovel",
+    "id_periodo",
+    "id_usuario_analise_critica"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 7560
+}

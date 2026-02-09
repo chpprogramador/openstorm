@@ -1,0 +1,16 @@
+{
+  "id": "c58e7a99-1f80-4ea0-8e9d-69c890384c39",
+  "jobName": "Medidor Tipo",
+  "selectSql": "select id, tipomedidor from public.tipomedidor",
+  "insertSql": "INSERT INTO ${SCHEMA}.medidor_tipo (id, nome_medidor_tipo) ",
+  "columns": [
+    "id",
+    "tipomedidor"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 2100
+}

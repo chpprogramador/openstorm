@@ -1,0 +1,13 @@
+{
+  "id": "ad35abb8-c90f-4ac7-b717-6265755fcf97",
+  "jobName": "Faturamento Tipo",
+  "selectSql": "INSERT INTO ${SCHEMA}.faturamento_tipo (id, nome_faturamento_tipo) VALUES(1, 'Agua');\r\nINSERT INTO ${SCHEMA}.faturamento_tipo (id, nome_faturamento_tipo) VALUES(2, 'Esgoto');\r\nINSERT INTO ${SCHEMA}.faturamento_tipo (id, nome_faturamento_tipo) VALUES(3, 'Agua e Esgoto');",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 660
+}

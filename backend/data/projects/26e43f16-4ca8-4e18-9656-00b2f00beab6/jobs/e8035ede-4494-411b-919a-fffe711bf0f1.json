@@ -1,0 +1,13 @@
+{
+  "id": "e8035ede-4494-411b-919a-fffe711bf0f1",
+  "jobName": "Habilita Triggers Vendas",
+  "selectSql": "ALTER TABLE ${SCHEMA}.rubrica_venda ENABLE TRIGGER ALL;\nALTER TABLE ${SCHEMA}.rubrica_venda_detalhe ENABLE TRIGGER ALL;\nALTER TABLE ${SCHEMA}.rubrica_venda_detalhe_parcela ENABLE TRIGGER ALL;\nALTER TABLE ${SCHEMA}.parcelamento ENABLE TRIGGER ALL;\nALTER TABLE ${SCHEMA}.parcelamento_detalhe ENABLE TRIGGER ALL;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 900,
+  "top": 6660
+}

@@ -1,0 +1,23 @@
+{
+  "id": "279a94e3-498c-46bb-9868-8f06fb183e99",
+  "jobName": "Alçada Parcelamento",
+  "selectSql": "select\n\ta.id id,\n\ta.descricao nome_alcada_parcelamento,\n\ta.percentual percentual_maximo_desconto,\n\ta.qtddiasentrada quantidade_dias_vencimento_entrada,\n\ta.qtdmaxparcelas quantidade_maxima_parcelas,\n\ttrue valida_reparcelamento_debito,\n\ta.valormaximo valor_maximo_parcelamento,\n\ta.valorminimo valor_minimo_parcelamento,\n\ta.idgrupousuario id_grupo_usuario\nfrom grupousuarioalcadaparcelamento a",
+  "insertSql": "insert into ${SCHEMA}.alcada_parcelamento (\n\tid,\n\tnome_alcada_parcelamento,\n\tpercentual_maximo_desconto,\n\tquantidade_dias_vencimento_entrada,\n\tquantidade_maxima_parcelas,\n\tvalida_reparcelamento_debito,\n\tvalor_maximo_parcelamento,\n\tvalor_minimo_parcelamento,\n\tid_grupo_usuario)",
+  "columns": [
+    "id",
+    "nome_alcada_parcelamento",
+    "percentual_maximo_desconto",
+    "quantidade_dias_vencimento_entrada",
+    "quantidade_maxima_parcelas",
+    "valida_reparcelamento_debito",
+    "valor_maximo_parcelamento",
+    "valor_minimo_parcelamento",
+    "id_grupo_usuario"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 8400
+}

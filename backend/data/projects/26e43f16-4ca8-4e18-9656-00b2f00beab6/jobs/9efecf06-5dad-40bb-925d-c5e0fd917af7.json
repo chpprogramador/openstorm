@@ -1,0 +1,25 @@
+{
+  "id": "9efecf06-5dad-40bb-925d-c5e0fd917af7",
+  "jobName": "Débito Automático Cadastro",
+  "selectSql": "select\n\td.id id,\n\tcase when d.ativo = 'S' then true else false end ativo,\n\td.codagencia codigo_agencia,\n\td.codconta codigo_conta,\n\tto_date(d.datacadastro,'YYYYMMDD') data_cadastro,\n\tto_date(d.datainativacao,'YYYYMMDD') data_cancelamento,\n\td.origemcadastrosan origem_cadastro_banco,\n\td.idarrecadacao id_arrecadacao_cadastro,\n\td.idarrecadador id_arrecadador,\n\td.idligacao id_ligacao_imovel,\n\tnull id_usuario_cadastro\nfrom debitoautomatico d \njoin \n(\n\tselect\n\t\t*,\n\t\tctid,\n\t\trow_number() over (partition by idmedidor order by id) as idm\n\tfrom\n\t\tligacao ) l on (d.idligacao = l.id)\nwhere l.idm = 1",
+  "insertSql": "  insert into ${SCHEMA}.debito_automatico_cadastro (\n\tid,\n\tativo,\n\tcodigo_agencia,\n\tcodigo_conta,\n\tdata_cadastro,\n\tdata_cancelamento,\n\torigem_cadastro_banco,\n\tid_arrecadacao_cadastro,\n\tid_arrecadador,\n\tid_ligacao_imovel,\n\tid_usuario_cadastro) ",
+  "columns": [
+    "id",
+    "ativo",
+    "codigo_agencia",
+    "codigo_conta",
+    "data_cadastro",
+    "data_cancelamento",
+    "origem_cadastro_banco",
+    "id_arrecadacao_cadastro",
+    "id_arrecadador",
+    "id_ligacao_imovel",
+    "id_usuario_cadastro"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 5160
+}

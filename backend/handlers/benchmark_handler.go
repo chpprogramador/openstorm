@@ -11,12 +11,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -83,7 +81,7 @@ func RunBenchmark(c *gin.Context) {
 
 	if opts.IncludeOrigin {
 		targetCount++
-		originMetrics, ok := collectDBMetrics(project.SourceDatabase, opts.ProbeIterations, false)
+		originMetrics, ok := collectDBMetrics(project.SourceDatabase, opts.ProbeIterations, derefBool(opts.EnableWriteProbe))
 		if !ok {
 			failedTargets++
 			run.Error = appendError(run.Error, fmt.Sprintf("origin: %s", strings.Join(originMetrics.Errors, "; ")))
@@ -173,93 +171,6 @@ func normalizeBenchmarkOptions(req models.BenchmarkRunRequest) models.BenchmarkR
 	return opts
 }
 
-// -------------------- Host Metrics --------------------
-func collectHostMetrics() (*models.HostMetrics, error) {
-	metrics := &models.HostMetrics{CPUCores: runtime.NumCPU()}
-
-	cpuUsage, err := readCPUUsagePct()
-	if err == nil {
-		metrics.CPUUsagePct = cpuUsage
-	}
-
-	var info syscall.Sysinfo_t
-	if err := syscall.Sysinfo(&info); err == nil {
-		total := uint64(info.Totalram) * uint64(info.Unit)
-		free := uint64(info.Freeram) * uint64(info.Unit)
-		metrics.MemTotalBytes = total
-		metrics.MemUsedBytes = total - free
-
-		swapTotal := uint64(info.Totalswap) * uint64(info.Unit)
-		swapFree := uint64(info.Freeswap) * uint64(info.Unit)
-		metrics.SwapTotalBytes = swapTotal
-		metrics.SwapUsedBytes = swapTotal - swapFree
-	}
-
-	var fs syscall.Statfs_t
-	if err := syscall.Statfs(".", &fs); err == nil {
-		total := fs.Blocks * uint64(fs.Bsize)
-		free := fs.Bavail * uint64(fs.Bsize)
-		metrics.DiskTotalBytes = total
-		metrics.DiskFreeBytes = free
-	}
-
-	return metrics, nil
-}
-
-func readCPUUsagePct() (float64, error) {
-	idle1, total1, err := readCPUStat()
-	if err != nil {
-		return 0, err
-	}
-	time.Sleep(200 * time.Millisecond)
-	idle2, total2, err := readCPUStat()
-	if err != nil {
-		return 0, err
-	}
-	if total2 <= total1 {
-		return 0, errors.New("cpu total delta invalido")
-	}
-	idleDelta := float64(idle2 - idle1)
-	totalDelta := float64(total2 - total1)
-	usage := 100.0 * (1.0 - (idleDelta / totalDelta))
-	if usage < 0 {
-		usage = 0
-	}
-	if usage > 100 {
-		usage = 100
-	}
-	return usage, nil
-}
-
-func readCPUStat() (uint64, uint64, error) {
-	data, err := os.ReadFile("/proc/stat")
-	if err != nil {
-		return 0, 0, err
-	}
-	lines := strings.Split(string(data), "\n")
-	if len(lines) == 0 {
-		return 0, 0, errors.New("/proc/stat vazio")
-	}
-	fields := strings.Fields(lines[0])
-	if len(fields) < 5 || fields[0] != "cpu" {
-		return 0, 0, errors.New("formato inesperado de /proc/stat")
-	}
-
-	var total uint64
-	var idle uint64
-	for i := 1; i < len(fields); i++ {
-		val, err := strconv.ParseUint(fields[i], 10, 64)
-		if err != nil {
-			return 0, 0, err
-		}
-		total += val
-		if i == 4 || i == 5 { // idle + iowait
-			idle += val
-		}
-	}
-	return idle, total, nil
-}
-
 // -------------------- DB Metrics --------------------
 
 type dbProbeSpec struct {
@@ -271,7 +182,7 @@ type dbProbeSpec struct {
 }
 
 func collectDBMetrics(cfg models.DatabaseConfig, probeIterations int, enableWrite bool) (*models.DBMetrics, bool) {
-	metrics := &models.DBMetrics{DBType: cfg.Type, WriteEnabled: enableWrite}
+	metrics := &models.DBMetrics{DBType: cfg.Type, WriteEnabled: false}
 
 	spec, err := getDBProbeSpec(cfg.Type)
 	if err != nil {
@@ -325,10 +236,25 @@ func collectDBMetrics(cfg models.DatabaseConfig, probeIterations int, enableWrit
 	}
 
 	if enableWrite && spec.WriteProbe != "" {
-		if latency, err := runWriteProbe(db, spec); err == nil {
-			metrics.WriteLatencyMs = latency
-		} else {
-			metrics.Errors = append(metrics.Errors, fmt.Sprintf("erro no write probe: %v", err))
+		readOnly, roErr := isDBReadOnly(db, cfg.Type)
+		if roErr != nil {
+			metrics.Errors = append(metrics.Errors, fmt.Sprintf("erro ao checar modo somente leitura: %v", roErr))
+		}
+		canWrite := true
+		if strings.ToLower(cfg.Type) == "postgres" {
+			var err error
+			canWrite, err = canWritePostgres(db)
+			if err != nil {
+				metrics.Errors = append(metrics.Errors, fmt.Sprintf("erro ao checar privilegios de escrita: %v", err))
+			}
+		}
+		if !readOnly && canWrite {
+			if latency, err := runWriteProbe(db, spec); err == nil {
+				metrics.WriteLatencyMs = latency
+				metrics.WriteEnabled = true
+			} else {
+				metrics.Errors = append(metrics.Errors, fmt.Sprintf("erro no write probe: %v", err))
+			}
 		}
 	}
 
@@ -436,6 +362,58 @@ func queryString(db *sql.DB, query string) (string, error) {
 		return "", err
 	}
 	return out, nil
+}
+
+func queryBool(db *sql.DB, query string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultProbeTimeout)
+	defer cancel()
+	row := db.QueryRowContext(ctx, query)
+	var out bool
+	if err := row.Scan(&out); err != nil {
+		return false, err
+	}
+	return out, nil
+}
+
+func isDBReadOnly(db *sql.DB, dbType string) (bool, error) {
+	switch strings.ToLower(dbType) {
+	case "postgres":
+		val, err := queryString(db, "SHOW transaction_read_only")
+		if err != nil {
+			return false, err
+		}
+		val = strings.ToLower(strings.TrimSpace(val))
+		return val == "on" || val == "true" || val == "1", nil
+	case "mysql":
+		val, err := queryString(db, "SELECT @@read_only")
+		if err != nil {
+			return false, err
+		}
+		val = strings.TrimSpace(val)
+		parsed, err := strconv.Atoi(val)
+		if err != nil {
+			return false, err
+		}
+		return parsed == 1, nil
+	default:
+		return false, nil
+	}
+}
+
+func canWritePostgres(db *sql.DB) (bool, error) {
+	// Verifica se o usuario atual tem privilegio de escrita em alguma tabela do schema do usuario.
+	query := `
+SELECT EXISTS (
+  SELECT 1
+  FROM pg_tables
+  WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
+    AND (
+      has_table_privilege(current_user, quote_ident(schemaname)||'.'||quote_ident(tablename), 'INSERT')
+      OR has_table_privilege(current_user, quote_ident(schemaname)||'.'||quote_ident(tablename), 'UPDATE')
+      OR has_table_privilege(current_user, quote_ident(schemaname)||'.'||quote_ident(tablename), 'DELETE')
+    )
+);`
+	return queryBool(db, query)
 }
 
 // -------------------- Scores --------------------

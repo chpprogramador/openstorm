@@ -1,0 +1,16 @@
+{
+  "id": "fc53e8eb-6773-48d6-be58-b8a560c5ccd5",
+  "jobName": "Categoria Tipo",
+  "selectSql": "select\r\n\tt.id,\r\n\tt.tipocategoria \r\nfrom tipocategoria t",
+  "insertSql": "INSERT INTO ${SCHEMA}.categoria_tipo (id, nome_categoria_tipo)",
+  "columns": [
+    "id",
+    "tipocategoria"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 2460
+}

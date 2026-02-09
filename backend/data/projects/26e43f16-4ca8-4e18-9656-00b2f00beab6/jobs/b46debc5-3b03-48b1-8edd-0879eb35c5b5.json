@@ -1,0 +1,16 @@
+{
+  "id": "b46debc5-3b03-48b1-8edd-0879eb35c5b5",
+  "jobName": "Condomínio Cobrança",
+  "selectSql": "select\n\tt.id id,\n\tt.descricao nome_cobranca\nfrom tipomacromedidor t ",
+  "insertSql": "insert into ${SCHEMA}.condominio_cobranca (\n\tid,\n\tnome_cobranca)",
+  "columns": [
+    "id",
+    "nome_cobranca"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 7560
+}

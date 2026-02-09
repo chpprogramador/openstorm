@@ -1,0 +1,13 @@
+{
+  "id": "b36e0259-1bf9-4747-81b0-dd17a84523f6",
+  "jobName": "Desabilita Trigger Vendas",
+  "selectSql": "ALTER TABLE ${SCHEMA}.rubrica_venda DISABLE TRIGGER ALL;\nALTER TABLE ${SCHEMA}.rubrica_venda_detalhe DISABLE TRIGGER ALL;\nALTER TABLE ${SCHEMA}.rubrica_venda_detalhe_parcela DISABLE TRIGGER ALL;\nALTER TABLE ${SCHEMA}.parcelamento DISABLE TRIGGER ALL;\nALTER TABLE ${SCHEMA}.parcelamento_detalhe DISABLE TRIGGER ALL;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 100,
+  "top": 6480
+}

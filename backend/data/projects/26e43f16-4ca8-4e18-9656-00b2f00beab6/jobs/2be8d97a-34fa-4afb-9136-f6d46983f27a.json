@@ -1,0 +1,16 @@
+{
+  "id": "2be8d97a-34fa-4afb-9136-f6d46983f27a",
+  "jobName": "Fonte Alternativa",
+  "selectSql": "select (id+100) id, fontealternativa from public.fontealternativa",
+  "insertSql": "INSERT INTO ${SCHEMA}.fonte_abastecimento (id, nome_fonte_abastecimento)",
+  "columns": [
+    "id",
+    "fontealternativa"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 840
+}

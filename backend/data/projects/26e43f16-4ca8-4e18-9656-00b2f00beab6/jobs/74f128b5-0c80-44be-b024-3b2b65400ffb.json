@@ -1,0 +1,16 @@
+{
+  "id": "74f128b5-0c80-44be-b024-3b2b65400ffb",
+  "jobName": "Rede Posição",
+  "selectSql": "select id, posicaorede from public.posicaorede",
+  "insertSql": "INSERT INTO ${SCHEMA}.rede_posicao (id, nome_rede_posicao) ",
+  "columns": [
+    "id",
+    "posicaorede"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 300
+}

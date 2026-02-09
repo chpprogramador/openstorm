@@ -1,0 +1,16 @@
+{
+  "id": "63079715-ddf2-48fd-9afb-c16c0a41f21c",
+  "jobName": "Cobrança Instituição",
+  "selectSql": "select\n\ti.id id,\n\ti.instituicaocobranca nome_instituicao\nfrom instituicaocobranca i ",
+  "insertSql": "insert into ${SCHEMA}.cobranca_instituicao (\n\tid,\n\tnome_instituicao)",
+  "columns": [
+    "id",
+    "nome_instituicao"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 5340
+}

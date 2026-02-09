@@ -1,0 +1,16 @@
+{
+  "id": "c10c8ca7-d469-4a3c-a13c-0c36a8e7b4a3",
+  "jobName": "Fatura Motivo Cancelamento",
+  "selectSql": "select \n\tf.id id,\n\tf.faturamotivocancto nome_motivo_cancelamento\nfrom faturamotivocancto f ",
+  "insertSql": "insert\n\tinto\n\t${SCHEMA}.fatura_motivo_cancelamento (\n\tid,\n\tnome_motivo_cancelamento)",
+  "columns": [
+    "id",
+    "nome_motivo_cancelamento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 7020
+}

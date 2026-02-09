@@ -1,0 +1,13 @@
+{
+  "id": "c1239c16-12c2-4b27-9dc9-16f3a3e61297",
+  "jobName": "Habilita Trigger Fatura",
+  "selectSql": "ALTER TABLE ${SCHEMA}.fatura ENABLE TRIGGER ALL;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 500,
+  "top": 7200
+}

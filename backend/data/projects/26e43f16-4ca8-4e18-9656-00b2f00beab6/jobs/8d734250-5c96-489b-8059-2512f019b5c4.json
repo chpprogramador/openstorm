@@ -1,0 +1,19 @@
+{
+  "id": "8d734250-5c96-489b-8059-2512f019b5c4",
+  "jobName": "Rubrica Venda Detalhe",
+  "selectSql": "select\n\tvd.id id,\n\tcase when vd.cancelado = 'S' then true else false end as cancelado,\n\tvd.valor valor,\n\tvd.idrubrica id_rubrica,\n\tvd.idrubrica id_rubrica_venda\nfrom vendadetalhe vd",
+  "insertSql": "insert into ${SCHEMA}.rubrica_venda_detalhe (\n\tid,\n\tcancelado,\n\tvalor,\n\tid_rubrica,\n\tid_rubrica_venda)",
+  "columns": [
+    "id",
+    "cancelado",
+    "valor",
+    "id_rubrica",
+    "id_rubrica_venda"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 6660
+}

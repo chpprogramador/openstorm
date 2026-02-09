@@ -1,0 +1,16 @@
+{
+  "id": "79bef5d0-6ee1-47bd-87d8-bb9ceafba737",
+  "jobName": "Rede Tipo",
+  "selectSql": "select id, tiporede from public.tiporede",
+  "insertSql": "INSERT INTO ${SCHEMA}.rede_tipo (id, nome_rede_tipo)",
+  "columns": [
+    "id",
+    "tiporede"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 480
+}

@@ -1,0 +1,16 @@
+{
+  "id": "e5f0f83f-f8e8-41f9-a5bd-360c9037109e",
+  "jobName": "Imovel Situação",
+  "selectSql": "select s.id, s.descricao from public.situacaoimovel s",
+  "insertSql": "INSERT INTO ${SCHEMA}.imovel_situacao (id, nome_imovel_situacao)",
+  "columns": [
+    "id",
+    "descricao"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 120
+}
