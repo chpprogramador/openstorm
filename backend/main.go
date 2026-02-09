@@ -19,6 +19,8 @@ func main() {
 	router.GET("/projects/:id", handlers.GetProjectByID)
 	router.POST("/projects/:id/close", handlers.CloseProject)
 	router.POST("/projects/:id/duplicate", handlers.DuplicateProject)
+	router.GET("/projects/:id/export", handlers.ExportProject)
+	router.POST("/projects/import", handlers.ImportProject)
 	router.PUT("/projects/:id", handlers.UpdateProject)
 	router.DELETE("/projects/:id", handlers.DeleteProject)
 
