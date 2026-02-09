@@ -13,6 +13,10 @@ export const routes: Routes = [
         component: HomeComponent
     },
     {
+        path: 'benchmark',
+        loadComponent: () => import('./features/benchmark/benchmark.component').then(m => m.BenchmarkComponent)
+    },
+    {
         path: 'variables',
         loadComponent: () => import('./features/variables/variables.component').then(m => m.VariablesComponent)
     },

@@ -22,6 +22,7 @@ import { Observable } from 'rxjs';
           
           <nav class="nav" *ngIf="selectedProject$ | async as project">
             <a routerLink="/home" routerLinkActive="active" class="nav-link">Home</a>
+            <a routerLink="/benchmark" routerLinkActive="active" class="nav-link">Benchmark</a>
             <a routerLink="/variables" routerLinkActive="active" class="nav-link">Variáveis</a>
             <a routerLink="/jobs" routerLinkActive="active" class="nav-link">Jobs</a>
             <a routerLink="/history" routerLinkActive="active" class="nav-link">Historico</a>

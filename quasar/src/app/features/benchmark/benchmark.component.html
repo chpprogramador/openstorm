@@ -1,0 +1,313 @@
+<div class="container">
+  <div class="page-header">
+    <div class="header-copy">
+      <p class="kicker">Projeto</p>
+      <h1 class="page-title">Benchmark</h1>
+      <p class="page-subtitle">Saúde, latência e capacidade do ETL, origem e destino em um clique.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-primary" (click)="runBenchmark()" [disabled]="!selectedProjectId || isRunning">
+        <span class="btn-label">Executar Benchmark</span>
+        <span class="btn-sub" *ngIf="isRunning">Executando...</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="summary-card" *ngIf="!selectedProjectId">
+    <div class="summary-empty">
+      <h3>Nenhum projeto selecionado</h3>
+      <p>Selecione um projeto para executar e acompanhar benchmarks.</p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="selectedProjectId">
+    <div class="toolbar">
+      <div class="toolbar-block">
+        <label class="toolbar-label">Histórico de benchmarks</label>
+        <select #historySelect class="toolbar-select" [ngModel]="selectedRunId" (change)="onHistoryChange(historySelect.value)" [disabled]="history.length === 0">
+          <option value="" disabled>Selecione um benchmark</option>
+          <option *ngFor="let item of history" [value]="item.run_id">{{ summaryLabel(item) }}</option>
+        </select>
+        <span class="toolbar-helper" *ngIf="history.length">Últimos {{ history.length }} benchmarks</span>
+      </div>
+      <div class="toolbar-actions">
+        <button class="btn-secondary" (click)="downloadSelectedPdf()" [disabled]="!selectedRunId">
+          Baixar PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="status-banner" *ngIf="loadError">{{ loadError }}</div>
+
+    <div class="cards-grid" *ngIf="isLoading && history.length === 0">
+      <div class="card skeleton"></div>
+      <div class="card skeleton"></div>
+    </div>
+
+    <div class="cards-grid" *ngIf="!isLoading || history.length > 0">
+      <div class="card hero">
+        <div class="card-header">
+          <div>
+            <p class="card-kicker">{{ isLatestActive() ? 'Último benchmark' : 'Benchmark selecionado' }}</p>
+            <h3>Resumo da execução</h3>
+            <p class="card-subtitle">
+              Acompanhe a saúde geral da infraestrutura.
+              <span class="inline-hint" *ngIf="latestBenchmark && !isLatestActive()">Último benchmark: {{ formatDateTime(latestBenchmark.started_at) }}</span>
+            </p>
+          </div>
+          <span class="status-pill" [ngClass]="statusClass(activeBenchmark?.status)">
+            {{ statusLabel(activeBenchmark?.status) }}
+          </span>
+        </div>
+
+        <ng-container *ngIf="activeBenchmark; else lastEmpty">
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span>Início</span>
+              <strong>{{ formatDateTime(activeBenchmark.started_at) }}</strong>
+            </div>
+            <div class="meta-item">
+              <span>Fim</span>
+              <strong>{{ formatDateTime(activeBenchmark.ended_at) }}</strong>
+            </div>
+            <div class="meta-item">
+              <span>Duração</span>
+              <strong>{{ formatDuration(activeBenchmark.started_at, activeBenchmark.ended_at) }}</strong>
+            </div>
+            <div class="meta-item">
+              <span>Run ID</span>
+              <strong>{{ shortId(activeBenchmark.run_id) }}</strong>
+            </div>
+          </div>
+
+          <div class="score-grid">
+            <div class="score-card" [ngClass]="scoreClass(activeBenchmark.scores.host_etl)">
+              <span>Host ETL</span>
+              <strong>{{ formatScore(activeBenchmark.scores.host_etl) }}</strong>
+              <em class="score-label">{{ scoreLabel(activeBenchmark.scores.host_etl) }}</em>
+            </div>
+            <div class="score-card" [ngClass]="scoreClass(activeBenchmark.scores.origin)">
+              <span>Origem</span>
+              <strong>{{ formatScore(activeBenchmark.scores.origin) }}</strong>
+              <em class="score-label">{{ scoreLabel(activeBenchmark.scores.origin) }}</em>
+            </div>
+            <div class="score-card" [ngClass]="scoreClass(activeBenchmark.scores.destination)">
+              <span>Destino</span>
+              <strong>{{ formatScore(activeBenchmark.scores.destination) }}</strong>
+              <em class="score-label">{{ scoreLabel(activeBenchmark.scores.destination) }}</em>
+            </div>
+          </div>
+
+          <div class="options-row">
+            <span class="option-pill">Iterações: {{ activeBenchmark.options.probe_iterations }}</span>
+            <span class="option-pill" [class.muted]="!activeBenchmark.options.include_host">Host: {{ activeBenchmark.options.include_host ? 'On' : 'Off' }}</span>
+            <span class="option-pill" [class.muted]="!activeBenchmark.options.include_origin">Origem: {{ activeBenchmark.options.include_origin ? 'On' : 'Off' }}</span>
+            <span class="option-pill" [class.muted]="!activeBenchmark.options.include_destination">Destino: {{ activeBenchmark.options.include_destination ? 'On' : 'Off' }}</span>
+            <span class="option-pill" [class.warn]="activeBenchmark.options.enable_write_probe">Write probe: {{ activeBenchmark.options.enable_write_probe ? 'Ativo' : 'Inativo' }}</span>
+          </div>
+
+          <div class="error-banner" *ngIf="activeBenchmark.error">{{ activeBenchmark.error }}</div>
+        </ng-container>
+
+        <ng-template #lastEmpty>
+          <div class="empty-state">
+            <strong>Nenhum benchmark registrado</strong>
+            <p>Execute o primeiro benchmark para ver métricas detalhadas.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="card highlight">
+        <div class="card-header">
+          <div>
+            <p class="card-kicker">Visão geral</p>
+            <h3>Indicadores rápidos</h3>
+            <p class="card-subtitle">Resumo dos principais sinais de saúde.</p>
+          </div>
+        </div>
+        <div class="quick-grid" *ngIf="activeBenchmark; else quickEmpty">
+          <div class="quick-item">
+            <span>CPU</span>
+            <strong>{{ activeBenchmark.metrics.host_etl?.cpu_usage_pct ?? '—' }}%</strong>
+          </div>
+          <div class="quick-item">
+            <span>Memória</span>
+            <strong>{{ formatBytes(activeBenchmark.metrics.host_etl?.mem_used_bytes) }}</strong>
+          </div>
+          <div class="quick-item">
+            <span>Origem</span>
+            <strong>{{ activeBenchmark.metrics.origin?.db_type || '—' }}</strong>
+          </div>
+          <div class="quick-item">
+            <span>Latência origem</span>
+            <strong>{{ formatLatency(activeBenchmark.metrics.origin?.conn_latency_ms) }}</strong>
+          </div>
+          <div class="quick-item">
+            <span>Destino</span>
+            <strong>{{ activeBenchmark.metrics.destination?.db_type || '—' }}</strong>
+          </div>
+          <div class="quick-item">
+            <span>Latência destino</span>
+            <strong>{{ formatLatency(activeBenchmark.metrics.destination?.conn_latency_ms) }}</strong>
+          </div>
+        </div>
+        <ng-template #quickEmpty>
+          <div class="empty-state compact">
+            <p>Sem dados para indicadores rápidos.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="details-header">
+      <div>
+        <p class="card-kicker">Benchmark selecionado</p>
+        <h3>Detalhes do histórico</h3>
+        <p class="card-subtitle">Métricas completas para o benchmark escolhido.</p>
+      </div>
+      <span class="status-pill" [ngClass]="statusClass(selectedBenchmark?.status)">
+        {{ statusLabel(selectedBenchmark?.status) }}
+      </span>
+    </div>
+
+    <div class="details-grid" *ngIf="selectedBenchmark; else detailEmpty">
+      <div class="card detail">
+        <div class="card-header">
+          <div>
+            <h4>Host ETL</h4>
+            <p class="card-subtitle">Infraestrutura local de execução.</p>
+          </div>
+          <div class="score-chip-group">
+            <span class="score-chip" [ngClass]="scoreClass(selectedBenchmark.scores.host_etl)">
+              {{ formatScore(selectedBenchmark.scores.host_etl) }}
+            </span>
+            <span class="score-caption">{{ scoreLabel(selectedBenchmark.scores.host_etl) }}</span>
+          </div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <span>Cores</span>
+            <strong>{{ selectedBenchmark.metrics.host_etl?.cpu_cores ?? '—' }}</strong>
+          </div>
+          <div class="metric">
+            <span>CPU</span>
+            <strong>{{ selectedBenchmark.metrics.host_etl?.cpu_usage_pct ?? '—' }}%</strong>
+          </div>
+          <div class="metric">
+            <span>Memória</span>
+            <strong>{{ formatBytes(selectedBenchmark.metrics.host_etl?.mem_used_bytes) }} / {{ formatBytes(selectedBenchmark.metrics.host_etl?.mem_total_bytes) }}</strong>
+          </div>
+          <div class="metric">
+            <span>Swap</span>
+            <strong>{{ formatBytes(selectedBenchmark.metrics.host_etl?.swap_used_bytes) }} / {{ formatBytes(selectedBenchmark.metrics.host_etl?.swap_total_bytes) }}</strong>
+          </div>
+          <div class="metric">
+            <span>Disco</span>
+            <strong>{{ formatBytes(selectedBenchmark.metrics.host_etl?.disk_free_bytes) }} livre de {{ formatBytes(selectedBenchmark.metrics.host_etl?.disk_total_bytes) }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="card detail">
+        <div class="card-header">
+          <div>
+            <h4>Origem</h4>
+            <p class="card-subtitle">Banco de dados de origem.</p>
+          </div>
+          <div class="score-chip-group">
+            <span class="score-chip" [ngClass]="scoreClass(selectedBenchmark.scores.origin)">
+              {{ formatScore(selectedBenchmark.scores.origin) }}
+            </span>
+            <span class="score-caption">{{ scoreLabel(selectedBenchmark.scores.origin) }}</span>
+          </div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <span>Tipo</span>
+            <strong>{{ selectedBenchmark.metrics.origin?.db_type || '—' }}</strong>
+          </div>
+          <div class="metric">
+            <span>Versão</span>
+            <strong>{{ selectedBenchmark.metrics.origin?.db_version || '—' }}</strong>
+          </div>
+          <div class="metric">
+            <span>Conexão</span>
+            <strong>{{ formatLatency(selectedBenchmark.metrics.origin?.conn_latency_ms) }}</strong>
+          </div>
+          <div class="metric">
+            <span>Ping</span>
+            <strong>{{ formatLatency(selectedBenchmark.metrics.origin?.ping_latency_ms) }}</strong>
+          </div>
+          <div class="metric">
+            <span>Probe</span>
+            <strong>{{ formatQps(selectedBenchmark.metrics.origin?.probe_qps) }}</strong>
+          </div>
+          <div class="metric">
+            <span>Write</span>
+            <strong>{{ selectedBenchmark.metrics.origin?.write_enabled ? 'Ativo' : 'Inativo' }}</strong>
+          </div>
+        </div>
+        <div class="error-list" *ngIf="selectedBenchmark.metrics.origin?.errors?.length">
+          <p>Erros</p>
+          <div class="error-item" *ngFor="let error of selectedBenchmark.metrics.origin?.errors">{{ error }}</div>
+        </div>
+      </div>
+
+      <div class="card detail">
+        <div class="card-header">
+          <div>
+            <h4>Destino</h4>
+            <p class="card-subtitle">Banco de dados de destino.</p>
+          </div>
+          <div class="score-chip-group">
+            <span class="score-chip" [ngClass]="scoreClass(selectedBenchmark.scores.destination)">
+              {{ formatScore(selectedBenchmark.scores.destination) }}
+            </span>
+            <span class="score-caption">{{ scoreLabel(selectedBenchmark.scores.destination) }}</span>
+          </div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <span>Tipo</span>
+            <strong>{{ selectedBenchmark.metrics.destination?.db_type || '—' }}</strong>
+          </div>
+          <div class="metric">
+            <span>Versão</span>
+            <strong>{{ selectedBenchmark.metrics.destination?.db_version || '—' }}</strong>
+          </div>
+          <div class="metric">
+            <span>Conexão</span>
+            <strong>{{ formatLatency(selectedBenchmark.metrics.destination?.conn_latency_ms) }}</strong>
+          </div>
+          <div class="metric">
+            <span>Ping</span>
+            <strong>{{ formatLatency(selectedBenchmark.metrics.destination?.ping_latency_ms) }}</strong>
+          </div>
+          <div class="metric">
+            <span>Probe</span>
+            <strong>{{ formatQps(selectedBenchmark.metrics.destination?.probe_qps) }}</strong>
+          </div>
+          <div class="metric">
+            <span>Write</span>
+            <strong>{{ selectedBenchmark.metrics.destination?.write_enabled ? 'Ativo' : 'Inativo' }}</strong>
+          </div>
+        </div>
+        <div class="error-list" *ngIf="selectedBenchmark.metrics.destination?.errors?.length">
+          <p>Erros</p>
+          <div class="error-item" *ngFor="let error of selectedBenchmark.metrics.destination?.errors">{{ error }}</div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #detailEmpty>
+      <div class="empty-state">
+        <strong>Nenhum benchmark selecionado</strong>
+        <p>Escolha um item no histórico para ver os detalhes.</p>
+      </div>
+    </ng-template>
+
+    <div class="loading-bar" *ngIf="isLoadingDetails">
+      <div class="loading-indicator"></div>
+    </div>
+  </ng-container>
+</div>

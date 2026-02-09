@@ -530,7 +530,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
     // Re-attach jobs and connections for the current project.
     this.jobs.forEach((job) => this.addJobToJsPlumb(job));
-    this.addExistingConnections(() => {
+    this.addExistingConnections(rebuildNonce, () => {
       if (this.activeRebuildNonce !== rebuildNonce) return;
       this.instance.repaintEverything();
       requestAnimationFrame(() => this.instance?.repaintEverything());
@@ -670,12 +670,13 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     });
   }
 
-  addExistingConnections(onDone?: () => void) {
+  addExistingConnections(rebuildNonce: number, onDone?: () => void) {
     if (!this.instance || !this.project?.connections) {
       if (onDone) onDone();
       return;
     }
 
+    const isStale = () => this.activeRebuildNonce !== rebuildNonce;
     const seen = new Set<string>();
     const conns = (this.project.connections || []).filter((conn) => {
       const key = `${conn.source}->${conn.target}`;
@@ -687,11 +688,14 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     let index = 0;
 
     const connectChunk = () => {
+      if (isStale()) return;
       if (!this.instance) return;
       const batch = conns.slice(index, index + chunkSize);
       if (batch.length === 0) {
-        this.isLoading = false;
-        if (onDone) onDone();
+        if (!isStale()) {
+          this.isLoading = false;
+          if (onDone) onDone();
+        }
         return;
       }
 
