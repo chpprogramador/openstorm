@@ -390,6 +390,61 @@ export class ProjectService {
     }
 
     /**
+     * Exporta um projeto (ZIP)
+     */
+    exportProject(id: string): Observable<Blob> | null {
+        if (!this.useApi) {
+            return null;
+        }
+        return this.http.get(`${this.apiUrl}/${id}/export`, {
+            responseType: 'blob'
+        });
+    }
+
+    /**
+     * Importa um projeto via ZIP
+     */
+    importProject(file: File, projectName?: string): Observable<Project | null> | null {
+        if (!this.useApi) {
+            return null;
+        }
+
+        const form = new FormData();
+        form.append('file', file);
+        if (projectName) {
+            form.append('projectName', projectName);
+        }
+
+        return this.http.post<any>(`${this.apiUrl}/import`, form).pipe(
+            tap(importedProject => {
+                if (!importedProject || !importedProject.id) {
+                    return;
+                }
+                const mapped = {
+                    id: importedProject.id,
+                    name: importedProject.projectName || importedProject.name,
+                    description: importedProject.description || '',
+                    createdAt: importedProject.createdAt ? new Date(importedProject.createdAt) : new Date(),
+                    updatedAt: importedProject.updatedAt ? new Date(importedProject.updatedAt) : new Date(),
+                    projectName: importedProject.projectName,
+                    jobs: importedProject.jobs || [],
+                    connections: importedProject.connections || [],
+                    sourceDatabase: importedProject.sourceDatabase,
+                    destinationDatabase: importedProject.destinationDatabase,
+                    concurrency: importedProject.concurrency,
+                    variables: importedProject.variables,
+                    visualElements: importedProject.visualElements
+                } as Project;
+
+                const exists = this.projectsSubject.value.some(p => p.id === mapped.id);
+                if (!exists) {
+                    this.projectsSubject.next([...this.projectsSubject.value, mapped]);
+                }
+            })
+        );
+    }
+
+    /**
      * Executa um projeto
      */
     runProject(id: string): Observable<any> {

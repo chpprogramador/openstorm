@@ -36,49 +36,79 @@ interface ProjectFormData {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="container">
+    <div class="container" (click)="closeMenus()">
       <div class="header-section">
         <div>
           <p class="kicker">Workspace</p>
           <h1 class="title">Projetos</h1>
           <p class="subtitle">Selecione ou crie um projeto para continuar</p>
         </div>
-        <button class="btn-primary" (click)="openCreateModal()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Novo Projeto
-        </button>
+        <div class="header-actions">
+          <button class="btn-secondary" (click)="openImportModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Importar
+          </button>
+          <button class="btn-primary" (click)="openCreateModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Novo Projeto
+          </button>
+        </div>
       </div>
 
       <ng-container *ngIf="projects$ | async as projects">
       <div class="projects-grid" *ngIf="projects.length > 0">
-        <div class="project-card" *ngFor="let project of projects" (click)="selectProject(project)">
+          <div class="project-card" *ngFor="let project of projects" (click)="selectProject(project)">
           <div class="card-header">
             <div>
               <h3 class="project-title">{{ project.projectName || project.name || 'Sem nome' }}</h3>
               <p class="project-description">{{ formatDbSummary(project) }}</p>
             </div>
             <div class="card-actions" (click)="$event.stopPropagation()">
-              <button class="btn-icon" (click)="openDuplicateModal(project)" title="Duplicar">
+              <button class="btn-icon" (click)="toggleMenu(project, $event)" title="Ações">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  <circle cx="12" cy="5" r="1.5" />
+                  <circle cx="12" cy="12" r="1.5" />
+                  <circle cx="12" cy="19" r="1.5" />
                 </svg>
               </button>
-              <button class="btn-icon" (click)="openEditModal(project)" title="Editar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
-              </button>
-              <button class="btn-icon btn-danger" (click)="openDeleteModal(project)" title="Excluir">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                </svg>
-              </button>
+              <div class="actions-menu" *ngIf="openMenuId === project.id" (click)="$event.stopPropagation()">
+                <button class="menu-item" (click)="exportProject(project)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  <span>Exportar</span>
+                </button>
+                <button class="menu-item" (click)="openDuplicateModal(project)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                  <span>Duplicar</span>
+                </button>
+                <button class="menu-item" (click)="openEditModal(project)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                  <span>Editar</span>
+                </button>
+                <button class="menu-item danger" (click)="openDeleteModal(project)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                  <span>Excluir</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -231,6 +261,30 @@ interface ProjectFormData {
           </div>
         </div>
       </div>
+
+      <div class="modal" *ngIf="showImportModal" (click)="closeImportModal()">
+        <div class="modal-content modal-small" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Importar Projeto</h2>
+            <button class="btn-close" (click)="closeImportModal()">x</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Arquivo ZIP</label>
+              <input type="file" class="input" accept=".zip" (change)="handleImportFile($event)" />
+              <small class="helper-text">Aceita arquivo .zip exportado pelo sistema.</small>
+            </div>
+            <div class="form-group">
+              <label>Novo nome (opcional)</label>
+              <input type="text" [(ngModel)]="importProjectName" class="input" placeholder="Digite o novo nome" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeImportModal()">Cancelar</button>
+            <button class="btn-primary" (click)="confirmImport()" [disabled]="!importFile">Importar</button>
+          </div>
+        </div>
+      </div>
     </div>
   `,
   styles: [
@@ -247,6 +301,12 @@ interface ProjectFormData {
         align-items: center;
         margin-bottom: 2.5rem;
         gap: 2rem;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
       }
 
       .kicker {
@@ -320,6 +380,7 @@ interface ProjectFormData {
         gap: 0.5rem;
         opacity: 0.7;
         transition: opacity 0.2s;
+        position: relative;
       }
 
       .project-card:hover .card-actions {
@@ -410,6 +471,48 @@ interface ProjectFormData {
         color: var(--error-color);
       }
 
+      .actions-menu {
+        position: absolute;
+        right: 0;
+        top: 2.6rem;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 0.4rem;
+        min-width: 160px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        box-shadow: 0 18px 30px rgba(15, 23, 42, 0.2);
+        z-index: 50;
+      }
+
+      .menu-item {
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        text-align: left;
+        padding: 0.55rem 0.75rem;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .menu-item:hover {
+        background: var(--hover-bg);
+      }
+
+      .menu-item.danger {
+        color: var(--error-color);
+      }
+
+      .menu-item svg {
+        opacity: 0.9;
+      }
+
       .btn-close {
         background: transparent;
         font-size: 1.5rem;
@@ -494,6 +597,11 @@ interface ProjectFormData {
         font-weight: 600;
       }
 
+      .helper-text {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+      }
+
       .empty-state {
         text-align: center;
         padding: 4rem 2rem;
@@ -528,6 +636,10 @@ interface ProjectFormData {
           align-items: flex-start;
         }
 
+        .header-actions {
+          width: 100%;
+        }
+
         .form-grid {
           grid-template-columns: 1fr;
         }
@@ -543,9 +655,13 @@ export class ProjectSelectionComponent implements OnInit {
   showModal = false;
   showDeleteModal = false;
   showDuplicateModal = false;
+  showImportModal = false;
   editingProject: Project | null = null;
   projectToDelete: Project | null = null;
   projectToDuplicate: Project | null = null;
+  openMenuId: string | null = null;
+  importFile: File | null = null;
+  importProjectName = '';
 
   formData: ProjectFormData = this.getDefaultFormData();
 
@@ -562,8 +678,18 @@ export class ProjectSelectionComponent implements OnInit {
   }
 
   selectProject(project: Project): void {
+    this.openMenuId = null;
     this.projectService.selectProject(project);
     this.router.navigate(['/home']);
+  }
+
+  toggleMenu(project: Project, event: Event): void {
+    event.stopPropagation();
+    this.openMenuId = this.openMenuId === project.id ? null : project.id;
+  }
+
+  closeMenus(): void {
+    this.openMenuId = null;
   }
 
   openCreateModal(): void {
@@ -573,6 +699,7 @@ export class ProjectSelectionComponent implements OnInit {
   }
 
   openEditModal(project: Project): void {
+    this.closeMenus();
     this.editingProject = project;
     this.formData = {
       id: project.id,
@@ -652,6 +779,7 @@ export class ProjectSelectionComponent implements OnInit {
   }
 
   openDeleteModal(project: Project): void {
+    this.closeMenus();
     this.projectToDelete = project;
     this.showDeleteModal = true;
   }
@@ -662,6 +790,7 @@ export class ProjectSelectionComponent implements OnInit {
   }
 
   openDuplicateModal(project: Project): void {
+    this.closeMenus();
     this.projectToDuplicate = project;
     this.showDuplicateModal = true;
   }
@@ -711,6 +840,62 @@ export class ProjectSelectionComponent implements OnInit {
       this.refreshProjects();
       this.closeDuplicateModal();
     }
+  }
+
+  openImportModal(): void {
+    this.importFile = null;
+    this.importProjectName = '';
+    this.showImportModal = true;
+  }
+
+  closeImportModal(): void {
+    this.showImportModal = false;
+    this.importFile = null;
+    this.importProjectName = '';
+  }
+
+  handleImportFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.importFile = input.files && input.files.length > 0 ? input.files[0] : null;
+  }
+
+  confirmImport(): void {
+    if (!this.importFile) return;
+    const projectName = this.importProjectName.trim();
+    const result = this.projectService.importProject(this.importFile, projectName ? projectName : undefined);
+
+    if (result && typeof (result as any).subscribe === 'function') {
+      (result as Observable<Project | null>).subscribe({
+        next: () => {
+          this.refreshProjects();
+          this.closeImportModal();
+        },
+        error: (error: any) => {
+          console.error('Erro ao importar projeto:', error);
+        }
+      });
+    }
+  }
+
+  exportProject(project: Project): void {
+    this.closeMenus();
+    const result = this.projectService.exportProject(project.id);
+    if (!result) return;
+
+    result.subscribe({
+      next: (blob) => {
+        const filename = `project_${project.id}.zip`;
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = filename;
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (error: any) => {
+        console.error('Erro ao exportar projeto:', error);
+      }
+    });
   }
 
   formatDate(date: Date): string {
