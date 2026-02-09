@@ -1,0 +1,17 @@
+{
+  "id": "f6dc6e92-c6a7-4eff-bc74-a6845d9d53d5",
+  "jobName": "Condomínio Detalhe",
+  "selectSql": "select\n\tc.id id,\n\tc.idcondominio id_condominio,\n\tc.idligacao id_ligacao_imovel\nfrom condominiodetalhe c",
+  "insertSql": "insert into ${SCHEMA}.condominio_detalhe (\n\tid,\n\tid_condominio,\n\tid_ligacao_imovel)",
+  "columns": [
+    "id",
+    "id_condominio",
+    "id_ligacao_imovel"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 7560
+}

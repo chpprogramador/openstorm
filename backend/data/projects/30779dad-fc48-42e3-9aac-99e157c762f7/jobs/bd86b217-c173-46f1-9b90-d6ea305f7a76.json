@@ -1,0 +1,16 @@
+{
+  "id": "bd86b217-c173-46f1-9b90-d6ea305f7a76",
+  "jobName": "Cobrança Processo Objetivo",
+  "selectSql": "select\n\to.id id,\n\to.objetivoprocessocorte nome_objetivo_processo\nfrom objetivoprocessocorte o",
+  "insertSql": "insert into ${SCHEMA}.cobranca_processo_objetivo (\n\tid,\n\tnome_objetivo_processo)",
+  "columns": [
+    "id",
+    "nome_objetivo_processo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 5520
+}

@@ -75,6 +75,13 @@ func main() {
 
 	api := router.Group("/api")
 	{
+		// Benchmarks
+		api.POST("/projects/:id/benchmarks/run", handlers.RunBenchmark)
+		api.GET("/projects/:id/benchmarks", handlers.ListBenchmarks)
+		api.GET("/projects/:id/benchmarks/:runId", handlers.GetBenchmark)
+		api.GET("/projects/:id/benchmarks/report", logger.BenchmarkHistoryReportHandler)
+		api.GET("/projects/:id/benchmarks/:runId/report", logger.BenchmarkReportHandler)
+
 		// Download do PDF
 		api.GET("/pipeline/:pipelineId/report", logger.PipelineReportHandler)
 

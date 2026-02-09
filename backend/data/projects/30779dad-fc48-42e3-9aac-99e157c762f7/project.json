@@ -103,7 +103,22 @@
     "jobs/a74b0b00-9b51-4282-bb5f-f4e4e3ab09d2.json",
     "jobs/df640f94-23ce-4b80-b547-0abaedfa5626.json",
     "jobs/badff19a-19bb-479e-8a93-7a9fe36de7f2.json",
-    "jobs/c1239c16-12c2-4b27-9dc9-16f3a3e61297.json"
+    "jobs/c1239c16-12c2-4b27-9dc9-16f3a3e61297.json",
+    "jobs/279a94e3-498c-46bb-9868-8f06fb183e99.json",
+    "jobs/cb53aca0-3cc5-4a5c-b78e-a3182bc97589.json",
+    "jobs/a982d962-5324-4e6d-b937-fc70f6cb7f8c.json",
+    "jobs/b46debc5-3b03-48b1-8edd-0879eb35c5b5.json",
+    "jobs/f6dc6e92-c6a7-4eff-bc74-a6845d9d53d5.json",
+    "jobs/787d504c-55fa-4c53-b390-4c7a0c0e2ab6.json",
+    "jobs/313958ac-0d1c-4fb0-8947-bb3c34ab898b.json",
+    "jobs/d44d13ce-5f63-409f-87e5-d85b76083f79.json",
+    "jobs/2c25418c-46fc-4da5-8a4e-69386e233759.json",
+    "jobs/b5b80fe4-5a67-4bd0-a225-88879770e78a.json",
+    "jobs/63079715-ddf2-48fd-9afb-c16c0a41f21c.json",
+    "jobs/b9cb9c81-82d2-4bc6-9929-9a6cda4394aa.json",
+    "jobs/bd86b217-c173-46f1-9b90-d6ea305f7a76.json",
+    "jobs/3b235423-d4fb-4bd7-b264-b12e5422bdba.json",
+    "jobs/48e76c62-d540-483b-b0b2-865f9ed88b11.json"
   ],
   "connections": [
     {
@@ -463,10 +478,6 @@
       "target": "1529850a-7095-4924-a915-fb324a26d2db"
     },
     {
-      "source": "4e976307-f0fc-44f4-9cda-4cb047cb693d",
-      "target": "cd2b37ad-927a-4d97-91f4-6ae93ff7f73b"
-    },
-    {
       "source": "52219519-ebb5-444a-b3de-3c4b072bb704",
       "target": "8d734250-5c96-489b-8059-2512f019b5c4"
     },
@@ -503,28 +514,84 @@
       "target": "c10c8ca7-d469-4a3c-a13c-0c36a8e7b4a3"
     },
     {
-      "source": "c1239c16-12c2-4b27-9dc9-16f3a3e61297",
-      "target": "599d305e-df49-4256-8620-8aa50b489210"
-    },
-    {
       "source": "47074030-6bd5-4fbc-b8fc-4f212ccd738f",
       "target": "c1239c16-12c2-4b27-9dc9-16f3a3e61297"
+    },
+    {
+      "source": "b46debc5-3b03-48b1-8edd-0879eb35c5b5",
+      "target": "a982d962-5324-4e6d-b937-fc70f6cb7f8c"
+    },
+    {
+      "source": "a982d962-5324-4e6d-b937-fc70f6cb7f8c",
+      "target": "f6dc6e92-c6a7-4eff-bc74-a6845d9d53d5"
+    },
+    {
+      "source": "f6dc6e92-c6a7-4eff-bc74-a6845d9d53d5",
+      "target": "787d504c-55fa-4c53-b390-4c7a0c0e2ab6"
+    },
+    {
+      "source": "787d504c-55fa-4c53-b390-4c7a0c0e2ab6",
+      "target": "313958ac-0d1c-4fb0-8947-bb3c34ab898b"
+    },
+    {
+      "source": "313958ac-0d1c-4fb0-8947-bb3c34ab898b",
+      "target": "d44d13ce-5f63-409f-87e5-d85b76083f79"
+    },
+    {
+      "source": "d44d13ce-5f63-409f-87e5-d85b76083f79",
+      "target": "2c25418c-46fc-4da5-8a4e-69386e233759"
+    },
+    {
+      "source": "4e976307-f0fc-44f4-9cda-4cb047cb693d",
+      "target": "63079715-ddf2-48fd-9afb-c16c0a41f21c"
+    },
+    {
+      "source": "63079715-ddf2-48fd-9afb-c16c0a41f21c",
+      "target": "bd86b217-c173-46f1-9b90-d6ea305f7a76"
+    },
+    {
+      "source": "bd86b217-c173-46f1-9b90-d6ea305f7a76",
+      "target": "b9cb9c81-82d2-4bc6-9929-9a6cda4394aa"
+    },
+    {
+      "source": "b9cb9c81-82d2-4bc6-9929-9a6cda4394aa",
+      "target": "48e76c62-d540-483b-b0b2-865f9ed88b11"
+    },
+    {
+      "source": "48e76c62-d540-483b-b0b2-865f9ed88b11",
+      "target": "3b235423-d4fb-4bd7-b264-b12e5422bdba"
+    },
+    {
+      "source": "3b235423-d4fb-4bd7-b264-b12e5422bdba",
+      "target": "b5b80fe4-5a67-4bd0-a225-88879770e78a"
+    },
+    {
+      "source": "b5b80fe4-5a67-4bd0-a225-88879770e78a",
+      "target": "cd2b37ad-927a-4d97-91f4-6ae93ff7f73b"
+    },
+    {
+      "source": "c1239c16-12c2-4b27-9dc9-16f3a3e61297",
+      "target": "b46debc5-3b03-48b1-8edd-0879eb35c5b5"
+    },
+    {
+      "source": "2c25418c-46fc-4da5-8a4e-69386e233759",
+      "target": "599d305e-df49-4256-8620-8aa50b489210"
     }
   ],
   "sourceDatabase": {
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "8pZDOLc+FPttOugk5s50fkChRIxE5VA=",
-    "password": "HYuNRrZpN5tmv4lDq2AgGfalGLzsR9G/rqyk+bcsvU8=",
+    "user": "h8ZGJZkt2iGDvphwNQiAzRsa/FUhMmQ=",
+    "password": "cvWYaNgXy82smIvE6BZBPQ7iUakIEpJenO/vYU8c0So=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "6YNCwhNhgvSHG7+iPfAxMszFAA==",
-    "password": "Qjq4EMbGa7GMQTssaQ05JCdE7Ws2yw==",
+    "user": "k3yKuzL4ZZqUe5PC3zEAH1aU2w==",
+    "password": "KpSd1z4dFPMYfLuW5NGsYy1DiOleRg==",
     "database": "vzmsaneamento"
   },
   "concurrency": 10,
@@ -598,7 +665,7 @@
       "id": "1ac6534b-f5b5-42c8-b4ae-20a3e95b52a5",
       "type": "rect",
       "x": -100,
-      "y": 3480,
+      "y": 3660,
       "width": 1900,
       "height": 600,
       "fillColor": "#0b0b0b",
@@ -617,7 +684,7 @@
       "x": -100,
       "y": 2400,
       "width": 1900,
-      "height": 240,
+      "height": 420,
       "fillColor": "#0b0b0b",
       "borderColor": "#e2e8f0",
       "borderWidth": 2,
@@ -632,9 +699,9 @@
       "id": "a3dd1656-75fc-4108-9c15-cc84b35d19eb",
       "type": "rect",
       "x": -100,
-      "y": 4200,
+      "y": 4380,
       "width": 1900,
-      "height": 1140,
+      "height": 1500,
       "fillColor": "#0b0b0b",
       "borderColor": "#e2e8f0",
       "borderWidth": 2,
@@ -649,7 +716,7 @@
       "id": "db11128b-cc03-48a7-9e2a-6abde9130abe",
       "type": "rect",
       "x": -100,
-      "y": 7440,
+      "y": 8700,
       "width": 1900,
       "height": 240,
       "fillColor": "#0b0b0b",
@@ -666,7 +733,7 @@
       "id": "1c6f60c5-c5c5-4d55-bed5-d76a2893dfe5",
       "type": "rect",
       "x": -100,
-      "y": 2760,
+      "y": 2940,
       "width": 1900,
       "height": 240,
       "fillColor": "#0b0b0b",
@@ -683,7 +750,7 @@
       "id": "13268088-5582-42e9-96be-b9aec8650a9d",
       "type": "rect",
       "x": -100,
-      "y": 3120,
+      "y": 3300,
       "width": 1900,
       "height": 240,
       "fillColor": "#0b0b0b",
@@ -717,7 +784,7 @@
       "id": "2f122bc7-30d0-455a-ad15-798d2c843edd",
       "type": "rect",
       "x": -100,
-      "y": 7080,
+      "y": 8340,
       "width": 1900,
       "height": 240,
       "fillColor": "#0b0b0b",
@@ -734,7 +801,7 @@
       "id": "56e72da8-42a3-4fb8-81c5-f59e93ecb724",
       "type": "rect",
       "x": -100,
-      "y": 5460,
+      "y": 6060,
       "width": 1900,
       "height": 240,
       "fillColor": "#0b0b0b",
@@ -751,7 +818,7 @@
       "id": "ee191a39-85d0-4ef9-a46a-180e834abfa6",
       "type": "rect",
       "x": -100,
-      "y": 6540,
+      "y": 6960,
       "width": 1900,
       "height": 420,
       "fillColor": "#0b0b0b",
@@ -768,13 +835,47 @@
       "id": "0c089753-b3dd-4779-a466-fe321815bcc4",
       "type": "rect",
       "x": -100,
-      "y": 5820,
+      "y": 6420,
       "width": 1900,
-      "height": 600,
-      "fillColor": "#000000",
+      "height": 420,
+      "fillColor": "#0b0b0b",
       "borderColor": "#ffffff",
       "borderWidth": 3,
       "text": "Parcelamento / Venda",
+      "textColor": "#e2e8f0",
+      "textAlign": "top-left",
+      "fontSize": 30,
+      "fontFamily": "Helvetica, Arial, sans-serif",
+      "cornerRadius": 8
+    },
+    {
+      "id": "de82b24b-1f89-4dff-afa9-12b8ba3684cf",
+      "type": "rect",
+      "x": -100,
+      "y": 7500,
+      "width": 1900,
+      "height": 240,
+      "fillColor": "#0b0b0b",
+      "borderColor": "#ffffff",
+      "borderWidth": 3,
+      "text": "Condomínio",
+      "textColor": "#e2e8f0",
+      "textAlign": "top-left",
+      "fontSize": 30,
+      "fontFamily": "Helvetica, Arial, sans-serif",
+      "cornerRadius": 8
+    },
+    {
+      "id": "4b0bb61c-9192-4f56-9a7a-3cbd5e0441d9",
+      "type": "rect",
+      "x": -100,
+      "y": 7920,
+      "width": 1900,
+      "height": 240,
+      "fillColor": "#0b0b0b",
+      "borderColor": "#ffffff",
+      "borderWidth": 3,
+      "text": "Consolidação",
       "textColor": "#e2e8f0",
       "textAlign": "top-left",
       "fontSize": 30,

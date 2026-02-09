@@ -1,0 +1,17 @@
+{
+  "id": "d44d13ce-5f63-409f-87e5-d85b76083f79",
+  "jobName": "Consolidação Detalhe",
+  "selectSql": "select\n\tc.id id,\n\tc.idconsolidacaoarrecadacao id_consolidacao,\n\tc.idligacao id_ligacao_imovel\nfrom consolidacaoarrecadacaodet c",
+  "insertSql": "insert into ${SCHEMA}.consolidacao_detalhe (\n\tid,\n\tid_consolidacao,\n\tid_ligacao_imovel)",
+  "columns": [
+    "id",
+    "id_consolidacao",
+    "id_ligacao_imovel"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 7980
+}
