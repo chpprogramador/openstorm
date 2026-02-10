@@ -1,12 +1,15 @@
 {
   "id": "047d5c2f-03f9-4735-9e96-3a1e2d6c0307",
   "jobName": "Situação Processo",
-  "selectSql": "INSERT INTO ${SCHEMA}.cobranca_processo_ligacao_situacao (id, nome_processo_ligacao_situacao) VALUES(1, 'Em Cobrança');\r\nINSERT INTO ${SCHEMA}.cobranca_processo_ligacao_situacao (id, nome_processo_ligacao_situacao) VALUES(2, 'Finalizado');",
-  "insertSql": "",
-  "columns": [],
+  "selectSql": "select\r\n\ts.id id,\r\n\ts.situacaoligacaoprocessocorte nome_processo_ligacao_situacao\r\nfrom situacaoligacaoprocessocorte s",
+  "insertSql": "insert into ${SCHEMA}.cobranca_processo_ligacao_situacao (\r\n\tid,\r\n\tnome_processo_ligacao_situacao)",
+  "columns": [
+    "id",
+    "nome_processo_ligacao_situacao"
+  ],
   "primaryKeys": null,
   "recordsPerPage": 1000,
-  "type": "execution",
+  "type": "insert",
   "stopOnError": true,
   "left": 900,
   "top": 4980

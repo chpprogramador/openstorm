@@ -382,10 +382,6 @@
       "target": "4e976307-f0fc-44f4-9cda-4cb047cb693d"
     },
     {
-      "source": "599d305e-df49-4256-8620-8aa50b489210",
-      "target": "ee14d9f1-5a83-439d-a3a6-0619e3849e84"
-    },
-    {
       "source": "ee14d9f1-5a83-439d-a3a6-0619e3849e84",
       "target": "12022f25-93cd-418a-a20c-36db5bf9887d"
     },
@@ -580,22 +576,30 @@
     {
       "source": "cb53aca0-3cc5-4a5c-b78e-a3182bc97589",
       "target": "53e2adab-d6b9-452e-b773-82326135b1b0"
+    },
+    {
+      "source": "599d305e-df49-4256-8620-8aa50b489210",
+      "target": "279a94e3-498c-46bb-9868-8f06fb183e99"
+    },
+    {
+      "source": "279a94e3-498c-46bb-9868-8f06fb183e99",
+      "target": "ee14d9f1-5a83-439d-a3a6-0619e3849e84"
     }
   ],
   "sourceDatabase": {
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "XMbBZb0b/Sla/bk7kWreTVr+ZdkIXXA=",
-    "password": "VCsWOPpDK9GSCCfqQZa7jLAENla8p9kbRcm5g/OvGO8=",
+    "user": "b+PQoecw6RSvBvIiv26xyfzxiyrZ3OM=",
+    "password": "ZZMw1D0ALaqxoN/VqyZwkv7I7+Cj0Npv4UYmemyPql0=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "Jer2DbwbqF2QycP5hRX3xhX9Yg==",
-    "password": "F0WanA8f/xe0beJG97iEAIXs4JU2SA==",
+    "user": "pyLNbzmByOGWPmV4Uj+7ei7grw==",
+    "password": "m30rmd4xvBkROQzAE8Cif2zDc9Wq2g==",
     "database": "vzmsaneamento"
   },
   "concurrency": 10,

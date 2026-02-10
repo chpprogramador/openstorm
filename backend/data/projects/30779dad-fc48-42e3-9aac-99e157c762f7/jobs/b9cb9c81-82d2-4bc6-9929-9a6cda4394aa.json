@@ -1,14 +1,14 @@
 {
   "id": "b9cb9c81-82d2-4bc6-9929-9a6cda4394aa",
   "jobName": "Cobrança Processo",
-  "selectSql": "select\n\tp.id id,\n\tcase when p.ativo = 'S' then true else false end as ativo,\n\tto_date(nullif(p.datacadastro,''),'YYYYMMDD') data_cadastro,\n\tto_date(nullif(p.datacorteprevista,''),'YYYYMMDD') data_corte_prevista,\n\tto_date(nullif(p.dataentregaprevista,''),'YYYYMMDD') data_entrega_prevista_comunicado,\n\tto_date(nullif(p.datacorteprevista,''),'YYYYMMDD') data_hora_finalizacao, -- Checar\n\tp.nomeprocesso nome_processo,\n\tp.idinstituicaocobranca id_cobranca_instituicao,\n\tp.idobjetivoprocessocorte id_cobranca_processo_objetivo,\n\tnull id_cobranca_processo_parametros,\n\tp.idobjetivoprocessocorte id_cobranca_processo_tipo,\n\tnull id_cobranca_regua,\n\tp.idgrupo id_grupo_medicao,\n\tp.idperiodo  id_periodo_cadastro,\n\tp.idperiodoimpressao id_periodo_impressao,\n\tnull id_usuario_cadastro\nfrom processocorte p ",
+  "selectSql": "select\n\tp.id id,\n\tcase when p.ativo = 'S' then true else false end as ativo,\n\tcase WHEN p.datacadastro ~ '^0+$' THEN null ELSE to_date(nullif(p.datacadastro,''), 'YYYYMMDD') END AS data_cadastro,\n\tcase WHEN p.datacorteprevista ~ '^0+$' THEN null ELSE to_date(nullif(p.datacorteprevista,''), 'YYYYMMDD') END AS data_corte_prevista,\n\tcase WHEN p.dataentregaprevista ~ '^0+$' THEN null ELSE to_date(nullif(p.dataentregaprevista,''), 'YYYYMMDD') END AS data_corte_prevista,\n\tcase WHEN p.datacorteprevista ~ '^0+$' THEN null ELSE to_date(nullif(p.datacorteprevista,''), 'YYYYMMDD') END AS data_hora_finalizacao,\n\tp.nomeprocesso nome_processo,\n\tp.idinstituicaocobranca id_cobranca_instituicao,\n\tp.idobjetivoprocessocorte id_cobranca_processo_objetivo,\n\tnull id_cobranca_processo_parametros,\n\tp.idobjetivoprocessocorte id_cobranca_processo_tipo,\n\tnull id_cobranca_regua,\n\tp.idgrupo id_grupo_medicao,\n\tp.idperiodo  id_periodo_cadastro,\n\tp.idperiodoimpressao id_periodo_impressao,\n\tnull id_usuario_cadastro\nfrom processocorte p ",
   "insertSql": "insert into ${SCHEMA}.cobranca_processo (\n\tid,\n\tativo,\n\tdata_cadastro,\n\tdata_corte_prevista,\n\tdata_entrega_prevista_comunicado,\n\tdata_hora_finalizacao,\n\tnome_processo,\n\tid_cobranca_instituicao,\n\tid_cobranca_processo_objetivo,\n\tid_cobranca_processo_parametros,\n\tid_cobranca_processo_tipo,\n\tid_cobranca_regua,\n\tid_grupo_medicao,\n\tid_periodo_cadastro,\n\tid_periodo_impressao,\n\tid_usuario_cadastro)",
   "columns": [
     "id",
     "ativo",
     "data_cadastro",
     "data_corte_prevista",
-    "data_entrega_prevista_comunicado",
+    "data_corte_prevista",
     "data_hora_finalizacao",
     "nome_processo",
     "id_cobranca_instituicao",
