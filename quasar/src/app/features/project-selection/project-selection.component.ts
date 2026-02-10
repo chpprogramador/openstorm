@@ -942,12 +942,8 @@ export class ProjectSelectionComponent implements OnInit {
     if (!source && !dest) {
       return 'Sem configuracao de banco';
     }
-    const sourceLabel = source
-      ? `${source.type || 'db'} ${source.host || '-'}:${source.port || '-'}`
-      : 'origem -';
-    const destLabel = dest
-      ? `${dest.type || 'db'} ${dest.host || '-'}:${dest.port || '-'}`
-      : 'destino -';
+    const sourceLabel = source ? `${source.database || '-'}` : 'origem -';
+    const destLabel = dest ? `${dest.database || '-'}` : 'destino -';
     return `${sourceLabel} → ${destLabel}`;
   }
 }
