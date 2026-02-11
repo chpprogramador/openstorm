@@ -7,9 +7,11 @@ import (
 	"etl/models"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -153,6 +155,9 @@ func ValidateJobHandler(c *gin.Context) {
 	}
 
 	decryptProjectFields(&project)
+	projectVariables := projectVariablesMap(project)
+	req.SelectSQL = substituteValidationVariables(req.SelectSQL, projectVariables)
+	req.InsertSQL = substituteValidationVariables(req.InsertSQL, projectVariables)
 
 	// Conecta ao banco de dados de origem
 	sourceDB, err := sql.Open(project.SourceDatabase.Type, buildDSN(project.SourceDatabase))
@@ -172,7 +177,40 @@ func ValidateJobHandler(c *gin.Context) {
 		req.Limit = 10
 	}
 
-	tx, err := sourceDB.Begin()
+	selectOnlyValidation := isSelectOnlyValidation(req)
+	if !selectOnlyValidation && containsMapDirective(req.SelectSQL) {
+		if strings.TrimSpace(req.InsertSQL) == "" {
+			c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
+				Valid:   false,
+				Message: "InsertSQL e obrigatorio para validacao de job insert",
+			})
+			return
+		}
+
+		cleanInsertSQL := cleanSQLNewlines(req.InsertSQL)
+		insertCols, err := extractInsertColumns(cleanInsertSQL)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
+				Valid:   false,
+				Message: fmt.Sprintf("Erro no INSERT: %v", err),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, models.ValidateJobResponse{
+			Columns: insertCols,
+			Valid:   true,
+			Message: "Validacao de insert com diretiva Map concluida (SELECT ignorado)",
+		})
+		return
+	}
+
+	validationDB := sourceDB
+	if selectOnlyValidation {
+		validationDB = destDB
+	}
+
+	tx, err := validationDB.Begin()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ValidateJobResponse{
 			Valid: false, Message: "Erro ao iniciar transação",
@@ -186,7 +224,7 @@ func ValidateJobHandler(c *gin.Context) {
 
 	// Não modificamos a query original para validação
 	// Isso evita problemas com funções de janela (window functions) e outras construções SQL complexas
-	
+
 	// Usa subconsulta para aplicar LIMIT 1 de forma segura na query original
 	validationSQL := fmt.Sprintf("SELECT * FROM (%s) AS t LIMIT 1", cleanSelectSQL)
 
@@ -201,6 +239,22 @@ func ValidateJobHandler(c *gin.Context) {
 	defer rows.Close()
 
 	columns, _ := rows.Columns()
+	if selectOnlyValidation {
+		c.JSON(http.StatusOK, models.ValidateJobResponse{
+			Columns: columns,
+			Valid:   true,
+			Message: "Validacao do SELECT bem-sucedida",
+		})
+		return
+	}
+
+	if strings.TrimSpace(req.InsertSQL) == "" {
+		c.JSON(http.StatusBadRequest, models.ValidateJobResponse{
+			Valid:   false,
+			Message: "InsertSQL e obrigatorio para validacao de job insert",
+		})
+		return
+	}
 
 	// Limpa quebras de linha para evitar problemas no PostgreSQL
 	cleanInsertSQL := cleanSQLNewlines(req.InsertSQL)
@@ -273,6 +327,47 @@ func ValidateJobHandler(c *gin.Context) {
 		Valid:   true,
 		Message: "Validação bem-sucedida",
 	})
+}
+
+func isSelectOnlyValidation(req models.ValidateJobRequest) bool {
+	jobType := strings.ToLower(strings.TrimSpace(req.Type))
+	mode := strings.ToLower(strings.TrimSpace(req.ValidationMode))
+	return jobType == "memory-select" || mode == "select-only"
+}
+
+func containsMapDirective(sqlText string) bool {
+	re := regexp.MustCompile(`Map\[\s*'[^']+'\s*\]\s*;?`)
+	return re.MatchString(sqlText)
+}
+
+func projectVariablesMap(project models.Project) map[string]string {
+	variables := make(map[string]string, len(project.Variables))
+	for _, variable := range project.Variables {
+		var valueStr string
+		switch v := variable.Value.(type) {
+		case string:
+			valueStr = v
+		case int, int64, float64:
+			valueStr = fmt.Sprintf("%v", v)
+		case bool:
+			valueStr = fmt.Sprintf("%t", v)
+		default:
+			valueStr = fmt.Sprintf("%v", v)
+		}
+		variables[variable.Name] = valueStr
+	}
+	return variables
+}
+
+func substituteValidationVariables(query string, variables map[string]string) string {
+	for key, value := range variables {
+		placeholder := fmt.Sprintf("${%s}", key)
+		query = strings.ReplaceAll(query, placeholder, value)
+	}
+	if strings.Contains(query, "${") {
+		log.Printf("Aviso: query de validacao ainda contem placeholders nao resolvidos")
+	}
+	return query
 }
 
 func cleanSQLNewlines(sql string) string {

@@ -1,0 +1,13 @@
+{
+  "id": "83dbc9d6-18a7-435c-9597-bc48b2806951",
+  "jobName": "Insere Holding, Empresa e Cidade",
+  "selectSql": "-- Insere Holding, Empresa e Cidade\r\nINSERT INTO public.holding (id, documento_identificacao, nome_holding, quantidade_ligacoes)\r\nVALUES (2, '38.113.789/0001-60', 'Elabb Holding', 1000000);\r\n\r\nINSERT INTO public.empresa (id, documento_identificacao, nome_empresa, quantidade_ligacoes, id_holding)\r\nVALUES (3, '06.711.846/0001-16', 'Elabb Saneamento', 1000000, 2);\r\n\r\nINSERT INTO public.cidade (id, cidade, tenant_schema, id_estado, numero_habitantes, numero_ligacoes, id_empresa)\r\nVALUES (7, 'New York', '${SCHEMA}', 1, 2145321, 1523456, 3);",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 500,
+  "top": -600
+}

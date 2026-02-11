@@ -1,0 +1,22 @@
+{
+  "id": "f42d901c-d6e5-455b-b692-318d3aebc7ec",
+  "jobName": "Usuário",
+  "selectSql": "select\r\n\t'${SCHEMA}' senha,\r\n\tu.usuario usuario,\r\n\tu.nomeusuario nome,\r\n\tnull id_empresa,\r\n\tu.email email,\r\n\ttrue usuario_sistema,\r\n\tnull caminho_imagem,\r\n\tu.id mig_id_usuario_original\r\nfrom usuario u",
+  "insertSql": "insert into public.usuario (\r\n\tsenha,\r\n\tusuario,\r\n\tnome,\r\n\tid_empresa,\r\n\temail,\r\n\tusuario_sistema,\r\n\tcaminho_imagem,\r\n\tmig_id_usuario_original)",
+  "columns": [
+    "senha",
+    "usuario",
+    "nome",
+    "id_empresa",
+    "email",
+    "usuario_sistema",
+    "caminho_imagem",
+    "mig_id_usuario_original"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": -600
+}

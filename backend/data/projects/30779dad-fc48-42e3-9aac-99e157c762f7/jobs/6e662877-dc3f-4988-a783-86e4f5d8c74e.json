@@ -1,0 +1,16 @@
+{
+  "id": "6e662877-dc3f-4988-a783-86e4f5d8c74e",
+  "jobName": "Usuário Cidade",
+  "selectSql": "Map['temp_usuario'];\r\n\r\nselect\r\n\t${IDCIDADE} id_cidade,\r\n\tt.id id_usuario\r\nfrom usuariocidade u \r\njoin temp_usuario t on (t.mig_id_usuario_original = u.id)",
+  "insertSql": "\r\n\r\ninsert into public.usuario_cidade (\r\n\tid_cidade,\r\n\tid_usuario)",
+  "columns": [
+    "id_cidade",
+    "id_usuario"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": -420
+}

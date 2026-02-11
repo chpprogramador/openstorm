@@ -5,6 +5,7 @@ import "encoding/json"
 type Job struct {
 	ID             string   `json:"id"`
 	JobName        string   `json:"jobName"`
+	Connection     string   `json:"connection"`
 	SelectSQL      string   `json:"selectSql"`
 	InsertSQL      string   `json:"insertSql"`
 	PostInsert     string   `json:"posInsertSql"`
@@ -22,6 +23,7 @@ func (j *Job) UnmarshalJSON(data []byte) error {
 	type jobJSON struct {
 		ID             string   `json:"id"`
 		JobName        string   `json:"jobName"`
+		Connection     string   `json:"connection"`
 		SelectSQL      string   `json:"selectSql"`
 		InsertSQL      string   `json:"insertSql"`
 		PostInsert     string   `json:"posInsertSql"`
@@ -42,6 +44,7 @@ func (j *Job) UnmarshalJSON(data []byte) error {
 
 	j.ID = aux.ID
 	j.JobName = aux.JobName
+	j.Connection = aux.Connection
 	j.SelectSQL = aux.SelectSQL
 	j.InsertSQL = aux.InsertSQL
 	if aux.PostInsert != "" {
@@ -65,6 +68,7 @@ func (j Job) MarshalJSON() ([]byte, error) {
 	type jobJSON struct {
 		ID             string   `json:"id"`
 		JobName        string   `json:"jobName"`
+		Connection     string   `json:"connection,omitempty"`
 		SelectSQL      string   `json:"selectSql"`
 		InsertSQL      string   `json:"insertSql"`
 		PostInsert     string   `json:"posInsertSql,omitempty"`
@@ -81,6 +85,7 @@ func (j Job) MarshalJSON() ([]byte, error) {
 	out := jobJSON{
 		ID:             j.ID,
 		JobName:        j.JobName,
+		Connection:     j.Connection,
 		SelectSQL:      j.SelectSQL,
 		InsertSQL:      j.InsertSQL,
 		PostInsert:     j.PostInsert,
@@ -98,10 +103,12 @@ func (j Job) MarshalJSON() ([]byte, error) {
 }
 
 type ValidateJobRequest struct {
-	SelectSQL string `json:"selectSQL"`
-	InsertSQL string `json:"insertSQL"`
-	Limit     int    `json:"limit"`
-	ProjectID string `json:"projectId"`
+	SelectSQL      string `json:"selectSQL"`
+	InsertSQL      string `json:"insertSQL"`
+	Limit          int    `json:"limit"`
+	ProjectID      string `json:"projectId"`
+	Type           string `json:"type,omitempty"`
+	ValidationMode string `json:"validationMode,omitempty"`
 }
 
 type ValidateJobResponse struct {

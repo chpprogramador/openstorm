@@ -1,0 +1,16 @@
+{
+  "id": "b0ec3eca-d431-4d2a-9567-f72bbf9abf55",
+  "jobName": "Temp Usuário",
+  "selectSql": "select id, mig_id_usuario_original from public.usuario",
+  "insertSql": "",
+  "columns": [
+    "id",
+    "mig_id_usuario_original"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "memory-select",
+  "stopOnError": true,
+  "left": 100,
+  "top": -420
+}

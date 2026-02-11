@@ -1,0 +1,13 @@
+{
+  "id": "e8fef808-0d03-4f08-8c4b-5a833603e5d1",
+  "jobName": "Drop coluna mig_id_usuario_original",
+  "selectSql": "ALTER TABLE public.usuario DROP COLUMN IF EXISTS mig_id_usuario_original;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 900,
+  "top": -420
+}

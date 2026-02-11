@@ -125,13 +125,15 @@
     "jobs/30685e95-e6d7-4819-90e9-3f24a2257931.json",
     "jobs/aa923daa-12e3-423c-8821-ff7699c47bbd.json",
     "jobs/9f297fec-3d10-45cc-9256-eeed8ddca03b.json",
-    "jobs/3dfc7efc-5e56-47c7-87e2-8036140749ea.json"
+    "jobs/3dfc7efc-5e56-47c7-87e2-8036140749ea.json",
+    "jobs/83dbc9d6-18a7-435c-9597-bc48b2806951.json",
+    "jobs/f2193f20-1bde-4bcc-b33b-a95c578b7a0a.json",
+    "jobs/e8fef808-0d03-4f08-8c4b-5a833603e5d1.json",
+    "jobs/f42d901c-d6e5-455b-b692-318d3aebc7ec.json",
+    "jobs/b0ec3eca-d431-4d2a-9567-f72bbf9abf55.json",
+    "jobs/6e662877-dc3f-4988-a783-86e4f5d8c74e.json"
   ],
   "connections": [
-    {
-      "source": "c261e485-8fd1-42af-bbc7-eebb02be84c5",
-      "target": "9587a320-098a-46db-8bd1-29c4e6ffa10d"
-    },
     {
       "source": "9587a320-098a-46db-8bd1-29c4e6ffa10d",
       "target": "65044050-d870-436f-bb66-cfa9f6547b2b"
@@ -619,22 +621,50 @@
     {
       "source": "3dfc7efc-5e56-47c7-87e2-8036140749ea",
       "target": "cd2b37ad-927a-4d97-91f4-6ae93ff7f73b"
+    },
+    {
+      "source": "c261e485-8fd1-42af-bbc7-eebb02be84c5",
+      "target": "83dbc9d6-18a7-435c-9597-bc48b2806951"
+    },
+    {
+      "source": "83dbc9d6-18a7-435c-9597-bc48b2806951",
+      "target": "f2193f20-1bde-4bcc-b33b-a95c578b7a0a"
+    },
+    {
+      "source": "f2193f20-1bde-4bcc-b33b-a95c578b7a0a",
+      "target": "f42d901c-d6e5-455b-b692-318d3aebc7ec"
+    },
+    {
+      "source": "f42d901c-d6e5-455b-b692-318d3aebc7ec",
+      "target": "b0ec3eca-d431-4d2a-9567-f72bbf9abf55"
+    },
+    {
+      "source": "b0ec3eca-d431-4d2a-9567-f72bbf9abf55",
+      "target": "6e662877-dc3f-4988-a783-86e4f5d8c74e"
+    },
+    {
+      "source": "6e662877-dc3f-4988-a783-86e4f5d8c74e",
+      "target": "e8fef808-0d03-4f08-8c4b-5a833603e5d1"
+    },
+    {
+      "source": "e8fef808-0d03-4f08-8c4b-5a833603e5d1",
+      "target": "9587a320-098a-46db-8bd1-29c4e6ffa10d"
     }
   ],
   "sourceDatabase": {
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "YzB7rh4SsZKY9UZs/g0bBUiI2ORsR1w=",
-    "password": "H/Z7iZ6gvtF+ntIhO8nPWmCw/nVF3MTyY9+UCyy+QSg=",
+    "user": "CbCemTcgzj+BMJUjZIYcyJ/Kqzy7Yt0=",
+    "password": "PukgHaIGmF54V5mCARhzMxEDmmVyDOe/8nGOgGTMfb0=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "GhW+EOfdIxtfTesY5Ai+49ryyA==",
-    "password": "WzpVioSdTyScQ8UGsDz9tuEwKdVMqg==",
+    "user": "QyZfvtuGPX7ghfndw8ErHXBYyg==",
+    "password": "uoa6HwTREexmo1XJNEC82VVxsstm3Q==",
     "database": "vzmsaneamento"
   },
   "concurrency": 10,
@@ -650,6 +680,12 @@
       "value": "true",
       "description": "",
       "type": "boolean"
+    },
+    {
+      "name": "IDCIDADE",
+      "value": 7,
+      "description": "",
+      "type": "number"
     }
   ],
   "visualElements": [
@@ -657,9 +693,9 @@
       "id": "eb2d14a5-de94-45a6-ac39-f07c9b780a9d",
       "type": "rect",
       "x": -100,
-      "y": -480,
+      "y": -660,
       "width": 1900,
-      "height": 240,
+      "height": 420,
       "fillColor": "#0b0b0b",
       "borderColor": "#e2e8f0",
       "borderWidth": 2,

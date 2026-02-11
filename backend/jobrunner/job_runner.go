@@ -12,10 +12,15 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
+	"unicode"
+
+	"golang.org/x/text/unicode/norm"
 )
 
 type JobRunner struct {
@@ -41,6 +46,8 @@ type JobRunner struct {
 	countMap       map[string]*countFuture
 	countQueue     chan *countRequest
 	countInit      sync.Once
+	memoryStoreMu  sync.RWMutex
+	memoryStore    map[string]memoryDataset
 }
 
 func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect dialects.SQLDialect, concurrency int, project string, projectID string) *JobRunner {
@@ -71,6 +78,7 @@ func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect d
 		Variables:      LoadProjectVariables(projectID),
 		PipelineLog:    pipelineLog,
 		ProjectID:      projectID,
+		memoryStore:    make(map[string]memoryDataset),
 	}
 	jr.ctx, jr.cancel = context.WithCancel(context.Background())
 
@@ -221,6 +229,13 @@ func (jr *JobRunner) preloadCounts(startIDs []string) {
 		if strings.ToLower(job.Type) != "insert" {
 			continue
 		}
+		jobCopy := job
+		jobCopy.SelectSQL = jr.SubstituteVariables(jobCopy.SelectSQL)
+		_, directives, err := extractMapDirectives(jobCopy.SelectSQL)
+		if err == nil && len(directives) > 0 {
+			// Jobs insert com diretiva Map fazem count na execucao, em sessao propria.
+			continue
+		}
 		total++
 	}
 	status.SetCountTotal(total)
@@ -236,6 +251,10 @@ func (jr *JobRunner) preloadCounts(startIDs []string) {
 		jobCopy.SelectSQL = jr.SubstituteVariables(jobCopy.SelectSQL)
 		jobCopy.InsertSQL = jr.SubstituteVariables(jobCopy.InsertSQL)
 		jobCopy.PostInsert = jr.SubstituteVariables(jobCopy.PostInsert)
+		_, directives, err := extractMapDirectives(jobCopy.SelectSQL)
+		if err == nil && len(directives) > 0 {
+			continue
+		}
 		jr.requestCount(jobID, jobCopy)
 	}
 }
@@ -270,8 +289,12 @@ func (jr *JobRunner) RunJob(jobID string) {
 		jr.runInsertJob(jobID, job)
 	case "execution":
 		jr.runExecutionJob(jobID, job)
+	case "update":
+		jr.runExecutionJob(jobID, job)
 	case "condition":
 		jr.runConditionJob(jobID, job)
+	case "memory-select":
+		jr.runMemorySelectJob(jobID, job)
 	default:
 		log.Printf("Tipo de job desconhecido: %s", job.Type)
 		// Log de erro para tipo desconhecido
@@ -327,13 +350,36 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		job.InsertSQL = jr.SubstituteVariables(job.InsertSQL)
 		job.PostInsert = jr.SubstituteVariables(job.PostInsert)
 
-		// total de registros (count calculado em worker sequencial)
-		countFuture := jr.requestCount(jobID, job)
-		total, err := jr.awaitCount(countFuture)
+		resolvedSelectSQL, mapDirectives, err := extractMapDirectives(job.SelectSQL)
 		if err != nil {
-			log.Printf("Erro ao contar registros: %v\n", err)
+			log.Printf("Erro ao processar diretivas Map no job %s: %v\n", job.ID, err)
 			jr.markJobFinalStatus(jobID, job, "error", err.Error(), time.Now())
 			return
+		}
+		job.SelectSQL = resolvedSelectSQL
+		if len(mapDirectives) > 0 {
+			log.Printf("Job %s (%s): %d diretiva(s) Map detectadas no select", job.ID, job.JobName, len(mapDirectives))
+		}
+
+		// total de registros (count calculado em worker sequencial)
+		total := 0
+		if len(mapDirectives) > 0 {
+			countStart := time.Now()
+			total, err = jr.countSelectWithMapDirectives(job, mapDirectives)
+			if err != nil {
+				log.Printf("Erro ao contar registros com Map: %v\n", err)
+				jr.markJobFinalStatus(jobID, job, "error", err.Error(), time.Now())
+				return
+			}
+			log.Printf("Job %s (%s): count com Map concluido em %s (total=%d)", job.ID, job.JobName, time.Since(countStart), total)
+		} else {
+			countFuture := jr.requestCount(jobID, job)
+			total, err = jr.awaitCount(countFuture)
+			if err != nil {
+				log.Printf("Erro ao contar registros: %v\n", err)
+				jr.markJobFinalStatus(jobID, job, "error", err.Error(), time.Now())
+				return
+			}
 		}
 
 		// Atualiza total no log
@@ -424,16 +470,16 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					}
 					batchStart := time.Now()
 					startOffset := int(atomic.LoadInt64(&processed))
-				batchLog := logger.BatchLog{
-					Offset:    startOffset,
-					Limit:     len(batch),
-					Status:    "running",
-					StartedAt: batchStart,
-				}
+					batchLog := logger.BatchLog{
+						Offset:    startOffset,
+						Limit:     len(batch),
+						Status:    "running",
+						StartedAt: batchStart,
+					}
 
-				insertSQL, args := jr.Dialect.BuildInsertQuery(job, batch)
+					insertSQL, args := jr.Dialect.BuildInsertQuery(job, batch)
 
-				if _, err := tx.Exec(insertSQL, args...); err != nil {
+					if _, err := tx.Exec(insertSQL, args...); err != nil {
 						jobHadError.Store(true)
 						lastErr.Store(err.Error())
 						reportJobError(err.Error())
@@ -485,7 +531,14 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		}
 
 		// Resolve tabela principal uma única vez (EXPLAIN)
-		mainTable, err := jr.getMainTableFromExplain(job)
+		mainTable := ""
+		if len(mapDirectives) > 0 {
+			explainStart := time.Now()
+			mainTable, err = jr.getMainTableFromExplainWithMapDirectives(job, mapDirectives, jobCtx)
+			log.Printf("Job %s (%s): explain com Map concluido em %s (mainTable=%s)", job.ID, job.JobName, time.Since(explainStart), mainTable)
+		} else {
+			mainTable, err = jr.getMainTableFromExplain(job)
+		}
 		if err != nil {
 			log.Printf("Erro no EXPLAIN do job %s: %v", job.ID, err)
 			jobHadError.Store(true)
@@ -508,14 +561,60 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 				}
 
 				query := jr.Dialect.BuildSelectQueryByHash(job, workerID, concurrency, mainTable)
-				rows, err := jr.SourceDB.Query(query)
-				if err != nil {
-					log.Printf("Erro na query do bucket %d: %v", workerID, err)
-					jobHadError.Store(true)
-					lastErr.Store(err.Error())
-					reportJobError(err.Error())
-					jobCancel()
-					return
+				var rows *sql.Rows
+				if len(mapDirectives) > 0 {
+					mapStart := time.Now()
+					conn, err := jr.SourceDB.Conn(jobCtx)
+					if err != nil {
+						log.Printf("Erro ao obter conexao do bucket %d: %v", workerID, err)
+						jobHadError.Store(true)
+						lastErr.Store(err.Error())
+						reportJobError(err.Error())
+						jobCancel()
+						return
+					}
+					defer conn.Close()
+
+					tx, err := conn.BeginTx(jobCtx, nil)
+					if err != nil {
+						log.Printf("Erro ao iniciar transacao do bucket %d: %v", workerID, err)
+						jobHadError.Store(true)
+						lastErr.Store(err.Error())
+						reportJobError(err.Error())
+						jobCancel()
+						return
+					}
+					defer tx.Rollback()
+
+					if err := jr.materializeDirectiveMapsWithExecutor(jobCtx, tx, normalizeDBTypeFromDSN(jr.SourceDSN), mapDirectives); err != nil {
+						log.Printf("Erro ao materializar maps no bucket %d: %v", workerID, err)
+						jobHadError.Store(true)
+						lastErr.Store(err.Error())
+						reportJobError(err.Error())
+						jobCancel()
+						return
+					}
+					log.Printf("Job %s (%s): worker %d materializou maps em %s", job.ID, job.JobName, workerID, time.Since(mapStart))
+
+					rows, err = tx.QueryContext(jobCtx, query)
+					if err != nil {
+						log.Printf("Erro na query do bucket %d: %v", workerID, err)
+						jobHadError.Store(true)
+						lastErr.Store(err.Error())
+						reportJobError(err.Error())
+						jobCancel()
+						return
+					}
+				} else {
+					rows, err = jr.SourceDB.Query(query)
+					if err != nil {
+						log.Printf("Erro na query do bucket %d: %v", workerID, err)
+						jobHadError.Store(true)
+						lastErr.Store(err.Error())
+						reportJobError(err.Error())
+						jobCancel()
+						return
+					}
 				}
 				defer rows.Close()
 
@@ -638,14 +737,13 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 }
 
 func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
-	log.Printf("Executando job de execução: %s\n", job.JobName)
+	log.Printf("Executando job de execucao: %s\n", job.JobName)
 	start := time.Now()
 	if jr.shouldStop() {
 		jr.markJobFinalStatus(jobID, job, "error", "pipeline interrompida", start)
 		return
 	}
 
-	// Inicializa log do job
 	jobLog := logger.JobLog{
 		JobID:       jobID,
 		JobName:     job.JobName,
@@ -653,7 +751,7 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 		StopOnError: job.StopOnError,
 		StartedAt:   start,
 		Processed:   0,
-		Total:       1, // Jobs de execução processam 1 comando
+		Total:       1,
 		Batches:     make([]logger.BatchLog, 0),
 	}
 	logger.AddJob(jr.PipelineLog, jobLog)
@@ -666,26 +764,66 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 		status.NotifySubscribers()
 	})
 
-	// Substitui variáveis no SQL
 	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
-
-	// Preserva quebras de linha para não afetar comentários
 	cleanSQL := strings.ReplaceAll(job.SelectSQL, "\r\n", "\n")
 	cleanSQL = strings.ReplaceAll(cleanSQL, "\r", "\n")
 	log.Printf("EXECUTION SQL (job=%s): %s", job.ID, cleanSQL)
 
-	_, err := jr.DestinationDB.Exec(cleanSQL)
-	end := time.Now()
+	targetDB, dbType := jr.resolveExecutionDB(job)
+	conn, err := targetDB.Conn(jr.ctx)
+	if err != nil {
+		jr.handleExecutionJobError(jobID, job, err)
+		return
+	}
+	defer conn.Close()
 
+	resolvedSQL, directives, err := extractMapDirectives(cleanSQL)
+	if err != nil {
+		jr.handleExecutionJobError(jobID, job, err)
+		return
+	}
+
+	if len(directives) > 0 {
+		tx, txErr := conn.BeginTx(jr.ctx, nil)
+		if txErr != nil {
+			jr.handleExecutionJobError(jobID, job, txErr)
+			return
+		}
+		committed := false
+		defer func() {
+			if !committed {
+				_ = tx.Rollback()
+			}
+		}()
+
+		if err := jr.materializeDirectiveMapsWithExecutor(jr.ctx, tx, dbType, directives); err != nil {
+			jr.handleExecutionJobError(jobID, job, err)
+			return
+		}
+
+		if strings.TrimSpace(resolvedSQL) != "" {
+			_, err = tx.ExecContext(jr.ctx, resolvedSQL)
+		}
+		if err == nil {
+			err = tx.Commit()
+			if err == nil {
+				committed = true
+			}
+		}
+	} else {
+		if strings.TrimSpace(resolvedSQL) != "" {
+			_, err = conn.ExecContext(jr.ctx, resolvedSQL)
+		}
+	}
+
+	end := time.Now()
 	if jr.shouldStop() {
 		jr.markJobFinalStatus(jobID, job, "error", "pipeline interrompida", end)
 		return
 	}
 
 	if err != nil {
-		log.Printf("Erro no job de execução: %v\n", err)
-
-		// Atualiza log do job com erro
+		log.Printf("Erro no job de execucao: %v\n", err)
 		logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
 			jl.Status = "error"
 			jl.Error = err.Error()
@@ -699,9 +837,8 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 			status.NotifySubscribers()
 		})
 
-		// Verifica se job falhou e se deve parar em erro
 		if job.StopOnError {
-			log.Printf("Job %s falhou e StopOnError está ativo. Não executando dependentes.\n", jobID)
+			log.Printf("Job %s falhou e StopOnError estah ativo. Nao executando dependentes.\n", jobID)
 			jr.PipelineLog.Status = "error"
 			jr.PipelineLog.EndedAt = end
 			jr.savePipelineLog()
@@ -709,7 +846,6 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 			return
 		}
 	} else {
-		// Atualiza log do job como concluído
 		logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
 			jl.Status = "done"
 			jl.Processed = 1
@@ -724,12 +860,10 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 		})
 	}
 
-	// Chama próximos jobs
 	for _, nextID := range jr.ConnMap[jobID] {
 		jr.RunJob(nextID)
 	}
 }
-
 func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 	log.Printf("Executando job de condição: %s\n", job.JobName)
 	start := time.Now()
@@ -760,9 +894,42 @@ func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 
 	// Substitui variáveis no SQL
 	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
+	resolvedSQL, directives, err := extractMapDirectives(job.SelectSQL)
+	if err != nil {
+		end := time.Now()
+		jr.markJobFinalStatus(jobID, job, "error", err.Error(), end)
+		if job.StopOnError {
+			jr.PipelineLog.Status = "error"
+			jr.PipelineLog.EndedAt = end
+			jr.savePipelineLog()
+			status.UpdateProjectStatus("error")
+		}
+		return
+	}
+	job.SelectSQL = resolvedSQL
 
 	var result bool
-	err := jr.SourceDB.QueryRow(job.SelectSQL).Scan(&result)
+	if len(directives) == 0 {
+		err = jr.SourceDB.QueryRow(job.SelectSQL).Scan(&result)
+	} else {
+		conn, connErr := jr.SourceDB.Conn(jr.ctx)
+		if connErr != nil {
+			err = connErr
+		} else {
+			defer conn.Close()
+			tx, txErr := conn.BeginTx(jr.ctx, nil)
+			if txErr != nil {
+				err = txErr
+			} else if materializeErr := jr.materializeDirectiveMapsWithExecutor(jr.ctx, tx, normalizeDBTypeFromDSN(jr.SourceDSN), directives); materializeErr != nil {
+				err = materializeErr
+			} else {
+				err = tx.QueryRowContext(jr.ctx, job.SelectSQL).Scan(&result)
+			}
+			if tx != nil {
+				_ = tx.Rollback()
+			}
+		}
+	}
 	end := time.Now()
 
 	if jr.shouldStop() {
@@ -842,6 +1009,644 @@ func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 	}
 }
 
+func (jr *JobRunner) runMemorySelectJob(jobID string, job models.Job) {
+	log.Printf("Executando job memory-select: %s\n", job.JobName)
+	start := time.Now()
+	if jr.shouldStop() {
+		jr.markJobFinalStatus(jobID, job, "error", "pipeline interrompida", start)
+		return
+	}
+
+	jobLog := logger.JobLog{
+		JobID:       jobID,
+		JobName:     job.JobName,
+		Status:      "running",
+		StopOnError: job.StopOnError,
+		StartedAt:   start,
+		Processed:   0,
+		Total:       0,
+		Batches:     make([]logger.BatchLog, 0),
+	}
+	logger.AddJob(jr.PipelineLog, jobLog)
+	jr.savePipelineLog()
+
+	status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+		js.Name = job.JobName
+		js.Status = "running"
+		js.StartedAt = &start
+		status.NotifySubscribers()
+	})
+
+	key, err := normalizeMemoryMapKey(job.JobName)
+	if err != nil {
+		jr.failMemorySelectJob(jobID, job, err)
+		return
+	}
+
+	if err := validateMemorySelectColumns(job.Columns); err != nil {
+		jr.failMemorySelectJob(jobID, job, err)
+		return
+	}
+
+	if exists := jr.hasMemoryMap(key); exists {
+		jr.failMemorySelectJob(jobID, job, fmt.Errorf("map em memoria '%s' ja existe", key))
+		return
+	}
+
+	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
+	rows, err := jr.DestinationDB.Query(job.SelectSQL)
+	if err != nil {
+		jr.failMemorySelectJob(jobID, job, err)
+		return
+	}
+	defer rows.Close()
+
+	resultColumns, err := rows.Columns()
+	if err != nil {
+		jr.failMemorySelectJob(jobID, job, err)
+		return
+	}
+	colTypes, err := rows.ColumnTypes()
+	if err != nil {
+		jr.failMemorySelectJob(jobID, job, err)
+		return
+	}
+	if len(resultColumns) != len(colTypes) {
+		jr.failMemorySelectJob(jobID, job, fmt.Errorf("metadados de colunas inconsistentes para o job %s", job.ID))
+		return
+	}
+
+	selectedIndices, err := buildSelectedColumnIndexes(job.Columns, resultColumns)
+	if err != nil {
+		jr.failMemorySelectJob(jobID, job, err)
+		return
+	}
+
+	columnDBTypes := make(map[string]string, len(job.Columns))
+	for _, idx := range selectedIndices {
+		columnDBTypes[job.Columns[idx.targetPos]] = strings.ToUpper(strings.TrimSpace(colTypes[idx.resultPos].DatabaseTypeName()))
+	}
+
+	records := make([]map[string]interface{}, 0)
+	for rows.Next() {
+		values := make([]interface{}, len(resultColumns))
+		ptrs := make([]interface{}, len(resultColumns))
+		for i := range resultColumns {
+			ptrs[i] = &values[i]
+		}
+
+		if err := rows.Scan(ptrs...); err != nil {
+			jr.failMemorySelectJob(jobID, job, err)
+			return
+		}
+
+		record := make(map[string]interface{}, len(job.Columns))
+		for _, idx := range selectedIndices {
+			columnName := job.Columns[idx.targetPos]
+			record[columnName] = convertScannedValue(values[idx.resultPos], colTypes[idx.resultPos].DatabaseTypeName())
+		}
+		records = append(records, record)
+	}
+
+	if err := rows.Err(); err != nil {
+		jr.failMemorySelectJob(jobID, job, err)
+		return
+	}
+
+	dataset := memoryDataset{
+		Columns:       append([]string(nil), job.Columns...),
+		ColumnDBTypes: columnDBTypes,
+		Rows:          records,
+	}
+	if err := jr.storeMemoryMap(key, dataset); err != nil {
+		jr.failMemorySelectJob(jobID, job, err)
+		return
+	}
+
+	end := time.Now()
+	logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
+		jl.Status = "done"
+		jl.Processed = len(records)
+		jl.Total = len(records)
+		jl.EndedAt = end
+	})
+	jr.savePipelineLog()
+
+	status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
+		js.Status = "done"
+		js.Processed = len(records)
+		js.Total = len(records)
+		js.Progress = 100
+		js.EndedAt = &end
+		status.NotifySubscribers()
+	})
+
+	for _, nextID := range jr.ConnMap[jobID] {
+		jr.RunJob(nextID)
+	}
+}
+
+func (jr *JobRunner) failMemorySelectJob(jobID string, job models.Job, runErr error) {
+	end := time.Now()
+	jr.markJobFinalStatus(jobID, job, "error", runErr.Error(), end)
+	if job.StopOnError {
+		jr.PipelineLog.Status = "error"
+		jr.PipelineLog.EndedAt = end
+		jr.savePipelineLog()
+		status.UpdateProjectStatus("error")
+		return
+	}
+	for _, nextID := range jr.ConnMap[jobID] {
+		jr.RunJob(nextID)
+	}
+}
+
+type selectedColumnIndex struct {
+	targetPos int
+	resultPos int
+}
+
+type memoryDataset struct {
+	Columns       []string
+	ColumnDBTypes map[string]string
+	Rows          []map[string]interface{}
+}
+
+type mapDirective struct {
+	Raw string
+	Key string
+}
+
+type directiveExecutor interface {
+	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
+	PrepareContext(context.Context, string) (*sql.Stmt, error)
+}
+
+var (
+	mapDirectiveRegex = regexp.MustCompile(`Map\[\s*'([^']+)'\s*\]\s*;?`)
+	mapKeyRegex       = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+)
+
+func buildSelectedColumnIndexes(targetColumns []string, resultColumns []string) ([]selectedColumnIndex, error) {
+	resultIdxByExact := make(map[string]int, len(resultColumns))
+	resultIdxByNormalized := make(map[string]int, len(resultColumns))
+	for i, col := range resultColumns {
+		resultIdxByExact[col] = i
+		norm := normalizeColumnName(col)
+		if _, exists := resultIdxByNormalized[norm]; !exists {
+			resultIdxByNormalized[norm] = i
+		}
+	}
+
+	selected := make([]selectedColumnIndex, 0, len(targetColumns))
+	for i, targetCol := range targetColumns {
+		if pos, ok := resultIdxByExact[targetCol]; ok {
+			selected = append(selected, selectedColumnIndex{targetPos: i, resultPos: pos})
+			continue
+		}
+		pos, ok := resultIdxByNormalized[normalizeColumnName(targetCol)]
+		if !ok {
+			return nil, fmt.Errorf("coluna '%s' nao encontrada no resultset", targetCol)
+		}
+		selected = append(selected, selectedColumnIndex{targetPos: i, resultPos: pos})
+	}
+
+	return selected, nil
+}
+
+func validateMemorySelectColumns(columns []string) error {
+	if len(columns) == 0 {
+		return fmt.Errorf("columns e obrigatorio para jobs do tipo memory-select")
+	}
+	for _, col := range columns {
+		if strings.TrimSpace(col) == "" {
+			return fmt.Errorf("columns contem valor vazio")
+		}
+	}
+	return nil
+}
+
+func normalizeMemoryMapKey(jobName string) (string, error) {
+	trimmed := strings.TrimSpace(jobName)
+	if trimmed == "" {
+		return "", fmt.Errorf("jobName e obrigatorio para jobs do tipo memory-select")
+	}
+
+	lowered := strings.ToLower(removeDiacritics(trimmed))
+	spaceHyphenRegex := regexp.MustCompile(`[\s-]+`)
+	specialCharsRegex := regexp.MustCompile(`[^a-z0-9_]+`)
+	underscoreRegex := regexp.MustCompile(`_+`)
+
+	normalized := spaceHyphenRegex.ReplaceAllString(lowered, "_")
+	normalized = specialCharsRegex.ReplaceAllString(normalized, "")
+	normalized = underscoreRegex.ReplaceAllString(normalized, "_")
+	normalized = strings.Trim(normalized, "_")
+	if normalized == "" {
+		return "", fmt.Errorf("jobName '%s' nao gera chave valida para map em memoria", jobName)
+	}
+	return normalized, nil
+}
+
+func removeDiacritics(input string) string {
+	decomposed := norm.NFD.String(input)
+	var b strings.Builder
+	for _, r := range decomposed {
+		if unicode.Is(unicode.Mn, r) {
+			continue
+		}
+		b.WriteRune(r)
+	}
+	return b.String()
+}
+
+func normalizeColumnName(name string) string {
+	var b strings.Builder
+	for _, r := range strings.TrimSpace(strings.ToLower(name)) {
+		if unicode.IsSpace(r) {
+			continue
+		}
+		if r == '"' || r == '\'' || r == '`' {
+			continue
+		}
+		b.WriteRune(r)
+	}
+	return b.String()
+}
+
+func (jr *JobRunner) resolveExecutionDB(job models.Job) (*sql.DB, string) {
+	conn := strings.ToLower(strings.TrimSpace(job.Connection))
+	switch conn {
+	case "origem", "source", "src", "source_db":
+		return jr.SourceDB, normalizeDBTypeFromDSN(jr.SourceDSN)
+	case "destino", "destination", "dest", "target", "destination_db":
+		return jr.DestinationDB, normalizeDBTypeFromDSN(jr.DestinationDSN)
+	default:
+		return jr.DestinationDB, normalizeDBTypeFromDSN(jr.DestinationDSN)
+	}
+}
+
+func (jr *JobRunner) handleExecutionJobError(jobID string, job models.Job, err error) {
+	end := time.Now()
+	jr.markJobFinalStatus(jobID, job, "error", err.Error(), end)
+	if job.StopOnError {
+		jr.PipelineLog.Status = "error"
+		jr.PipelineLog.EndedAt = end
+		jr.savePipelineLog()
+		status.UpdateProjectStatus("error")
+		return
+	}
+	for _, nextID := range jr.ConnMap[jobID] {
+		jr.RunJob(nextID)
+	}
+}
+
+func extractMapDirectives(sqlText string) (string, []mapDirective, error) {
+	matches := mapDirectiveRegex.FindAllStringSubmatch(sqlText, -1)
+	directives := make([]mapDirective, 0, len(matches))
+	seen := make(map[string]struct{}, len(matches))
+
+	for _, m := range matches {
+		if len(m) < 2 {
+			continue
+		}
+		raw := m[0]
+		key := strings.TrimSpace(m[1])
+		if !mapKeyRegex.MatchString(key) {
+			return "", nil, fmt.Errorf("chave de map invalida na diretiva: %s", key)
+		}
+		if _, exists := seen[key]; exists {
+			return "", nil, fmt.Errorf("diretiva Map com chave repetida: %s", key)
+		}
+		seen[key] = struct{}{}
+		directives = append(directives, mapDirective{Raw: raw, Key: key})
+	}
+
+	cleanSQL := mapDirectiveRegex.ReplaceAllString(sqlText, "")
+	return cleanSQL, directives, nil
+}
+
+func (jr *JobRunner) materializeDirectiveMaps(ctx context.Context, conn *sql.Conn, targetDBType string, directives []mapDirective) error {
+	return jr.materializeDirectiveMapsWithExecutor(ctx, conn, targetDBType, directives)
+}
+
+func (jr *JobRunner) materializeDirectiveMapsWithExecutor(ctx context.Context, executor directiveExecutor, targetDBType string, directives []mapDirective) error {
+	for _, directive := range directives {
+		directiveStart := time.Now()
+		dataset, ok := jr.getMemoryMap(directive.Key)
+		if !ok {
+			return fmt.Errorf("map '%s' nao encontrado no contexto da pipeline", directive.Key)
+		}
+		log.Printf("Map materialization: key=%s rows=%d cols=%d target=%s", directive.Key, len(dataset.Rows), len(dataset.Columns), targetDBType)
+
+		createStart := time.Now()
+		createSQL, err := buildCreateTempTableSQL(targetDBType, directive.Key, dataset)
+		if err != nil {
+			return err
+		}
+		if _, err := executor.ExecContext(ctx, createSQL); err != nil {
+			return err
+		}
+		log.Printf("Map materialization: key=%s create temp table em %s", directive.Key, time.Since(createStart))
+
+		if len(dataset.Rows) == 0 {
+			log.Printf("Map materialization: key=%s sem linhas, apenas schema criado (%s)", directive.Key, time.Since(directiveStart))
+			continue
+		}
+
+		insertStart := time.Now()
+		insertSQL, err := buildInsertTempTableSQL(targetDBType, directive.Key, dataset.Columns)
+		if err != nil {
+			return err
+		}
+
+		stmt, err := executor.PrepareContext(ctx, insertSQL)
+		if err != nil {
+			return err
+		}
+
+		for _, row := range dataset.Rows {
+			args := make([]interface{}, 0, len(dataset.Columns))
+			for _, col := range dataset.Columns {
+				args = append(args, row[col])
+			}
+			if _, err := stmt.ExecContext(ctx, args...); err != nil {
+				_ = stmt.Close()
+				return err
+			}
+		}
+		if err := stmt.Close(); err != nil {
+			return err
+		}
+		log.Printf("Map materialization: key=%s insert %d linha(s) em %s (total %s)", directive.Key, len(dataset.Rows), time.Since(insertStart), time.Since(directiveStart))
+	}
+	return nil
+}
+
+func buildCreateTempTableSQL(targetDBType, tableName string, dataset memoryDataset) (string, error) {
+	if len(dataset.Columns) == 0 {
+		return "", fmt.Errorf("map '%s' sem colunas para materializacao", tableName)
+	}
+
+	columnDefs := make([]string, 0, len(dataset.Columns))
+	for _, col := range dataset.Columns {
+		sqlType, err := inferColumnSQLType(targetDBType, col, dataset)
+		if err != nil {
+			return "", err
+		}
+		columnDefs = append(columnDefs, fmt.Sprintf("%s %s", quoteIdentifier(targetDBType, col), sqlType))
+	}
+
+	createPrefix := "CREATE TEMP TABLE"
+	if targetDBType == "mysql" {
+		createPrefix = "CREATE TEMPORARY TABLE"
+	}
+	createSuffix := ""
+	if targetDBType == "postgres" {
+		createSuffix = " ON COMMIT DROP"
+	}
+
+	return fmt.Sprintf("%s %s (%s)%s", createPrefix, quoteIdentifier(targetDBType, tableName), strings.Join(columnDefs, ", "), createSuffix), nil
+}
+
+func buildInsertTempTableSQL(targetDBType, tableName string, columns []string) (string, error) {
+	if len(columns) == 0 {
+		return "", fmt.Errorf("nao e possivel gerar insert sem colunas")
+	}
+
+	quotedColumns := make([]string, 0, len(columns))
+	for _, col := range columns {
+		quotedColumns = append(quotedColumns, quoteIdentifier(targetDBType, col))
+	}
+
+	placeholders := make([]string, 0, len(columns))
+	for i := range columns {
+		if targetDBType == "postgres" {
+			placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
+			continue
+		}
+		placeholders = append(placeholders, "?")
+	}
+
+	return fmt.Sprintf(
+		"INSERT INTO %s (%s) VALUES (%s)",
+		quoteIdentifier(targetDBType, tableName),
+		strings.Join(quotedColumns, ", "),
+		strings.Join(placeholders, ", "),
+	), nil
+}
+
+func inferColumnSQLType(targetDBType, column string, dataset memoryDataset) (string, error) {
+	valueKind := ""
+	for _, row := range dataset.Rows {
+		value := row[column]
+		kind, err := classifyColumnValue(value)
+		if err != nil {
+			return "", fmt.Errorf("coluna '%s': %w", column, err)
+		}
+		if kind == "" {
+			continue
+		}
+		if valueKind == "" {
+			valueKind = kind
+			continue
+		}
+		if valueKind != kind {
+			return "", fmt.Errorf("inconsistencia de tipos na coluna '%s'", column)
+		}
+	}
+
+	dbTypeName := strings.ToUpper(strings.TrimSpace(dataset.ColumnDBTypes[column]))
+	if dbTypeName != "" {
+		return mapDBTypeToSQLType(targetDBType, dbTypeName), nil
+	}
+
+	switch valueKind {
+	case "int":
+		if targetDBType == "postgres" {
+			return "BIGINT", nil
+		}
+		return "BIGINT", nil
+	case "float":
+		if targetDBType == "postgres" {
+			return "DOUBLE PRECISION", nil
+		}
+		return "DOUBLE", nil
+	case "bool":
+		return "BOOLEAN", nil
+	case "time":
+		if targetDBType == "postgres" {
+			return "TIMESTAMP", nil
+		}
+		return "DATETIME", nil
+	case "string", "":
+		return "TEXT", nil
+	default:
+		return "", fmt.Errorf("tipo nao suportado na coluna '%s'", column)
+	}
+}
+
+func classifyColumnValue(value interface{}) (string, error) {
+	if value == nil {
+		return "", nil
+	}
+	switch value.(type) {
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
+		return "int", nil
+	case float32, float64:
+		return "float", nil
+	case bool:
+		return "bool", nil
+	case string:
+		return "string", nil
+	case time.Time:
+		return "time", nil
+	default:
+		return "", fmt.Errorf("valor com tipo nao suportado: %T", value)
+	}
+}
+
+func mapDBTypeToSQLType(targetDBType, dbTypeName string) string {
+	switch {
+	case strings.Contains(dbTypeName, "INT"):
+		return "BIGINT"
+	case strings.Contains(dbTypeName, "DECIMAL"), strings.Contains(dbTypeName, "NUMERIC"):
+		if targetDBType == "postgres" {
+			return "NUMERIC"
+		}
+		return "DECIMAL(38,10)"
+	case strings.Contains(dbTypeName, "DOUBLE"), strings.Contains(dbTypeName, "FLOAT"), strings.Contains(dbTypeName, "REAL"):
+		if targetDBType == "postgres" {
+			return "DOUBLE PRECISION"
+		}
+		return "DOUBLE"
+	case strings.Contains(dbTypeName, "BOOL"), strings.Contains(dbTypeName, "BIT"):
+		return "BOOLEAN"
+	case strings.Contains(dbTypeName, "TIMESTAMP"):
+		return "TIMESTAMP"
+	case strings.Contains(dbTypeName, "DATE"):
+		if targetDBType == "postgres" {
+			return "DATE"
+		}
+		return "DATE"
+	case strings.Contains(dbTypeName, "TIME"):
+		if targetDBType == "postgres" {
+			return "TIME"
+		}
+		return "TIME"
+	default:
+		return "TEXT"
+	}
+}
+
+func quoteIdentifier(targetDBType, ident string) string {
+	if targetDBType == "mysql" {
+		escaped := strings.ReplaceAll(ident, "`", "``")
+		return "`" + escaped + "`"
+	}
+	escaped := strings.ReplaceAll(ident, "\"", "\"\"")
+	return "\"" + escaped + "\""
+}
+
+func normalizeDBTypeFromDSN(dsn string) string {
+	lower := strings.ToLower(dsn)
+	switch {
+	case strings.Contains(lower, "host="), strings.Contains(lower, "sslmode="):
+		return "postgres"
+	case strings.Contains(lower, "@tcp("):
+		return "mysql"
+	default:
+		return "postgres"
+	}
+}
+
+func (jr *JobRunner) hasMemoryMap(key string) bool {
+	jr.memoryStoreMu.RLock()
+	_, exists := jr.memoryStore[key]
+	jr.memoryStoreMu.RUnlock()
+	return exists
+}
+
+func (jr *JobRunner) storeMemoryMap(key string, dataset memoryDataset) error {
+	jr.memoryStoreMu.Lock()
+	defer jr.memoryStoreMu.Unlock()
+	if _, exists := jr.memoryStore[key]; exists {
+		return fmt.Errorf("map em memoria '%s' ja existe", key)
+	}
+	jr.memoryStore[key] = dataset
+	return nil
+}
+
+func (jr *JobRunner) getMemoryMap(key string) (memoryDataset, bool) {
+	jr.memoryStoreMu.RLock()
+	dataset, exists := jr.memoryStore[key]
+	jr.memoryStoreMu.RUnlock()
+	return dataset, exists
+}
+
+func (jr *JobRunner) clearMemoryStore() {
+	jr.memoryStoreMu.Lock()
+	jr.memoryStore = make(map[string]memoryDataset)
+	jr.memoryStoreMu.Unlock()
+}
+
+func convertScannedValue(value interface{}, dbTypeName string) interface{} {
+	if value == nil {
+		return nil
+	}
+
+	rawBytes, isBytes := value.([]byte)
+	if !isBytes {
+		return value
+	}
+
+	raw := string(rawBytes)
+	dbType := strings.ToUpper(strings.TrimSpace(dbTypeName))
+	switch {
+	case isIntDBType(dbType):
+		if parsed, err := strconv.ParseInt(raw, 10, 64); err == nil {
+			return parsed
+		}
+	case isFloatDBType(dbType):
+		if parsed, err := strconv.ParseFloat(raw, 64); err == nil {
+			return parsed
+		}
+	case isBoolDBType(dbType):
+		if parsed, ok := parseDBBool(raw); ok {
+			return parsed
+		}
+	}
+
+	return raw
+}
+
+func isIntDBType(dbType string) bool {
+	return strings.Contains(dbType, "INT")
+}
+
+func isFloatDBType(dbType string) bool {
+	return strings.Contains(dbType, "DECIMAL") ||
+		strings.Contains(dbType, "NUMERIC") ||
+		strings.Contains(dbType, "FLOAT") ||
+		strings.Contains(dbType, "DOUBLE") ||
+		strings.Contains(dbType, "REAL")
+}
+
+func isBoolDBType(dbType string) bool {
+	return strings.Contains(dbType, "BOOL") || strings.Contains(dbType, "BIT")
+}
+
+func parseDBBool(raw string) (bool, bool) {
+	trimmed := strings.TrimSpace(strings.ToLower(raw))
+	switch trimmed {
+	case "t", "true", "1", "y", "yes":
+		return true, true
+	case "f", "false", "0", "n", "no":
+		return false, true
+	default:
+		return false, false
+	}
+}
+
 // Marca erro no job
 func (jr *JobRunner) markJobError(jobID string, job models.Job, err error) {
 	end := time.Now()
@@ -878,6 +1683,7 @@ func (jr *JobRunner) markJobFinalStatus(jobID string, job models.Job, statusStr,
 
 func (jr *JobRunner) Run(startIDs []string) {
 	log.Printf("Iniciando pipeline %s para projeto %s\n", jr.PipelineLog.PipelineID, jr.PipelineLog.Project)
+	defer jr.clearMemoryStore()
 
 	jr.preloadCounts(startIDs)
 
@@ -1077,6 +1883,79 @@ func (jr *JobRunner) getMainTableFromExplain(job models.Job) (string, error) {
 		return "", err
 	}
 	return mainTable, nil
+}
+
+func (jr *JobRunner) getMainTableFromExplainWithMapDirectives(job models.Job, directives []mapDirective, ctx context.Context) (string, error) {
+	conn, err := jr.SourceDB.Conn(ctx)
+	if err != nil {
+		return "", err
+	}
+	defer conn.Close()
+
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return "", err
+	}
+	defer tx.Rollback()
+
+	if err := jr.materializeDirectiveMapsWithExecutor(ctx, tx, normalizeDBTypeFromDSN(jr.SourceDSN), directives); err != nil {
+		return "", err
+	}
+
+	queryExplain := jr.Dialect.BuildExplainSelectQueryByHash(job)
+	rowsExplain, err := tx.QueryContext(ctx, queryExplain)
+	if err != nil {
+		return "", err
+	}
+	defer rowsExplain.Close()
+
+	var explainJSON []byte
+	for rowsExplain.Next() {
+		var col string
+		if err := rowsExplain.Scan(&col); err != nil {
+			return "", err
+		}
+		explainJSON = []byte(col)
+	}
+
+	if err := rowsExplain.Err(); err != nil {
+		return "", err
+	}
+
+	mainTable, err := GetMainTableFromExplain(explainJSON)
+	if err != nil {
+		return "", err
+	}
+	return mainTable, nil
+}
+
+func (jr *JobRunner) countSelectWithMapDirectives(job models.Job, directives []mapDirective) (int, error) {
+	ctx := jr.ctx
+	conn, err := jr.SourceDB.Conn(ctx)
+	if err != nil {
+		return 0, err
+	}
+	defer conn.Close()
+
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	if err := jr.materializeDirectiveMapsWithExecutor(ctx, tx, normalizeDBTypeFromDSN(jr.SourceDSN), directives); err != nil {
+		return 0, err
+	}
+
+	selectSQL := strings.TrimSpace(job.SelectSQL)
+	selectSQL = strings.TrimSuffix(selectSQL, ";")
+	countSQL := fmt.Sprintf("SELECT COUNT(*) FROM (%s) AS t", selectSQL)
+
+	var total int
+	if err := tx.QueryRowContext(ctx, countSQL).Scan(&total); err != nil {
+		return 0, err
+	}
+	return total, nil
 }
 
 func extractInsertTable(insertSQL string) (string, bool) {
