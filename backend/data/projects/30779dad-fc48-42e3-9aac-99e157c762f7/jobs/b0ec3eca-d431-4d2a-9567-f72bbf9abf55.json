@@ -11,6 +11,6 @@
   "recordsPerPage": 1000,
   "type": "memory-select",
   "stopOnError": true,
-  "left": 100,
-  "top": -420
+  "left": 1300,
+  "top": -600
 }

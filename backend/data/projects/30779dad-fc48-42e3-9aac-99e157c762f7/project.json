@@ -655,16 +655,16 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "CbCemTcgzj+BMJUjZIYcyJ/Kqzy7Yt0=",
-    "password": "PukgHaIGmF54V5mCARhzMxEDmmVyDOe/8nGOgGTMfb0=",
+    "user": "TyOLENRGMBoHMADOonAGvLH+6zLByqY=",
+    "password": "0gM24SYfjbEs9jFC3n5P4c/Yu2t3bwnBqeI5acd03lw=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "QyZfvtuGPX7ghfndw8ErHXBYyg==",
-    "password": "uoa6HwTREexmo1XJNEC82VVxsstm3Q==",
+    "user": "zaZAoPCrcTY6PptL0OBQDGuaPg==",
+    "password": "xfWgJ++mqlWb69LkkH5G0VMmjl/UAQ==",
     "database": "vzmsaneamento"
   },
   "concurrency": 10,
@@ -699,7 +699,7 @@
       "fillColor": "#0b0b0b",
       "borderColor": "#e2e8f0",
       "borderWidth": 2,
-      "text": "Início / Limpeza",
+      "text": "Estrutura básica de empresa e usuário",
       "textColor": "#e2e8f0",
       "textAlign": "top-left",
       "fontSize": 26,
@@ -1024,6 +1024,23 @@
       "y2": 5580,
       "borderColor": "#94a3b8",
       "borderWidth": 2
+    },
+    {
+      "id": "df26e958-630e-4d3b-b030-58e1063993cd",
+      "type": "rect",
+      "x": -100,
+      "y": -1020,
+      "width": 1900,
+      "height": 240,
+      "fillColor": "#0b0b0b",
+      "borderColor": "#e2e8f0",
+      "borderWidth": 2,
+      "text": "Limpeza",
+      "textColor": "#e2e8f0",
+      "textAlign": "top-left",
+      "fontSize": 26,
+      "fontFamily": "Helvetica, Arial, sans-serif",
+      "cornerRadius": 8
     }
   ]
 }
