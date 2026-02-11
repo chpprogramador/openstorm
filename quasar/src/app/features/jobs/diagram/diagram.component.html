@@ -45,6 +45,17 @@
       <span>Logs</span>
     </button>
 
+    <button
+      mat-stroked-button
+      class="action-btn zoom toggle-btn icon-only"
+      [class.active]="!showAuxBars"
+      (click)="toggleAuxBars()"
+      aria-label="Ocultar barras"
+      matTooltip="Ocultar Barras"
+    >
+      <mat-icon>view_sidebar</mat-icon>
+    </button>
+
     <button mat-stroked-button class="action-btn zoom" (click)="removeZoom()" aria-label="Resetar zoom">
       <mat-icon>zoom_in</mat-icon>
       <span>{{(zoom * 100 | number:'1.0-0')}}%</span>
@@ -52,142 +63,147 @@
   </div>
 </div>
 
-<div class="side-toolbar" aria-label="Adicionar elementos">
-  <button
-    mat-stroked-button
-    class="action-btn add-btn primary"
-    (click)="addNewJob()"
-    draggable="true"
-    (dragstart)="onToolbarDragStart($event, { kind: 'job' })"
-    matTooltip="Novo Job"
-    matTooltipPosition="left"
-  >
-    <mat-icon>add_box</mat-icon>
-    <span>Novo Job</span>
-  </button>
-
-  <button
-    mat-stroked-button
-    class="action-btn add-btn"
-    (click)="addVisualElement('rect')"
-    draggable="true"
-    (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'rect' })"
-    matTooltip="Retangulo"
-    matTooltipPosition="left"
-  >
-    <mat-icon>crop_square</mat-icon>
-    <span>Retangulo</span>
-  </button>
-
-  <button
-    mat-stroked-button
-    class="action-btn add-btn"
-    (click)="addVisualElement('circle')"
-    draggable="true"
-    (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'circle' })"
-    matTooltip="Circulo"
-    matTooltipPosition="left"
-  >
-    <mat-icon>circle</mat-icon>
-    <span>Circulo</span>
-  </button>
-
-  <button
-    mat-stroked-button
-    class="action-btn add-btn"
-    (click)="addVisualElement('line')"
-    draggable="true"
-    (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'line' })"
-    matTooltip="Linha"
-    matTooltipPosition="left"
-  >
-    <mat-icon>horizontal_rule</mat-icon>
-    <span>Linha</span>
-  </button>
-
-  <button
-    mat-stroked-button
-    class="action-btn add-btn"
-    (click)="addVisualElement('text')"
-    draggable="true"
-    (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'text' })"
-    matTooltip="Texto"
-    matTooltipPosition="left"
-  >
-    <mat-icon>text_fields</mat-icon>
-    <span>Texto</span>
-  </button>
-
-  <div class="side-separator" aria-hidden="true"></div>
-
-  <button
-    mat-stroked-button
-    class="action-btn toggle-btn"
-    [class.active]="snapEnabled"
-    (click)="toggleSnap()"
-    aria-label="Alternar grade"
-    matTooltip="Grade"
-    matTooltipPosition="left"
-  >
-    <mat-icon>grid_on</mat-icon>
-    <span>Grade</span>
-  </button>
-
-  <button
-    mat-stroked-button
-    class="action-btn"
-    (click)="fitToScreen()"
-    aria-label="Ajustar ao conteudo"
-    matTooltip="Ajustar"
-    matTooltipPosition="left"
-  >
-    <mat-icon>fit_screen</mat-icon>
-    <span>Ajustar</span>
-  </button>
-</div>
-
-<div class="toolbar-legend" *ngIf="getStatusCounts() as counts">
-  <div class="legend-group status-chart">
-    <div
-      class="status-bar"
-      role="img"
-      [attr.aria-label]="'Status: Total ' + counts.total + ', em execucao ' + counts.running + ', concluido ' + counts.done + ', erro ' + counts.error + ', pendente ' + counts.pending"
+  <div class="side-toolbar" [class.is-hidden]="!showAuxBars" [attr.aria-hidden]="!showAuxBars" aria-label="Adicionar elementos">
+    <button
+      mat-stroked-button
+      class="action-btn add-btn primary"
+      (click)="addNewJob()"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'job' })"
+      matTooltip="Novo Job"
+      matTooltipPosition="left"
     >
-      <span class="status-segment running" [style.width.%]="getPercent(counts.running, counts.total)"></span>
-      <span class="status-segment done" [style.width.%]="getPercent(counts.done, counts.total)"></span>
-      <span class="status-segment error" [style.width.%]="getPercent(counts.error, counts.total)"></span>
-      <span class="status-segment pending" [style.width.%]="getPercent(counts.pending, counts.total)"></span>
+      <mat-icon>add_box</mat-icon>
+      <span>Novo Job</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('rect')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'rect' })"
+      matTooltip="Retangulo"
+      matTooltipPosition="left"
+    >
+      <mat-icon>crop_square</mat-icon>
+      <span>Retangulo</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('circle')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'circle' })"
+      matTooltip="Circulo"
+      matTooltipPosition="left"
+    >
+      <mat-icon>circle</mat-icon>
+      <span>Circulo</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('line')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'line' })"
+      matTooltip="Linha"
+      matTooltipPosition="left"
+    >
+      <mat-icon>horizontal_rule</mat-icon>
+      <span>Linha</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn add-btn"
+      (click)="addVisualElement('text')"
+      draggable="true"
+      (dragstart)="onToolbarDragStart($event, { kind: 'visual', type: 'text' })"
+      matTooltip="Texto"
+      matTooltipPosition="left"
+    >
+      <mat-icon>text_fields</mat-icon>
+      <span>Texto</span>
+    </button>
+
+    <div class="side-separator" aria-hidden="true"></div>
+
+    <button
+      mat-stroked-button
+      class="action-btn toggle-btn"
+      [class.active]="snapEnabled"
+      (click)="toggleSnap()"
+      aria-label="Alternar grade"
+      matTooltip="Grade"
+      matTooltipPosition="left"
+    >
+      <mat-icon>grid_on</mat-icon>
+      <span>Grade</span>
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn"
+      (click)="fitToScreen()"
+      aria-label="Ajustar ao conteudo"
+      matTooltip="Ajustar"
+      matTooltipPosition="left"
+    >
+      <mat-icon>fit_screen</mat-icon>
+      <span>Ajustar</span>
+    </button>
+  </div>
+
+  <div
+    class="toolbar-legend"
+    *ngIf="getStatusCounts() as counts"
+    [class.is-hidden]="!showAuxBars"
+    [attr.aria-hidden]="!showAuxBars"
+  >
+    <div class="legend-group status-chart">
+      <div
+        class="status-bar"
+        role="img"
+        [attr.aria-label]="'Status: Total ' + counts.total + ', em execucao ' + counts.running + ', concluido ' + counts.done + ', erro ' + counts.error + ', pendente ' + counts.pending"
+      >
+        <span class="status-segment running" [style.width.%]="getPercent(counts.running, counts.total)"></span>
+        <span class="status-segment done" [style.width.%]="getPercent(counts.done, counts.total)"></span>
+        <span class="status-segment error" [style.width.%]="getPercent(counts.error, counts.total)"></span>
+        <span class="status-segment pending" [style.width.%]="getPercent(counts.pending, counts.total)"></span>
+      </div>
+      <div class="status-legend">
+        <span class="legend-pill running">Em execucao {{ counts.running }}</span>
+        <span class="legend-pill done">Concluido {{ counts.done }}</span>
+        <span class="legend-pill error">Erro {{ counts.error }}</span>
+        <span class="legend-pill pending">Pendente {{ counts.pending }}</span>
+        <span class="legend-pill total">Total {{ counts.total }}</span>
+      </div>
     </div>
-    <div class="status-legend">
-      <span class="legend-pill running">Em execucao {{ counts.running }}</span>
-      <span class="legend-pill done">Concluido {{ counts.done }}</span>
-      <span class="legend-pill error">Erro {{ counts.error }}</span>
-      <span class="legend-pill pending">Pendente {{ counts.pending }}</span>
-      <span class="legend-pill total">Total {{ counts.total }}</span>
+    <span class="legend-separator" aria-hidden="true"></span>
+    <div class="legend-group exec-group">
+      <div class="exec-item counts">
+        <span class="exec-bar" [class.is-empty]="isEmptyProgress(countsProgress?.done, countsProgress?.total)" aria-hidden="true">
+          <span class="exec-fill" [style.width.%]="getPercent(countsProgress?.done, countsProgress?.total)"></span>
+        </span>
+        <span class="legend-pill exec-card counts">Counts {{ countsProgress?.done ?? '--' }}/{{ countsProgress?.total ?? '--' }}</span>
+      </div>
+      <div class="exec-item read">
+        <span class="exec-bar" [class.is-empty]="isEmptyProgress(workersUsage?.readActive, workersUsage?.readTotal)" aria-hidden="true">
+          <span class="exec-fill" [style.width.%]="getPercent(workersUsage?.readActive, workersUsage?.readTotal)"></span>
+        </span>
+        <span class="legend-pill exec-card read">Leitura {{ workersUsage?.readActive ?? '--' }}/{{ workersUsage?.readTotal ?? '--' }}</span>
+      </div>
+      <div class="exec-item write">
+        <span class="exec-bar" [class.is-empty]="isEmptyProgress(workersUsage?.writeActive, workersUsage?.writeTotal)" aria-hidden="true">
+          <span class="exec-fill" [style.width.%]="getPercent(workersUsage?.writeActive, workersUsage?.writeTotal)"></span>
+        </span>
+        <span class="legend-pill exec-card write">Escrita {{ workersUsage?.writeActive ?? '--' }}/{{ workersUsage?.writeTotal ?? '--' }}</span>
+      </div>
     </div>
   </div>
-  <span class="legend-separator" aria-hidden="true"></span>
-  <div class="legend-group exec-group">
-    <div class="exec-item counts">
-      <span class="exec-bar" [class.is-empty]="isEmptyProgress(countsProgress?.done, countsProgress?.total)" aria-hidden="true">
-        <span class="exec-fill" [style.width.%]="getPercent(countsProgress?.done, countsProgress?.total)"></span>
-      </span>
-      <span class="legend-pill exec-card counts">Counts {{ countsProgress?.done ?? '--' }}/{{ countsProgress?.total ?? '--' }}</span>
-    </div>
-    <div class="exec-item read">
-      <span class="exec-bar" [class.is-empty]="isEmptyProgress(workersUsage?.readActive, workersUsage?.readTotal)" aria-hidden="true">
-        <span class="exec-fill" [style.width.%]="getPercent(workersUsage?.readActive, workersUsage?.readTotal)"></span>
-      </span>
-      <span class="legend-pill exec-card read">Leitura {{ workersUsage?.readActive ?? '--' }}/{{ workersUsage?.readTotal ?? '--' }}</span>
-    </div>
-    <div class="exec-item write">
-      <span class="exec-bar" [class.is-empty]="isEmptyProgress(workersUsage?.writeActive, workersUsage?.writeTotal)" aria-hidden="true">
-        <span class="exec-fill" [style.width.%]="getPercent(workersUsage?.writeActive, workersUsage?.writeTotal)"></span>
-      </span>
-      <span class="legend-pill exec-card write">Escrita {{ workersUsage?.writeActive ?? '--' }}/{{ workersUsage?.writeTotal ?? '--' }}</span>
-    </div>
-  </div>
-</div>
 
 <div class="diagram-layout" [class.with-logs]="showLogs">
   <div
@@ -331,7 +347,7 @@
             @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
               {{ job.progress | number:'1.2-2'}}% |
             }
-            {{ tempoTotal(job.startedAt!, job.endedAt!)  }}
+            {{ elapsedByJobId[job.id] || '' }}
             @if (job?.status && job?.type === 'insert' && job.processed! > 0) {
               <mat-progress-bar
                 [mode]="'determinate'"

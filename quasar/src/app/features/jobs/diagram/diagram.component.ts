@@ -123,6 +123,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   gridX = 100;
   gridY = 60;
   showLogs = false;
+  showAuxBars = true;
+  elapsedByJobId: Record<string, string> = {};
   visualElements: VisualElement[] = [];
   selectedVisualElement: VisualElement | null = null;
   snapEnabled = true;
@@ -164,6 +166,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   private lastRebuildKey: string | null = null;
   private blurHandler: (() => void) | null = null;
   private visibilityHandler: (() => void) | null = null;
+  private elapsedTimer: number | null = null;
+  private runningJobs = new Map<string, JobExtended>();
   private suppressConnectionEvents = false;
   private repaintTimer: ReturnType<typeof setTimeout> | null = null;
   private jobElementsSub: Subscription | null = null;
@@ -333,11 +337,16 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!this.isBrowser || !this.instance) return;
+    if (!this.isBrowser) return;
 
     const projectChanged = !!changes['project'] && this.project?.id !== this.lastProjectId;
     const jobsChange = changes['jobs'];
     const jobsChanged = !!jobsChange && !jobsChange.firstChange;
+    if (jobsChange) {
+      this.refreshElapsedTracking();
+    }
+
+    if (!this.instance) return;
 
     if (projectChanged) {
       this.lastProjectId = this.project?.id ?? null;
@@ -404,6 +413,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     if (this.visibilityHandler) {
       document.removeEventListener('visibilitychange', this.visibilityHandler);
     }
+    this.stopElapsedTimer();
   }
 
   onWheel(event: WheelEvent) {
@@ -740,6 +750,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     };
 
     this.jobs.push(newJob);
+    this.refreshElapsedTracking();
 
     if (this.project) {
       this.project.jobs = this.jobs.map(job => `jobs/${job.id}.json`);
@@ -777,6 +788,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
         this.jobService.deleteJob(this.project?.id || '', job.id).subscribe({
           next: () => {
             this.jobs = this.jobs.filter(j => j.id !== job.id);
+            this.refreshElapsedTracking();
             const remaining = jobs_.filter(j => j.id !== job.id);
             jobs_.length = 0;
             jobs_.push(...remaining);
@@ -1914,6 +1926,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       job.endedAt = '';
       job.error = '';
     });
+    this.refreshElapsedTracking();
 
     this.projectService.runProject(this.project.id).subscribe({
       next: () => {
@@ -1949,6 +1962,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   showHideLogs() {
     this.showLogs = !this.showLogs;
+  }
+
+  toggleAuxBars() {
+    this.showAuxBars = !this.showAuxBars;
   }
 
   toggleSnap() {
@@ -2299,20 +2316,96 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     return `translate(${this.viewOffsetX}px, ${this.viewOffsetY}px) scale(${this.zoom})`;
   }
 
-  tempoTotal(dataIso: string, dataIso2: string): string {
-    const agora = new Date();
-    const data = new Date(dataIso);
-    const data2 = new Date(dataIso2);
+  private startElapsedTimer() {
+    if (!this.isBrowser) return;
+    this.stopElapsedTimer();
+    this.elapsedTimer = window.setInterval(() => {
+      this.updateElapsedTimes();
+    }, 1000);
+  }
 
-    if (isNaN(data.getTime())) return '';
+  private stopElapsedTimer() {
+    if (this.elapsedTimer !== null) {
+      window.clearInterval(this.elapsedTimer);
+      this.elapsedTimer = null;
+    }
+  }
 
-    let diffMs: number;
-    if (isNaN(data2.getTime())) {
-      diffMs = agora.getTime() - data.getTime();
-    } else {
-      diffMs = data2.getTime() - data.getTime();
+  private refreshElapsedTracking() {
+    const jobs = this.jobs ?? [];
+    if (!jobs.length) {
+      this.elapsedByJobId = {};
+      this.runningJobs.clear();
+      this.stopElapsedTimer();
+      return;
     }
 
+    const nowMs = Date.now();
+    const next: Record<string, string> = {};
+    const running = new Map<string, JobExtended>();
+    for (const job of jobs) {
+      if (!job?.id) continue;
+      if (!job.startedAt) {
+        next[job.id] = '';
+        continue;
+      }
+      next[job.id] = this.computeElapsed(job.startedAt, job.endedAt, nowMs);
+      if (!job.endedAt) {
+        running.set(job.id, job);
+      }
+    }
+    this.elapsedByJobId = next;
+    this.runningJobs = running;
+
+    if (this.runningJobs.size) {
+      this.startElapsedTimer();
+    } else {
+      this.stopElapsedTimer();
+    }
+  }
+
+  private updateElapsedTimes() {
+    if (!this.runningJobs.size) {
+      this.stopElapsedTimer();
+      return;
+    }
+
+    const nowMs = Date.now();
+    const finished: string[] = [];
+    this.runningJobs.forEach((job, id) => {
+      if (!job?.startedAt) {
+        this.elapsedByJobId[id] = '';
+        finished.push(id);
+        return;
+      }
+      if (job.endedAt) {
+        this.elapsedByJobId[id] = this.computeElapsed(job.startedAt, job.endedAt, nowMs);
+        finished.push(id);
+        return;
+      }
+      this.elapsedByJobId[id] = this.computeElapsed(job.startedAt, job.endedAt, nowMs);
+    });
+
+    if (finished.length) {
+      finished.forEach(id => this.runningJobs.delete(id));
+    }
+    if (!this.runningJobs.size) {
+      this.stopElapsedTimer();
+    }
+  }
+
+  private computeElapsed(startedAt?: string | null, endedAt?: string | null, nowMs = Date.now()): string {
+    if (!startedAt) return '';
+    const startMs = new Date(startedAt).getTime();
+    if (!Number.isFinite(startMs)) return '';
+    let endMs = nowMs;
+    if (endedAt) {
+      const resolvedEnd = new Date(endedAt).getTime();
+      if (Number.isFinite(resolvedEnd)) {
+        endMs = resolvedEnd;
+      }
+    }
+    const diffMs = Math.max(0, endMs - startMs);
     const totalSeconds = Math.floor(diffMs / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
