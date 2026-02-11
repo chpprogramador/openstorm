@@ -1,7 +1,7 @@
 {
   "id": "9f297fec-3d10-45cc-9256-eeed8ddca03b",
-  "jobName": "Disable Trigger Arrecadação Inconsistência",
-  "selectSql": "ALTER TABLE ${SCHEMA}.arrecadacao_inconsistencia DISABLE TRIGGER ALL;",
+  "jobName": "Disable Trigger Arrecadação Inconsistência / Pagamento",
+  "selectSql": "ALTER TABLE ${SCHEMA}.arrecadacao_inconsistencia DISABLE TRIGGER ALL;\r\nALTER TABLE ${SCHEMA}.arrecadacao_pagamento DISABLE TRIGGER ALL;",
   "insertSql": "",
   "columns": [],
   "primaryKeys": null,
