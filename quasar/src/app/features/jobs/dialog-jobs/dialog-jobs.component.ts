@@ -1,6 +1,6 @@
 import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -11,8 +11,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AppState } from '../../../core/services/app-state';
 import { Job, JobService, ValidateJob } from '../../../core/services/job.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { InformDialogComponent } from '../../../shared/components/inform-dialog/inform-dialog.component';
 import { SqlEditor } from './sql-editor/sql-editor.component';
+
+interface DialogJobsData {
+  job: Job;
+  jobs?: Job[];
+}
 
 @Component({
   standalone: true,
@@ -43,24 +49,28 @@ export class DialogJobs {
   insertAtualizado = '';
   posInsertAtualizado = '';
   activeEditor: 'insert' | 'pos-insert' | 'select' = 'select';
+  columnsValidationError = '';
   private localJob: Job;
+  private allJobsInPipeline: Job[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<DialogJobs>,
     private dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: Job,
+    @Inject(MAT_DIALOG_DATA) public data: Job | DialogJobsData,
     private fb: FormBuilder,
     private jobService: JobService,
     private appState: AppState
   ) {
-    this.localJob = structuredClone(this.data);
+    const inputData = this.isDialogData(this.data) ? this.data : { job: this.data };
+    this.localJob = structuredClone(inputData.job);
+    this.allJobsInPipeline = Array.isArray(inputData.jobs) ? inputData.jobs : [];
     this.form = this.fb.group({
       id: [this.localJob?.id || ''],
-      jobName: [this.localJob?.jobName || '', []],
-      selectSql: [this.localJob?.selectSql || '', []],
+      jobName: [this.localJob?.jobName || '', [Validators.required]],
+      selectSql: [this.localJob?.selectSql || '', [Validators.required]],
       insertSql: [this.localJob?.insertSql || '', []],
       posInsertSql: [this.localJob?.posInsertSql || '', []],
-      recordsPerPage: [this.localJob?.recordsPerPage || 100, []],
+      recordsPerPage: [this.localJob?.recordsPerPage || 1000, []],
       type: [this.localJob?.type || 'insert', []],
       stopOnError: [this.localJob?.stopOnError, []],
       top: [this.localJob?.top || 0, []],
@@ -77,32 +87,120 @@ export class DialogJobs {
   }
 
   onSave() {
-    if (this.form.valid) {
-      if (this.form.get('type')?.value === 'insert') {
-        const validateJob: ValidateJob = {
-          selectSQL: this.form.value.selectSql,
-          insertSQL: this.form.value.insertSql,
-          limit: this.form.value.recordsPerPage,
-          projectId: this.appState.project?.id || ''
-        };
-
-        this.jobService.validate(validateJob).subscribe({
-          next: (response) => {
-            this.data.columns = response.columns || [];
-            this.form.patchValue({ columns: response.columns });
-            this.openInformDialog('Querys validadas com sucesso!', true);
-          },
-          error: (error) => {
-            this.openInformDialog('Erro na validacao: ' + error.error.message, false);
-          }
-        });
-      } else {
-        this.dialogRef.close(this.form.value);
-      }
+    this.columnsValidationError = '';
+    this.form.markAllAsTouched();
+    if (!this.form.valid) {
+      return;
     }
+
+    const formValue = this.form.getRawValue();
+    const payload: Job = {
+      id: formValue.id,
+      jobName: String(formValue.jobName ?? ''),
+      selectSql: String(formValue.selectSql ?? ''),
+      insertSql: String(formValue.insertSql ?? ''),
+      posInsertSql: String(formValue.posInsertSql ?? ''),
+      columns: Array.isArray(formValue.columns) ? formValue.columns : [],
+      recordsPerPage: this.isMemorySelectType() ? 1000 : Number(formValue.recordsPerPage ?? 1000),
+      type: String(formValue.type ?? 'insert'),
+      stopOnError: !!formValue.stopOnError,
+      top: Number(formValue.top ?? 0),
+      left: Number(formValue.left ?? 0)
+    };
+
+    if (this.shouldValidateColumnsFromSelect(payload.type)) {
+      this.validateAndBuildColumns(payload);
+      return;
+    }
+
+    this.dialogRef.close(payload);
   }
 
-  openInformDialog(message: string, success: boolean) {
+  hasDuplicateJobName(): boolean {
+    const currentName = String(this.form.get('jobName')?.value ?? '').trim().toLowerCase();
+    if (!currentName) return false;
+    const currentId = String(this.form.get('id')?.value ?? '');
+    return this.allJobsInPipeline.some(job => job.id !== currentId && job.jobName.trim().toLowerCase() === currentName);
+  }
+
+  isMemorySelectType(): boolean {
+    return this.form.get('type')?.value === 'memory-select';
+  }
+
+  private shouldValidateColumnsFromSelect(type: string): boolean {
+    return type === 'insert' || type === 'memory-select';
+  }
+
+  private validateAndBuildColumns(payload: Job) {
+    const validateJob: ValidateJob = {
+      selectSQL: payload.selectSql,
+      limit: payload.recordsPerPage,
+      projectId: this.appState.project?.id || '',
+      type: payload.type
+    };
+    if (payload.type === 'insert') {
+      validateJob.insertSQL = payload.insertSql;
+    }
+    if (payload.type === 'memory-select') {
+      validateJob.validationMode = 'select-only';
+    }
+
+    this.jobService.validate(validateJob).subscribe({
+      next: (response) => {
+        const columns = Array.isArray(response.columns)
+          ? response.columns.map(col => String(col).trim()).filter(col => col.length > 0)
+          : [];
+        payload.columns = columns;
+        this.form.patchValue({ columns }, { emitEvent: false });
+
+        if (payload.type === 'memory-select' && columns.length === 0) {
+          this.columnsValidationError = 'columns e obrigatorio';
+          return;
+        }
+
+        if (payload.type === 'insert') {
+          this.openInformDialog('Querys validadas com sucesso!', true, payload);
+          return;
+        }
+
+        this.dialogRef.close(payload);
+      },
+      error: (error) => {
+        const errorMessage = this.resolveValidationErrorMessage(error);
+        this.openValidationErrorConfirmDialog(errorMessage, payload);
+      }
+    });
+  }
+
+  private isDialogData(value: Job | DialogJobsData): value is DialogJobsData {
+    return !!(value as DialogJobsData)?.job;
+  }
+
+  private resolveValidationErrorMessage(error: any): string {
+    const backendMessage = error?.error?.message || error?.message;
+    return backendMessage ? String(backendMessage) : 'Erro desconhecido na validacao.';
+  }
+
+  private openValidationErrorConfirmDialog(validationErrorMessage: string, payload: Job) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      panelClass: 'custom-dialog-container',
+      minWidth: '36vw',
+      data: {
+        title: 'Erro de validacao',
+        message: `Erro na validacao: ${validationErrorMessage}\n\nGostaria de salvar assim mesmo?`,
+        confirmLabel: 'Sim',
+        cancelLabel: 'Nao'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.dialogRef.close(payload);
+      }
+    });
+  }
+
+  openInformDialog(message: string, success: boolean, payload?: Job) {
     const dialogRefInf = this.dialog.open(InformDialogComponent, {
       panelClass: 'custom-dialog-container',
       data: {
@@ -113,14 +211,15 @@ export class DialogJobs {
 
     dialogRefInf.afterClosed().subscribe(() => {
       if (success) {
-        dialogRefInf.close(this.form.value);
-        this.dialogRef.close(this.form.value);
+        dialogRefInf.close(payload ?? this.form.getRawValue());
+        this.dialogRef.close(payload ?? this.form.getRawValue());
       }
     });
   }
 
   onSelectAtualizado(novoSql: string) {
     this.selectAtualizado = novoSql;
+    this.columnsValidationError = '';
     this.form.patchValue({ selectSql: novoSql });
   }
 

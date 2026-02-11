@@ -364,8 +364,10 @@
           </div>
           <div class="handle">{{ job.jobName }}</div>
           <div class="icons">
-            <mat-icon>notes</mat-icon> {{ job.recordsPerPage }}
-            <span>|</span>
+            @if (shouldDisplayRecordsPerPage(job)) {
+              <mat-icon>notes</mat-icon> {{ job.recordsPerPage }}
+              <span>|</span>
+            }
             <mat-icon>layers</mat-icon> {{ project?.concurrency }}
           </div>
         </div>

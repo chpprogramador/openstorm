@@ -19,9 +19,11 @@ export interface Job {
 
 export interface ValidateJob {
   selectSQL: string;
-  insertSQL: string;
-  limit: number;
+  insertSQL?: string;
+  limit?: number;
   projectId: string;
+  type?: string;
+  validationMode?: string;
 }
 
 @Injectable({ providedIn: 'root' })

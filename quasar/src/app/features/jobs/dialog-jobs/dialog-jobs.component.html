@@ -1,105 +1,122 @@
 <div class="dialog-header">
-    <h2 mat-dialog-title>Jobs</h2>
+  <h2 mat-dialog-title>Jobs</h2>
 </div>
 
 <mat-dialog-content class="dialog-content">
+  <form [formGroup]="form">
+    <div class="lineFull">
+      <div class="w50">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome do Job</mat-label>
+          <input matInput formControlName="jobName" required>
+          <mat-error *ngIf="form.get('jobName')?.hasError('required')">jobName e obrigatorio</mat-error>
+          <mat-hint class="warning-hint" *ngIf="hasDuplicateJobName()">
+            Ja existe outro job com este nome (case-insensitive). O backend valida o nome normalizado.
+          </mat-hint>
+        </mat-form-field>
+      </div>
 
-    <form [formGroup]="form">
+      <div class="w25">
+        <mat-form-field appearance="outline" *ngIf="!isMemorySelectType(); else ignoredRecordsPerPageField">
+          <mat-label>Registros por Pagina</mat-label>
+          <input matInput type="number" formControlName="recordsPerPage" required>
+        </mat-form-field>
+      </div>
 
-        <div class="lineFull">
-            <div class="w50">
-                <mat-form-field appearance="outline">
-                    <mat-label>Nome do Job</mat-label>
-                    <input matInput formControlName="jobName" required>
-                </mat-form-field>
-            </div>
+      <div class="w15">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="insert">Insert</mat-option>
+            <mat-option value="execution">Execucao</mat-option>
+            <mat-option value="condition">Condicao</mat-option>
+            <mat-option value="memory-select">Memory Select</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-            <div class="w25">
-                <mat-form-field appearance="outline">
-                    <mat-label>Registros por Página</mat-label>
-                    <input matInput type="number" formControlName="recordsPerPage" required>
-                </mat-form-field>
-            </div>
-
-            <div class="w15">
-                 <mat-form-field appearance="outline">
-                    <mat-label>Tipo</mat-label>
-                    <mat-select formControlName="type">
-                        <mat-option value="insert">Insert</mat-option>
-                        <mat-option value="execution">Execução</mat-option>
-                        <mat-option value="condition">Condição</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-            <div class="w10">
-                <mat-slide-toggle formControlName="stopOnError">Parar quando erro?</mat-slide-toggle>
-            </div>
-
-        </div>
-
-        <input type="hidden" formControlName="id">
-        <input type="hidden" formControlName="left">
-        <input type="hidden" formControlName="top">
-        <input type="hidden" formControlName="columns">
-    </form>
-
-    <div
-        class="lineFull editors"
-        [class.three]="isInsertType()"
-        [class.active-insert]="isInsertType() && activeEditor === 'insert'"
-        [class.active-pos-insert]="isInsertType() && activeEditor === 'pos-insert'"
-        [class.active-select]="isInsertType() && activeEditor === 'select'"
-    >
-        <div
-            class="editor editor-insert"
-            *ngIf="isInsertType()"
-            tabindex="0"
-            (click)="setActiveEditor('insert')"
-            (focusin)="setActiveEditor('insert')"
-            [class.is-active]="isInsertType() && activeEditor === 'insert'"
-        >
-            <h2>insert</h2>
-            <app-sql-editor
-            [initialSql]="sqlInsert"
-            (sqlChanged)="onInsertAtualizado($event)">
-            </app-sql-editor>
-        </div>
-
-        <div
-            class="editor editor-pos-insert"
-            *ngIf="isInsertType()"
-            tabindex="0"
-            (click)="setActiveEditor('pos-insert')"
-            (focusin)="setActiveEditor('pos-insert')"
-            [class.is-active]="isInsertType() && activeEditor === 'pos-insert'"
-        >
-            <h2>pos-insert</h2>
-            <app-sql-editor
-            [initialSql]="sqlPosInsert"
-            (sqlChanged)="onPosInsertAtualizado($event)">
-            </app-sql-editor>
-        </div>
-
-        <div
-            class="editor editor-select"
-            tabindex="0"
-            (click)="setActiveEditor('select')"
-            (focusin)="setActiveEditor('select')"
-            [class.is-active]="isInsertType() && activeEditor === 'select'"
-        >
-            <h2 *ngIf="isInsertType()">Select</h2>
-            <h2 *ngIf="!isInsertType()">Query</h2>
-            <app-sql-editor
-            [initialSql]="sqlSelect"
-            (sqlChanged)="onSelectAtualizado($event)">
-            </app-sql-editor>
-        </div>
+      <div class="w10">
+        <mat-slide-toggle formControlName="stopOnError">Parar quando erro?</mat-slide-toggle>
+      </div>
     </div>
 
+    <input type="hidden" formControlName="id">
+    <input type="hidden" formControlName="left">
+    <input type="hidden" formControlName="top">
+    <input type="hidden" formControlName="columns">
+
+  </form>
+
+  <div
+    class="lineFull editors"
+    [class.three]="isInsertType()"
+    [class.active-insert]="isInsertType() && activeEditor === 'insert'"
+    [class.active-pos-insert]="isInsertType() && activeEditor === 'pos-insert'"
+    [class.active-select]="isInsertType() && activeEditor === 'select'"
+  >
+    <div
+      class="editor editor-insert"
+      *ngIf="isInsertType()"
+      tabindex="0"
+      (click)="setActiveEditor('insert')"
+      (focusin)="setActiveEditor('insert')"
+      [class.is-active]="isInsertType() && activeEditor === 'insert'"
+    >
+      <h2>insert</h2>
+      <app-sql-editor
+        [initialSql]="sqlInsert"
+        (sqlChanged)="onInsertAtualizado($event)"
+      >
+      </app-sql-editor>
+    </div>
+
+    <div
+      class="editor editor-pos-insert"
+      *ngIf="isInsertType()"
+      tabindex="0"
+      (click)="setActiveEditor('pos-insert')"
+      (focusin)="setActiveEditor('pos-insert')"
+      [class.is-active]="isInsertType() && activeEditor === 'pos-insert'"
+    >
+      <h2>pos-insert</h2>
+      <app-sql-editor
+        [initialSql]="sqlPosInsert"
+        (sqlChanged)="onPosInsertAtualizado($event)"
+      >
+      </app-sql-editor>
+    </div>
+
+    <div
+      class="editor editor-select"
+      tabindex="0"
+      (click)="setActiveEditor('select')"
+      (focusin)="setActiveEditor('select')"
+      [class.is-active]="isInsertType() && activeEditor === 'select'"
+    >
+      <h2 *ngIf="isInsertType()">Select</h2>
+      <h2 *ngIf="!isInsertType()">Query</h2>
+      <app-sql-editor
+        [initialSql]="sqlSelect"
+        (sqlChanged)="onSelectAtualizado($event)"
+      >
+      </app-sql-editor>
+      <mat-error class="select-error" *ngIf="columnsValidationError">{{ columnsValidationError }}</mat-error>
+      <mat-error class="select-error" *ngIf="form.get('selectSql')?.hasError('required') && form.get('selectSql')?.touched">
+        selectSql e obrigatorio
+      </mat-error>
+    </div>
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions class="dialog-actions" align="end">
   <button mat-button class="cancel-btn" (click)="onCancel()">Cancelar</button>
   <button mat-flat-button color="primary" class="save-btn" (click)="onSave()" [disabled]="!this.form.valid">Salvar</button>
 </mat-dialog-actions>
+
+<ng-template #ignoredRecordsPerPageField>
+  <mat-form-field appearance="outline">
+    <mat-label>Registros por Pagina</mat-label>
+    <input matInput type="number" [value]="form.get('recordsPerPage')?.value" disabled>
+    <mat-hint>Ignorado para este tipo</mat-hint>
+  </mat-form-field>
+</ng-template>

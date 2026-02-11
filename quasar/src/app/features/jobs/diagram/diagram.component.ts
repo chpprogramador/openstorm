@@ -833,11 +833,15 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   openEditDialog(job: Job | null) {
+    if (!job) return;
     const dialogRef = this.dialog.open(DialogJobs, {
       panelClass: 'custom-dialog-container',
       minWidth: '90vw',
       minHeight: '90vh',
-      data: job
+      data: {
+        job,
+        jobs: this.jobs
+      }
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -2071,6 +2075,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   isEmptyProgress(value?: number | null, total?: number | null): boolean {
     return (value ?? 0) <= 0 && (total ?? 0) <= 0;
+  }
+
+  shouldDisplayRecordsPerPage(job: JobExtended): boolean {
+    return job.type !== 'memory-select';
   }
 
   onMouseDown(e: MouseEvent): void {

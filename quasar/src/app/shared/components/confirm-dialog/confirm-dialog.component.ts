@@ -14,8 +14,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
       <p class="dialog-message">{{ data.message || 'Tem certeza que deseja continuar?' }}</p>
     </mat-dialog-content>
     <mat-dialog-actions class="dialog-actions" align="end">
-      <button mat-button class="cancel-btn" (click)="onCancel()">Cancelar</button>
-      <button mat-raised-button color="warn" class="confirm-btn" (click)="onConfirm()">Remover</button>
+      <button mat-button class="cancel-btn" (click)="onCancel()">{{ data.cancelLabel || 'Cancelar' }}</button>
+      <button mat-raised-button color="warn" class="confirm-btn" (click)="onConfirm()">{{ data.confirmLabel || 'Remover' }}</button>
     </mat-dialog-actions>
   `,
   styles: [
