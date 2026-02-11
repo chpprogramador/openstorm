@@ -1,0 +1,13 @@
+{
+  "id": "3dfc7efc-5e56-47c7-87e2-8036140749ea",
+  "jobName": "Enable Trigger Arrecadação Inconsistência",
+  "selectSql": "ALTER TABLE ${SCHEMA}.arrecadacao_inconsistencia ENABLE TRIGGER ALL;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 900,
+  "top": 5880
+}

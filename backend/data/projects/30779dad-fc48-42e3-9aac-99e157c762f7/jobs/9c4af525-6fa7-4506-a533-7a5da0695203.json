@@ -1,0 +1,13 @@
+{
+  "id": "9c4af525-6fa7-4506-a533-7a5da0695203",
+  "jobName": "Enable Trigger Cobrança Processo Fatura",
+  "selectSql": "ALTER TABLE ${SCHEMA}.cobranca_processo_fatura ENABLE TRIGGER ALL;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 500,
+  "top": 5700
+}

@@ -1,0 +1,17 @@
+{
+  "id": "505cd7d5-2aef-48c0-b813-c2902a9061de",
+  "jobName": "Arrecadação Tipo Inconsistência",
+  "selectSql": "select\n\ti.id id,\n\ti.codfebraban codigo_febraban,\n\ti.inconsistencia nome_arrecadacao_tipo_inconsistencia\nfrom inconsistenciaarrec i ",
+  "insertSql": "insert into ${SCHEMA}.arrecadacao_tipo_inconsistencia (\n\tid,\n\tcodigo_febraban,\n\tnome_arrecadacao_tipo_inconsistencia)",
+  "columns": [
+    "id",
+    "codigo_febraban",
+    "nome_arrecadacao_tipo_inconsistencia"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 5700
+}

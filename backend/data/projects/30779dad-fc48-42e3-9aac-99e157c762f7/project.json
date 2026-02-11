@@ -118,7 +118,14 @@
     "jobs/b9cb9c81-82d2-4bc6-9929-9a6cda4394aa.json",
     "jobs/bd86b217-c173-46f1-9b90-d6ea305f7a76.json",
     "jobs/3b235423-d4fb-4bd7-b264-b12e5422bdba.json",
-    "jobs/48e76c62-d540-483b-b0b2-865f9ed88b11.json"
+    "jobs/48e76c62-d540-483b-b0b2-865f9ed88b11.json",
+    "jobs/2036635f-e26d-42fa-b0dd-3ba3674fd163.json",
+    "jobs/5b10cff8-df00-412c-8f2f-6d20b3c7faf4.json",
+    "jobs/505cd7d5-2aef-48c0-b813-c2902a9061de.json",
+    "jobs/30685e95-e6d7-4819-90e9-3f24a2257931.json",
+    "jobs/aa923daa-12e3-423c-8821-ff7699c47bbd.json",
+    "jobs/9f297fec-3d10-45cc-9256-eeed8ddca03b.json",
+    "jobs/3dfc7efc-5e56-47c7-87e2-8036140749ea.json"
   ],
   "connections": [
     {
@@ -550,18 +557,6 @@
       "target": "48e76c62-d540-483b-b0b2-865f9ed88b11"
     },
     {
-      "source": "48e76c62-d540-483b-b0b2-865f9ed88b11",
-      "target": "3b235423-d4fb-4bd7-b264-b12e5422bdba"
-    },
-    {
-      "source": "3b235423-d4fb-4bd7-b264-b12e5422bdba",
-      "target": "b5b80fe4-5a67-4bd0-a225-88879770e78a"
-    },
-    {
-      "source": "b5b80fe4-5a67-4bd0-a225-88879770e78a",
-      "target": "cd2b37ad-927a-4d97-91f4-6ae93ff7f73b"
-    },
-    {
       "source": "c1239c16-12c2-4b27-9dc9-16f3a3e61297",
       "target": "b46debc5-3b03-48b1-8edd-0879eb35c5b5"
     },
@@ -584,22 +579,62 @@
     {
       "source": "279a94e3-498c-46bb-9868-8f06fb183e99",
       "target": "ee14d9f1-5a83-439d-a3a6-0619e3849e84"
+    },
+    {
+      "source": "48e76c62-d540-483b-b0b2-865f9ed88b11",
+      "target": "2036635f-e26d-42fa-b0dd-3ba3674fd163"
+    },
+    {
+      "source": "2036635f-e26d-42fa-b0dd-3ba3674fd163",
+      "target": "3b235423-d4fb-4bd7-b264-b12e5422bdba"
+    },
+    {
+      "source": "3b235423-d4fb-4bd7-b264-b12e5422bdba",
+      "target": "5b10cff8-df00-412c-8f2f-6d20b3c7faf4"
+    },
+    {
+      "source": "5b10cff8-df00-412c-8f2f-6d20b3c7faf4",
+      "target": "b5b80fe4-5a67-4bd0-a225-88879770e78a"
+    },
+    {
+      "source": "b5b80fe4-5a67-4bd0-a225-88879770e78a",
+      "target": "505cd7d5-2aef-48c0-b813-c2902a9061de"
+    },
+    {
+      "source": "aa923daa-12e3-423c-8821-ff7699c47bbd",
+      "target": "cd2b37ad-927a-4d97-91f4-6ae93ff7f73b"
+    },
+    {
+      "source": "505cd7d5-2aef-48c0-b813-c2902a9061de",
+      "target": "9f297fec-3d10-45cc-9256-eeed8ddca03b"
+    },
+    {
+      "source": "9f297fec-3d10-45cc-9256-eeed8ddca03b",
+      "target": "30685e95-e6d7-4819-90e9-3f24a2257931"
+    },
+    {
+      "source": "30685e95-e6d7-4819-90e9-3f24a2257931",
+      "target": "3dfc7efc-5e56-47c7-87e2-8036140749ea"
+    },
+    {
+      "source": "3dfc7efc-5e56-47c7-87e2-8036140749ea",
+      "target": "aa923daa-12e3-423c-8821-ff7699c47bbd"
     }
   ],
   "sourceDatabase": {
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "b+PQoecw6RSvBvIiv26xyfzxiyrZ3OM=",
-    "password": "ZZMw1D0ALaqxoN/VqyZwkv7I7+Cj0Npv4UYmemyPql0=",
+    "user": "2DTWrYxLtvi5oCAzH3UKgcgpk1FnU9k=",
+    "password": "LGTC0RPCf47ZPWOBXZaHZWYHPb8QDSRWMd3NRzPYA4Q=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "pyLNbzmByOGWPmV4Uj+7ei7grw==",
-    "password": "m30rmd4xvBkROQzAE8Cif2zDc9Wq2g==",
+    "user": "8U0oAgFkf13y8FzevHSs8ok6tQ==",
+    "password": "oiQrixKRFl4DCNVfeid72N8p9rweKA==",
     "database": "vzmsaneamento"
   },
   "concurrency": 10,
@@ -709,7 +744,7 @@
       "x": -100,
       "y": 4380,
       "width": 1900,
-      "height": 1500,
+      "height": 1680,
       "fillColor": "#0b0b0b",
       "borderColor": "#e2e8f0",
       "borderWidth": 2,
@@ -809,7 +844,7 @@
       "id": "56e72da8-42a3-4fb8-81c5-f59e93ecb724",
       "type": "rect",
       "x": -100,
-      "y": 6060,
+      "y": 6180,
       "width": 1900,
       "height": 240,
       "fillColor": "#0b0b0b",
@@ -826,7 +861,7 @@
       "id": "ee191a39-85d0-4ef9-a46a-180e834abfa6",
       "type": "rect",
       "x": -100,
-      "y": 6960,
+      "y": 7080,
       "width": 1900,
       "height": 420,
       "fillColor": "#0b0b0b",
@@ -843,7 +878,7 @@
       "id": "0c089753-b3dd-4779-a466-fe321815bcc4",
       "type": "rect",
       "x": -100,
-      "y": 6420,
+      "y": 6540,
       "width": 1900,
       "height": 420,
       "fillColor": "#0b0b0b",
@@ -860,7 +895,7 @@
       "id": "de82b24b-1f89-4dff-afa9-12b8ba3684cf",
       "type": "rect",
       "x": -100,
-      "y": 7500,
+      "y": 7620,
       "width": 1900,
       "height": 240,
       "fillColor": "#0b0b0b",
@@ -877,7 +912,7 @@
       "id": "4b0bb61c-9192-4f56-9a7a-3cbd5e0441d9",
       "type": "rect",
       "x": -100,
-      "y": 7920,
+      "y": 7980,
       "width": 1900,
       "height": 240,
       "fillColor": "#0b0b0b",
@@ -889,6 +924,70 @@
       "fontSize": 30,
       "fontFamily": "Helvetica, Arial, sans-serif",
       "cornerRadius": 8
+    },
+    {
+      "id": "84439f50-6ea6-4e6b-9a53-d62f7cf1b4af",
+      "type": "rect",
+      "x": -700,
+      "y": 6540,
+      "width": 400,
+      "height": 180,
+      "fillColor": "rgba(15, 23, 42, 0.65)",
+      "borderColor": "rgba(148, 163, 184, 0.6)",
+      "borderWidth": 2,
+      "text": "DISABLE TRIGGER:\n\nDesabilitamos a trigger por causa de uma referencia cisrular existente entre as tabelas de venda e  a tabela de fatura.",
+      "textColor": "#e2e8f0",
+      "textAlign": "top-left",
+      "fontSize": 20,
+      "fontFamily": "Helvetica, Arial, sans-serif",
+      "cornerRadius": 8
+    },
+    {
+      "id": "a03dbe45-4971-4502-85d6-f543aa07e392",
+      "type": "line",
+      "x": 100,
+      "y": 120,
+      "x2": 300,
+      "y2": 120,
+      "borderColor": "#94a3b8",
+      "borderWidth": 2
+    },
+    {
+      "id": "819616a9-5358-422c-a0f7-7bdaeaf83e7e",
+      "type": "line",
+      "x": -300,
+      "y": 6660,
+      "x2": 100,
+      "y2": 6660,
+      "borderColor": "#94a3b8",
+      "borderWidth": 2
+    },
+    {
+      "id": "9a7c613c-364c-48f7-89fd-817e1f515574",
+      "type": "rect",
+      "x": 2100,
+      "y": 5460,
+      "width": 400,
+      "height": 180,
+      "fillColor": "rgba(15, 23, 42, 0.65)",
+      "borderColor": "rgba(148, 163, 184, 0.6)",
+      "borderWidth": 2,
+      "text": "DISABLE TRIGGER:\n\nDesabilitamos a trigger para manter uma ordem de migração onde eu consiga migrar outras tabelas com dependência dessa.",
+      "textColor": "#e2e8f0",
+      "textAlign": "top-left",
+      "fontSize": 20,
+      "fontFamily": "Helvetica, Arial, sans-serif",
+      "cornerRadius": 8
+    },
+    {
+      "id": "5277b36a-573c-4388-b512-845b278a0701",
+      "type": "line",
+      "x": 1600,
+      "y": 5580,
+      "x2": 2100,
+      "y2": 5580,
+      "borderColor": "#94a3b8",
+      "borderWidth": 2
     }
   ]
 }

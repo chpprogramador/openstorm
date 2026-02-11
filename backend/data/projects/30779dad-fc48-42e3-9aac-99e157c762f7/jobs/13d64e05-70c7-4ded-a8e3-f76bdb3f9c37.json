@@ -1,0 +1,13 @@
+{
+  "id": "13d64e05-70c7-4ded-a8e3-f76bdb3f9c37",
+  "jobName": "Disable Trigger Cobrança Processo Fatura",
+  "selectSql": "ALTER TABLE ${SCHEMA}.cobranca_processo_fatura DISABLE TRIGGER ALL;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 5520
+}
