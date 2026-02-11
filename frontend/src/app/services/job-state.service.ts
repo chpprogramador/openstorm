@@ -20,6 +20,8 @@ export interface JobExtended extends Job {
   startedAt?: string;
   endedAt?: string;
   error?: string;
+  // Marca jobs criados localmente que ainda não foram persistidos
+  localPending?: boolean;
 }
 
 @Injectable({
@@ -108,13 +110,15 @@ export function updateJobsWithStatus(newJobs: any[]) {
         status: existingJob.status,
         startedAt: existingJob.startedAt,
         endedAt: existingJob.endedAt,
-        error: existingJob.error
+        error: existingJob.error,
+        localPending: existingJob.localPending
       };
     }
     // Job novo, sem status ainda
     return {
       ...newJob,
-      status: 'pending'
+      status: 'pending',
+      localPending: false
     };
   });
   

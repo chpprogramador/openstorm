@@ -391,7 +391,7 @@ export class Diagram implements AfterViewInit {
   addNewJobAt(x: number, y: number): void {
     this.isSaving = true;
 
-    const newJob: Job = {
+    const newJob: JobExtended = {
       id: uuidv4(),
       jobName: 'Novo Job',
       selectSql: '',
@@ -403,6 +403,7 @@ export class Diagram implements AfterViewInit {
       stopOnError: true,
       top: y,
       left: x,
+      localPending: true
     };
 
     this.jobs.push(newJob);
@@ -415,7 +416,12 @@ export class Diagram implements AfterViewInit {
 
     this.jobService.addJob(this.project?.id || '', newJob).subscribe({
       next: () => {
+        newJob.localPending = false;
         this.saveProject();
+      },
+      error: (error) => {
+        console.error('Erro ao salvar novo job:', error);
+        this.notifyPersistError('Erro ao salvar novo job. Verifique sua conexão.', error);
       }
     });
   }
@@ -1105,6 +1111,8 @@ export class Diagram implements AfterViewInit {
       job.error = '';
     });
 
+    this.refreshJobsFromServer();
+
 
     this.projectService.runProject(this.project.id).subscribe({
       next: (response) => {
@@ -1114,6 +1122,50 @@ export class Diagram implements AfterViewInit {
       error: (error) => {
         console.error('Erro ao executar projeto:', error);
         this.isSaved();
+      }
+    });
+  }
+
+  private refreshJobsFromServer() {
+    if (!this.project?.id) return;
+
+    this.jobService.listJobs(this.project.id).subscribe({
+      next: (serverJobs) => {
+        const localById = new Map(this.jobs.map(job => [job.id, job]));
+        const serverIds = new Set(serverJobs.map(job => job.id));
+
+        const merged: JobExtended[] = serverJobs.map(job => {
+          const local = localById.get(job.id);
+          return {
+            ...job,
+            total: local?.total,
+            processed: local?.processed,
+            progress: local?.progress,
+            status: local?.status ?? 'pending',
+            startedAt: local?.startedAt,
+            endedAt: local?.endedAt,
+            error: local?.error,
+            localPending: false
+          };
+        });
+
+        const pendingLocal = this.jobs.filter(job => job.localPending && !serverIds.has(job.id));
+        merged.push(...pendingLocal);
+
+        this.jobs.length = 0;
+        this.jobs.push(...merged);
+
+        if (this.project) {
+          this.project.jobs = this.jobs.map(job => `jobs/${job.id}.json`);
+        }
+
+        if (this.instance) {
+          merged.forEach(job => this.scheduleJobPlumbAttach(job.id));
+          setTimeout(() => this.instance.repaintEverything(), 0);
+        }
+      },
+      error: (error) => {
+        console.error('Erro ao sincronizar jobs do servidor:', error);
       }
     });
   }
