@@ -1354,28 +1354,28 @@ func (jr *JobRunner) materializeDirectiveMapsWithExecutor(ctx context.Context, e
 		}
 
 		insertStart := time.Now()
-		insertSQL, err := buildInsertTempTableSQL(targetDBType, directive.Key, dataset.Columns)
-		if err != nil {
-			return err
-		}
-
-		stmt, err := executor.PrepareContext(ctx, insertSQL)
-		if err != nil {
-			return err
-		}
-
-		for _, row := range dataset.Rows {
-			args := make([]interface{}, 0, len(dataset.Columns))
-			for _, col := range dataset.Columns {
-				args = append(args, row[col])
+		batchSize := suggestMapInsertBatchSize(targetDBType, len(dataset.Columns))
+		for start := 0; start < len(dataset.Rows); start += batchSize {
+			end := start + batchSize
+			if end > len(dataset.Rows) {
+				end = len(dataset.Rows)
 			}
-			if _, err := stmt.ExecContext(ctx, args...); err != nil {
-				_ = stmt.Close()
+
+			insertSQL, err := buildInsertTempTableSQL(targetDBType, directive.Key, dataset.Columns, end-start)
+			if err != nil {
 				return err
 			}
-		}
-		if err := stmt.Close(); err != nil {
-			return err
+
+			args := make([]interface{}, 0, (end-start)*len(dataset.Columns))
+			for _, row := range dataset.Rows[start:end] {
+				for _, col := range dataset.Columns {
+					args = append(args, row[col])
+				}
+			}
+
+			if _, err := executor.ExecContext(ctx, insertSQL, args...); err != nil {
+				return err
+			}
 		}
 		log.Printf("Map materialization: key=%s insert %d linha(s) em %s (total %s)", directive.Key, len(dataset.Rows), time.Since(insertStart), time.Since(directiveStart))
 	}
@@ -1408,9 +1408,12 @@ func buildCreateTempTableSQL(targetDBType, tableName string, dataset memoryDatas
 	return fmt.Sprintf("%s %s (%s)%s", createPrefix, quoteIdentifier(targetDBType, tableName), strings.Join(columnDefs, ", "), createSuffix), nil
 }
 
-func buildInsertTempTableSQL(targetDBType, tableName string, columns []string) (string, error) {
+func buildInsertTempTableSQL(targetDBType, tableName string, columns []string, rowCount int) (string, error) {
 	if len(columns) == 0 {
 		return "", fmt.Errorf("nao e possivel gerar insert sem colunas")
+	}
+	if rowCount <= 0 {
+		return "", fmt.Errorf("nao e possivel gerar insert sem linhas")
 	}
 
 	quotedColumns := make([]string, 0, len(columns))
@@ -1418,21 +1421,51 @@ func buildInsertTempTableSQL(targetDBType, tableName string, columns []string) (
 		quotedColumns = append(quotedColumns, quoteIdentifier(targetDBType, col))
 	}
 
-	placeholders := make([]string, 0, len(columns))
-	for i := range columns {
-		if targetDBType == "postgres" {
-			placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
-			continue
+	valueGroups := make([]string, 0, rowCount)
+	paramIndex := 1
+	for row := 0; row < rowCount; row++ {
+		placeholders := make([]string, 0, len(columns))
+		for range columns {
+			if targetDBType == "postgres" {
+				placeholders = append(placeholders, fmt.Sprintf("$%d", paramIndex))
+				paramIndex++
+				continue
+			}
+			placeholders = append(placeholders, "?")
 		}
-		placeholders = append(placeholders, "?")
+		valueGroups = append(valueGroups, fmt.Sprintf("(%s)", strings.Join(placeholders, ", ")))
 	}
 
 	return fmt.Sprintf(
-		"INSERT INTO %s (%s) VALUES (%s)",
+		"INSERT INTO %s (%s) VALUES %s",
 		quoteIdentifier(targetDBType, tableName),
 		strings.Join(quotedColumns, ", "),
-		strings.Join(placeholders, ", "),
+		strings.Join(valueGroups, ", "),
 	), nil
+}
+
+func suggestMapInsertBatchSize(targetDBType string, columnCount int) int {
+	if columnCount <= 0 {
+		return 1
+	}
+
+	switch targetDBType {
+	case "postgres":
+		// Postgres limita o total de parametros por statement.
+		const maxParamsPerStmt = 65535
+		size := maxParamsPerStmt / columnCount
+		if size > 1000 {
+			return 1000
+		}
+		if size < 1 {
+			return 1
+		}
+		return size
+	case "mysql":
+		return 1000
+	default:
+		return 500
+	}
 }
 
 func inferColumnSQLType(targetDBType, column string, dataset memoryDataset) (string, error) {
