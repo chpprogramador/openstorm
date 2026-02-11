@@ -655,16 +655,16 @@
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "TyOLENRGMBoHMADOonAGvLH+6zLByqY=",
-    "password": "0gM24SYfjbEs9jFC3n5P4c/Yu2t3bwnBqeI5acd03lw=",
+    "user": "wXEfMhY5MT+wAZz54kGeOv3Bjg5M5M0=",
+    "password": "T75L06MZ5u5/PRUYuHrV4DLOQHI/2XZixGWEK1S9/xA=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "zaZAoPCrcTY6PptL0OBQDGuaPg==",
-    "password": "xfWgJ++mqlWb69LkkH5G0VMmjl/UAQ==",
+    "user": "Z2Yx/jzN2qG5hA25cVIzMCIytg==",
+    "password": "2QIgvoH+6mPBUU6EF8XuvKW+DI0Mug==",
     "database": "vzmsaneamento"
   },
   "concurrency": 10,
@@ -684,6 +684,12 @@
     {
       "name": "IDCIDADE",
       "value": 7,
+      "description": "",
+      "type": "number"
+    },
+    {
+      "name": "IDEMPRESA",
+      "value": 3,
       "description": "",
       "type": "number"
     }
