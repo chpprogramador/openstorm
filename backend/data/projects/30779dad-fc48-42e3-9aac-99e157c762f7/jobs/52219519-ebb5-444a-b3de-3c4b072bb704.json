@@ -1,7 +1,7 @@
 {
   "id": "52219519-ebb5-444a-b3de-3c4b072bb704",
   "jobName": "Rubrica Venda",
-  "selectSql": "Map['temp_usuario'];\n\nselect\n\tv.id id,\n\tto_date(nullif(v.\"data\",''),'YYYYMMDD') data_geracao_venda,\n\tcase when left(t.tipolancamento,1) = 'M' then 'MANUAL' else 'AUTOMATICO' end as rubrica_venda_tipo,\n\tv.valor valor_venda,\n\tv.idatrasoencargo id_encargo_atraso,\n\tv.idfaturaorigem id_fatura_origem_venda,\n\tv.idligacao id_ligacao_imovel,\n\tv.idligacaoconsolidadora id_ligacao_imovel_consolidadora,\n\tv.idperiodo id_periodo,\n\tnull id_usuario_cadastro\nfrom venda v\njoin tipovenda t on (v.idtipovenda = t.id)\njoin temp_usuario t on (t.mig_id_usuario_original = v.idusuariocadastro)",
+  "selectSql": "Map['temp_usuario'];\n\nselect\n\tv.id id,\n\tto_date(nullif(v.\"data\",''),'YYYYMMDD') data_geracao_venda,\n\tcase when left(t.tipolancamento,1) = 'M' then 'MANUAL' else 'AUTOMATICO' end as rubrica_venda_tipo,\n\tv.valor valor_venda,\n\tv.idatrasoencargo id_encargo_atraso,\n\tv.idfaturaorigem id_fatura_origem_venda,\n\tv.idligacao id_ligacao_imovel,\n\tv.idligacaoconsolidadora id_ligacao_imovel_consolidadora,\n\tv.idperiodo id_periodo,\n\ttu.id id_usuario_cadastro\nfrom venda v\nleft join tipovenda t on (v.idtipovenda = t.id)\njoin temp_usuario tu on (tu.mig_id_usuario_original = v.idusuariocadastro)",
   "insertSql": "insert into ${SCHEMA}.rubrica_venda (\n\tid,\n\tdata_geracao_venda,\n\trubrica_venda_tipo,\n\tvalor_venda,\n\tid_encargo_atraso,\n\tid_fatura_origem_venda,\n\tid_ligacao_imovel,\n\tid_ligacao_imovel_consolidadora,\n\tid_periodo,\n\tid_usuario_cadastro)",
   "columns": [
     "id",

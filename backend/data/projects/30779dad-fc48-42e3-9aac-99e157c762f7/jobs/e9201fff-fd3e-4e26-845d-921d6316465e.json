@@ -1,0 +1,13 @@
+{
+  "id": "e9201fff-fd3e-4e26-845d-921d6316465e",
+  "jobName": "Disable Trigger Rubrica",
+  "selectSql": "ALTER TABLE ${SCHEMA}.rubrica DISABLE TRIGGER ALL;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 500,
+  "top": 5340
+}

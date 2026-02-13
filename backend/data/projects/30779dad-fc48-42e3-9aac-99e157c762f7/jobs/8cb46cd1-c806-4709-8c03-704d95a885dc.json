@@ -1,0 +1,13 @@
+{
+  "id": "8cb46cd1-c806-4709-8c03-704d95a885dc",
+  "jobName": "Enable Trigger Rubrica",
+  "selectSql": "ALTER TABLE ${SCHEMA}.rubrica ENABLE TRIGGER ALL;",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 5340
+}

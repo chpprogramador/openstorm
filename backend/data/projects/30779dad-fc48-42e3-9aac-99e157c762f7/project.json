@@ -139,7 +139,9 @@
     "jobs/6745aec9-4d82-495d-a5d1-6a99576ad36e.json",
     "jobs/6b3969ee-6ec1-4b62-836f-225ac4da9b4c.json",
     "jobs/c2b0a746-056c-41a7-b04c-835c345af882.json",
-    "jobs/0fe659f1-4c9e-4b93-a6fd-677eb79bb8e5.json"
+    "jobs/0fe659f1-4c9e-4b93-a6fd-677eb79bb8e5.json",
+    "jobs/e9201fff-fd3e-4e26-845d-921d6316465e.json",
+    "jobs/8cb46cd1-c806-4709-8c03-704d95a885dc.json"
   ],
   "connections": [
     {
@@ -365,14 +367,6 @@
     {
       "source": "88f359ce-b47f-497c-9f9d-ff80702f69a6",
       "target": "9efecf06-5dad-40bb-925d-c5e0fd917af7"
-    },
-    {
-      "source": "ff0257c6-72bd-404f-807d-3965d26d9cac",
-      "target": "439062d1-009e-4796-8b70-50d570798d60"
-    },
-    {
-      "source": "439062d1-009e-4796-8b70-50d570798d60",
-      "target": "047d5c2f-03f9-4735-9e96-3a1e2d6c0307"
     },
     {
       "source": "8302cba1-1bd2-43fc-9ea3-08878d7236d6",
@@ -689,22 +683,38 @@
     {
       "source": "505cd7d5-2aef-48c0-b813-c2902a9061de",
       "target": "30685e95-e6d7-4819-90e9-3f24a2257931"
+    },
+    {
+      "source": "ff0257c6-72bd-404f-807d-3965d26d9cac",
+      "target": "e9201fff-fd3e-4e26-845d-921d6316465e"
+    },
+    {
+      "source": "e9201fff-fd3e-4e26-845d-921d6316465e",
+      "target": "439062d1-009e-4796-8b70-50d570798d60"
+    },
+    {
+      "source": "439062d1-009e-4796-8b70-50d570798d60",
+      "target": "8cb46cd1-c806-4709-8c03-704d95a885dc"
+    },
+    {
+      "source": "8cb46cd1-c806-4709-8c03-704d95a885dc",
+      "target": "047d5c2f-03f9-4735-9e96-3a1e2d6c0307"
     }
   ],
   "sourceDatabase": {
     "type": "postgres",
     "host": "34.67.188.220",
     "port": 5430,
-    "user": "jlZCL3QPqIVzqAE83MFJAgKzz7q656k=",
-    "password": "p0CRpPh5Qrg7cLsrnNqLlM/wM81RcJsAiYksDxv8o9Y=",
+    "user": "VEMyGo8AJwVEItR1NVQTham3W4fkBMs=",
+    "password": "hwvLnB0h/cz2l/C2odH5hiRi9jxmxHan3H33qG7Jf9g=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "2/44iFOlAZ2S1+mZdS+7d1ohbQ==",
-    "password": "k0cHPK0yis2DH2JShHRQBf0KADaHKw==",
+    "user": "boVKLWwLwz1bi43WxVJcXBvT6A==",
+    "password": "RkWQctWCv0mZJqlJwkn4EcmkuYqENA==",
     "database": "vzmsaneamento"
   },
   "concurrency": 10,
