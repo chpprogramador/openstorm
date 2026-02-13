@@ -1,0 +1,20 @@
+{
+  "id": "6b3969ee-6ec1-4b62-836f-225ac4da9b4c",
+  "jobName": "Medição Categoria",
+  "selectSql": "select\n\tmc.id id,\n\tmc.qtdeconomia quantidade_economias,\n\tmc.volconsminimo volume_consumo_minimo,\n\tmc.idcategoria id_categoria,\n\tmc.idmedicaodetalhe id_medicao_detalhe,\n\tmc.idsubcategoria id_subcategoria\nfrom medicaocategoria mc",
+  "insertSql": "insert into ${SCHEMA}.medicao_categoria (\n\tid,\n\tquantidade_economias,\n\tvolume_consumo_minimo,\n\tid_categoria,\n\tid_medicao_detalhe,\n\tid_subcategoria)",
+  "columns": [
+    "id",
+    "quantidade_economias",
+    "volume_consumo_minimo",
+    "id_categoria",
+    "id_medicao_detalhe",
+    "id_subcategoria"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 4440
+}

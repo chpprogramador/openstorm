@@ -1,0 +1,23 @@
+{
+  "id": "c2b0a746-056c-41a7-b04c-835c345af882",
+  "jobName": "Medição Cronograma",
+  "selectSql": "select\n\tpg.id id,\n\tto_date(nullif(pg.dataentrega,''),'YYYYMMDD') data_entrega_fatura,\n\tto_date(nullif(pg.datainiciovenda,''),'YYYYMMDD') data_inicio_venda,\n\tto_date(nullif(pg.dataleitura,''),'YYYYMMDD') data_leitura,\n\tto_date(nullif(pg.dataproxleitura,''),'YYYYMMDD') data_proxima_leitura,\n\tto_date(nullif(pg.datatermvenda,''),'YYYYMMDD') data_termino_venda,\n\tto_date(nullif(pg.datavencimento,''),'YYYYMMDD') data_vencimento,\n\tpg.idgrupo id_grupo_medicao,\n\tpg.idperiodo id_periodo\nfrom periodogrupo pg ",
+  "insertSql": "insert into ${SCHEMA}.medicao_cronograma (\n\tid,\n\tdata_entrega_fatura,\n\tdata_inicio_venda,\n\tdata_leitura,\n\tdata_proxima_leitura,\n\tdata_termino_venda,\n\tdata_vencimento,\n\tid_grupo_medicao,\n\tid_periodo)",
+  "columns": [
+    "id",
+    "data_entrega_fatura",
+    "data_inicio_venda",
+    "data_leitura",
+    "data_proxima_leitura",
+    "data_termino_venda",
+    "data_vencimento",
+    "id_grupo_medicao",
+    "id_periodo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 4440
+}

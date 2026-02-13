@@ -1,7 +1,7 @@
 {
   "id": "b5b80fe4-5a67-4bd0-a225-88879770e78a",
   "jobName": "Guia",
-  "selectSql": "select \n\tg.id id,\n\tg.codigobarras codigo_barras,\n\tto_date(nullif(g.\"data\",''),'YYYYMMDD') data_geracao,\n\tto_date(nullif(g.datapagto,''),'YYYYMMDD') data_pagamento,\n\tto_date(nullif(g.datavencimento,''),'YYYYMMDD') data_vencimento,\n\tcase when g.comacrescimos = 'S' then true else false end as encargo_acrescimo,\n\tcase when g.geraoscorte = 'S' then true else false end as gera_servico_ordem_corte,\n\tcase when g.paga = 'S' then true else false end as paga,\n\tg.valorguiapagto valor_acrescimo,\n\tg.valortotalfaturas valor_total,\n\tlpc.idprocessocorte id_cobranca_processo_ligacao,\n\tg.idtipoguia id_guia_tipo,\n\tnullif(g.idligacao,0) id_ligacao_imovel,\n\tnull id_usuario_geracao\nfrom guia g\nleft join ligacaoprocessocorte lpc on (g.idligacaoprocessocorte = lpc.id)",
+  "selectSql": "Map['temp_usuario'];\n\nselect \n\tg.id id,\n\tg.codigobarras codigo_barras,\n\tto_date(nullif(g.\"data\",''),'YYYYMMDD') data_geracao,\n\tto_date(nullif(g.datapagto,''),'YYYYMMDD') data_pagamento,\n\tto_date(nullif(g.datavencimento,''),'YYYYMMDD') data_vencimento,\n\tcase when g.comacrescimos = 'S' then true else false end as encargo_acrescimo,\n\tcase when g.geraoscorte = 'S' then true else false end as gera_servico_ordem_corte,\n\tcase when g.paga = 'S' then true else false end as paga,\n\tg.valorguiapagto valor_acrescimo,\n\tg.valortotalfaturas valor_total,\n\tlpc.idprocessocorte id_cobranca_processo_ligacao,\n\tg.idtipoguia id_guia_tipo,\n\tnullif(g.idligacao,0) id_ligacao_imovel,\n\tt.id id_usuario_geracao\nfrom guia g\nleft join ligacaoprocessocorte lpc on (g.idligacaoprocessocorte = lpc.id)\njoin temp_usuario t on (t.mig_id_usuario_original = g.idusuario)",
   "insertSql": "insert into ${SCHEMA}.guia (\n\tid,\n\tcodigo_barras,\n\tdata_geracao,\n\tdata_pagamento,\n\tdata_vencimento,\n\tencargo_acrescimo,\n\tgera_servico_ordem_corte,\n\tpaga,\n\tvalor_acrescimo,\n\tvalor_total,\n\tid_cobranca_processo_ligacao,\n\tid_guia_tipo,\n\tid_ligacao_imovel,\n\tid_usuario_geracao)",
   "columns": [
     "id",
@@ -24,5 +24,5 @@
   "type": "insert",
   "stopOnError": true,
   "left": 900,
-  "top": 5700
+  "top": 6060
 }

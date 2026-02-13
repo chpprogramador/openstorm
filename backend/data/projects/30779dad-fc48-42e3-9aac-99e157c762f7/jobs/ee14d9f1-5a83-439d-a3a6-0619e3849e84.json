@@ -1,7 +1,7 @@
 {
   "id": "ee14d9f1-5a83-439d-a3a6-0619e3849e84",
   "jobName": "Aprovação Recalculo",
-  "selectSql": "select\n  src.id AS id,\n  to_timestamp(src.datahoramovimento, 'YYYYMMDD HH24:MI:SS') AS data_hora_execucao_alcada,\n  to_timestamp(src.datahorarecalculo, 'YYYYMMDD HH24:MI:SS') AS data_hora_recalculo,\n  src.leituraatual::int AS leitura_original,\n    case\n  \twhen src.status = 'A' then 'APROVADO'\n  \twhen src.status = 'R' then 'REPROVADO'\n   \twhen src.status = 'P' then 'PENDENTE_APROVACAO'\n  end AS status_alcada,\n  src.valormaximorecalculo AS valor_maximo_recalculo,\n  src.volfat AS volume_faturado_original,\n  src.volmedido AS volume_medido_original,\n  f.id AS id_fatura_original,\n  NULL AS id_fatura_recalculada,\n  (select idligacao from fatura f where f.id = src.idfatura) AS id_ligacao_imovel,\n  NULL AS id_usuario_execucao_alcada,\n  NULL AS id_usuario_recalculo\nFROM aprovacaorecalculo src\nleft join fatura f on (f.id = src.idfatura)",
+  "selectSql": "Map['temp_usuario'];\n\nselect\n  src.id AS id,\n  to_timestamp(src.datahoramovimento, 'YYYYMMDD HH24:MI:SS') AS data_hora_execucao_alcada,\n  to_timestamp(src.datahorarecalculo, 'YYYYMMDD HH24:MI:SS') AS data_hora_recalculo,\n  src.leituraatual::int AS leitura_original,\n    case\n  \twhen src.status = 'A' then 'APROVADO'\n  \twhen src.status = 'R' then 'REPROVADO'\n   \twhen src.status = 'P' then 'PENDENTE_APROVACAO'\n  end AS status_alcada,\n  src.valormaximorecalculo AS valor_maximo_recalculo,\n  src.volfat AS volume_faturado_original,\n  src.volmedido AS volume_medido_original,\n  f.id AS id_fatura_original,\n  NULL AS id_fatura_recalculada,\n  (select idligacao from fatura f where f.id = src.idfatura) AS id_ligacao_imovel,\n  t.id AS id_usuario_execucao_alcada,\n  t.id AS id_usuario_recalculo\nFROM aprovacaorecalculo src\nleft join fatura f on (f.id = src.idfatura)\njoin temp_usuario t on (t.mig_id_usuario_original = src.idusuario)",
   "insertSql": "INSERT INTO\n  ${SCHEMA}.aprovacao_recalculo (\n    id,\n    data_hora_execucao_alcada,\n    data_hora_recalculo,\n    leitura_original,\n    status_alcada,\n    valor_maximo_recalculo,\n    volume_faturado_original,\n    volume_medido_original,\n    id_fatura_original,\n    id_fatura_recalculada,\n    id_ligacao_imovel,\n    id_usuario_execucao_alcada,\n    id_usuario_recalculo\n  )",
   "columns": [
     "id",
@@ -23,5 +23,5 @@
   "type": "insert",
   "stopOnError": true,
   "left": 900,
-  "top": 8400
+  "top": 8940
 }

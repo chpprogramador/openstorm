@@ -1,0 +1,18 @@
+{
+  "id": "2bbbce64-e686-4cb1-8135-13b750b4c62e",
+  "jobName": "Indice Reajuste Detalhe",
+  "selectSql": "select\n\tir.id id,\n\tir.percentual percentual,\n\tir.idindicereajuste id_indice_reajuste,\n\tir.idperiodo id_periodo\nfrom indicereajustedetalhe ir",
+  "insertSql": "insert into ${SCHEMA}.indice_reajuste_detalhe (\n\tid,\n\tpercentual,\n\tid_indice_reajuste,\n\tid_periodo)",
+  "columns": [
+    "id",
+    "percentual",
+    "id_indice_reajuste",
+    "id_periodo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 1200
+}

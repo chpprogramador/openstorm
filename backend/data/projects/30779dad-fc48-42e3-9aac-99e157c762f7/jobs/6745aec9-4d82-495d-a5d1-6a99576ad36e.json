@@ -1,0 +1,19 @@
+{
+  "id": "6745aec9-4d82-495d-a5d1-6a99576ad36e",
+  "jobName": "Lacre",
+  "selectSql": "select\n\tl.id id,\n\tcase when l.ativo = 'S' then true else false end as ativo,\n\tl.numerolacre numero_lacre,\n\tl.idsituacaolacrecavalete id_lacre_cavalete_situacao,\n\tl.idtipolacrecavalete id_lacre_cavalete_tipo\nfrom lacre l",
+  "insertSql": "insert into ${SCHEMA}.lacre (\n\tid,\n\tativo,\n\tnumero_lacre,\n\tid_lacre_cavalete_situacao,\n\tid_lacre_cavalete_tipo)",
+  "columns": [
+    "id",
+    "ativo",
+    "numero_lacre",
+    "id_lacre_cavalete_situacao",
+    "id_lacre_cavalete_tipo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 2280
+}

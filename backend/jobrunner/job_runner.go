@@ -428,6 +428,17 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			})
 			status.AppendLog(fmt.Sprintf("%s - Job: %s falhou: %s", jr.PipelineLog.Project, job.JobName, errMsg))
 		}
+		setJobError := func(err error) {
+			if err == nil {
+				return
+			}
+			if jobHadError.CompareAndSwap(false, true) {
+				lastErr.Store(err.Error())
+				reportJobError(err.Error())
+				return
+			}
+			log.Printf("Erro adicional no job %s (%s): %v", job.ID, job.JobName, err)
+		}
 
 		jobCtx, jobCancel := context.WithCancel(jr.ctx)
 		defer jobCancel()
@@ -450,9 +461,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 				tx, err := jr.DestinationDB.Begin()
 				if err != nil {
-					jobHadError.Store(true)
-					lastErr.Store(err.Error())
-					reportJobError(err.Error())
+					setJobError(err)
 					jobCancel()
 					return
 				}
@@ -480,9 +489,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					insertSQL, args := jr.Dialect.BuildInsertQuery(job, batch)
 
 					if _, err := tx.Exec(insertSQL, args...); err != nil {
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
+						setJobError(err)
 
 						analyzer := &logger.ErrorAnalyzer{}
 						errorType, errorCode, _ := analyzer.AnalyzeError(err)
@@ -521,9 +528,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 				}
 
 				if err := tx.Commit(); err != nil {
-					jobHadError.Store(true)
-					lastErr.Store(err.Error())
-					reportJobError(err.Error())
+					setJobError(err)
 					return
 				}
 				committed = true
@@ -541,9 +546,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		}
 		if err != nil {
 			log.Printf("Erro no EXPLAIN do job %s: %v", job.ID, err)
-			jobHadError.Store(true)
-			lastErr.Store(err.Error())
-			reportJobError(err.Error())
+			setJobError(err)
 			jobCancel()
 			return
 		}
@@ -560,16 +563,19 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					return
 				}
 
-				query := jr.Dialect.BuildSelectQueryByHash(job, workerID, concurrency, mainTable)
+				query := strings.TrimSpace(job.SelectSQL)
+				if concurrency > 1 {
+					query = jr.Dialect.BuildSelectQueryByHash(job, workerID, concurrency, mainTable)
+				} else {
+					log.Printf("Job %s (%s): leitura sem hash (worker unico)", job.ID, job.JobName)
+				}
 				var rows *sql.Rows
 				if len(mapDirectives) > 0 {
 					mapStart := time.Now()
 					conn, err := jr.SourceDB.Conn(jobCtx)
 					if err != nil {
 						log.Printf("Erro ao obter conexao do bucket %d: %v", workerID, err)
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
+						setJobError(err)
 						jobCancel()
 						return
 					}
@@ -578,9 +584,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					tx, err := conn.BeginTx(jobCtx, nil)
 					if err != nil {
 						log.Printf("Erro ao iniciar transacao do bucket %d: %v", workerID, err)
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
+						setJobError(err)
 						jobCancel()
 						return
 					}
@@ -588,9 +592,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 					if err := jr.materializeDirectiveMapsWithExecutor(jobCtx, tx, normalizeDBTypeFromDSN(jr.SourceDSN), mapDirectives); err != nil {
 						log.Printf("Erro ao materializar maps no bucket %d: %v", workerID, err)
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
+						setJobError(err)
 						jobCancel()
 						return
 					}
@@ -599,9 +601,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					rows, err = tx.QueryContext(jobCtx, query)
 					if err != nil {
 						log.Printf("Erro na query do bucket %d: %v", workerID, err)
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
+						setJobError(err)
 						jobCancel()
 						return
 					}
@@ -609,9 +609,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 					rows, err = jr.SourceDB.Query(query)
 					if err != nil {
 						log.Printf("Erro na query do bucket %d: %v", workerID, err)
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
+						setJobError(err)
 						jobCancel()
 						return
 					}
@@ -632,9 +630,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 						ptrs[i] = &values[i]
 					}
 					if err := rows.Scan(ptrs...); err != nil {
-						jobHadError.Store(true)
-						lastErr.Store(err.Error())
-						reportJobError(err.Error())
+						setJobError(err)
 						jobCancel()
 						return
 					}
@@ -665,9 +661,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 				if err := rows.Err(); err != nil {
 					log.Printf("Erro ao iterar rows no bucket %d: %v", workerID, err)
-					jobHadError.Store(true)
-					lastErr.Store(err.Error())
-					reportJobError(err.Error())
+					setJobError(err)
 					jobCancel()
 					return
 				}
@@ -701,7 +695,17 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		}
 		if !jobHadError.Load() && finalProcessed < total {
 			jobHadError.Store(true)
-			lastErr.Store(fmt.Sprintf("processados %d de %d registros", finalProcessed, total))
+			mismatchErr := fmt.Sprintf("inconsistencia: processados %d de %d registros sem erro SQL", finalProcessed, total)
+			if concurrency > 1 {
+				mismatchErr += " (possivel divergencia no particionamento hash por ctid)"
+			} else {
+				mismatchErr += " (leitura sem hash; verifique joins/filtros da query)"
+			}
+			if len(mapDirectives) > 0 {
+				mismatchErr += " com diretiva Map ativa"
+			}
+			lastErr.Store(mismatchErr)
+			log.Printf("Job %s (%s): %s", job.ID, job.JobName, mismatchErr)
 		}
 
 		if jobHadError.Load() || jr.shouldStop() || jobCtx.Err() != nil {

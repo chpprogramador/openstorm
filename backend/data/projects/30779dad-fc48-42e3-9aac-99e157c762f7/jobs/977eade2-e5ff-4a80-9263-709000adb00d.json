@@ -1,0 +1,16 @@
+{
+  "id": "977eade2-e5ff-4a80-9263-709000adb00d",
+  "jobName": "Indice Reajuste",
+  "selectSql": "select\n\ti.id id,\n\ti.indicereajuste nome_indice_reajuste\nfrom indicereajuste i ",
+  "insertSql": "insert into ${SCHEMA}.indice_reajuste (\n\tid,\n\tnome_indice_reajuste)",
+  "columns": [
+    "id",
+    "nome_indice_reajuste"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 1200
+}
