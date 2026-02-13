@@ -27,18 +27,21 @@ func (d PostgresDialect) FetchTotalCount(db *sql.DB, job models.Job) (int, error
 }
 
 func (d PostgresDialect) BuildSelectQueryByHash(job models.Job, concurrencyIndex, totalConcurrency int, mainTable string) string {
-	withWhere, modifiedSQL := AnalyzeAndModifySQL(job.SelectSQL)
+	_, modifiedSQL := AnalyzeAndModifySQL(job.SelectSQL)
 
-	// Usa hashtextextended (mais robusto que hashtext simples)
-	hashExpr := fmt.Sprintf("mod(abs(hashtextextended(%s, 0)), %d) = %d",
-		mainTable+".ctid::text", totalConcurrency, concurrencyIndex)
+	// Aplica hash sobre a linha resultante da query encapsulada.
+	// Evita dependÃªncia de alias/tabela no escopo externo (ex.: subqueries/CTEs).
+	hashExpr := fmt.Sprintf(
+		"mod(abs(hashtextextended(to_jsonb(hash_src)::text, 0)), %d) = %d",
+		totalConcurrency,
+		concurrencyIndex,
+	)
 
-	var queryRet string
-	if withWhere {
-		queryRet = fmt.Sprintf("%s AND (%s)", modifiedSQL, hashExpr)
-	} else {
-		queryRet = fmt.Sprintf("%s WHERE (%s)", modifiedSQL, hashExpr)
-	}
+	queryRet := fmt.Sprintf(
+		"SELECT * FROM (%s) AS hash_src WHERE (%s)",
+		modifiedSQL,
+		hashExpr,
+	)
 
 	println("Query com hash:", queryRet)
 

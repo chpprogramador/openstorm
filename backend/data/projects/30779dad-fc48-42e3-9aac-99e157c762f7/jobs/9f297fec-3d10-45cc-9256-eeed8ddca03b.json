@@ -1,13 +1,13 @@
 {
   "id": "9f297fec-3d10-45cc-9256-eeed8ddca03b",
   "jobName": "Disable Trigger Arrecadação Inconsistência / Pagamento",
-  "selectSql": "ALTER TABLE ${SCHEMA}.arrecadacao_inconsistencia DISABLE TRIGGER ALL;\r\nALTER TABLE ${SCHEMA}.arrecadacao_pagamento DISABLE TRIGGER ALL;",
+  "selectSql": "ALTER TABLE ${SCHEMA}.arrecadacao_inconsistencia DISABLE TRIGGER ALL;\r\nALTER TABLE ${SCHEMA}.arrecadacao_pagamento DISABLE TRIGGER ALL;\r\nALTER TABLE ${SCHEMA}.guia_fatura DISABLE TRIGGER ALL;",
   "insertSql": "",
   "columns": [],
   "primaryKeys": null,
   "recordsPerPage": 1000,
   "type": "execution",
   "stopOnError": true,
-  "left": 500,
-  "top": 6240
+  "left": 1300,
+  "top": 6060
 }

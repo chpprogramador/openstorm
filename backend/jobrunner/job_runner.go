@@ -1915,7 +1915,7 @@ func (jr *JobRunner) getMainTableFromExplain(job models.Job) (string, error) {
 		return "", err
 	}
 
-	mainTable, err := GetMainTableFromExplain(explainJSON)
+	mainTable, err := GetMainTableFromExplain(explainJSON, MainTableResolveOptions{})
 	if err != nil {
 		return "", err
 	}
@@ -1959,7 +1959,14 @@ func (jr *JobRunner) getMainTableFromExplainWithMapDirectives(job models.Job, di
 		return "", err
 	}
 
-	mainTable, err := GetMainTableFromExplain(explainJSON)
+	tempTables := make(map[string]struct{}, len(directives))
+	for _, d := range directives {
+		tempTables[strings.ToLower(strings.TrimSpace(d.Key))] = struct{}{}
+	}
+
+	mainTable, err := GetMainTableFromExplain(explainJSON, MainTableResolveOptions{
+		TemporaryTables: tempTables,
+	})
 	if err != nil {
 		return "", err
 	}
@@ -2039,26 +2046,131 @@ type Explain struct {
 	Plan PlanNode `json:"Plan"`
 }
 
-func getMainTable(node PlanNode) (string, bool) {
-	// Retorna alias se existir
-	if node.Alias != "" {
-		return node.Alias, true
-	}
-
-	// Caso contrário, retorna schema.tabela se possível
-	if node.RelationName != "" && node.Schema != "" {
-		return node.Schema + "." + node.RelationName, true
-	}
-
-	// Busca recursivamente no próximo plano
-	if len(node.Plans) > 0 {
-		return getMainTable(node.Plans[0])
-	}
-
-	return "", false
+type MainTableResolveOptions struct {
+	TemporaryTables map[string]struct{}
 }
 
-func GetMainTableFromExplain(jsonData []byte) (string, error) {
+type mainTableCandidate struct {
+	Name       string
+	Score      int
+	IsPhysical bool
+	IsTemp     bool
+	Depth      int
+}
+
+func relationDisplayName(node PlanNode) string {
+	if node.Alias != "" {
+		return node.Alias
+	}
+	if node.RelationName != "" && node.Schema != "" {
+		return node.Schema + "." + node.RelationName
+	}
+	if node.RelationName != "" {
+		return node.RelationName
+	}
+	return ""
+}
+
+func isTemporaryPlanNode(node PlanNode, options MainTableResolveOptions) bool {
+	nodeType := strings.ToLower(strings.TrimSpace(node.NodeType))
+	schema := strings.ToLower(strings.TrimSpace(node.Schema))
+	relation := strings.ToLower(strings.TrimSpace(node.RelationName))
+
+	if strings.HasPrefix(schema, "pg_temp") {
+		return true
+	}
+	if _, ok := options.TemporaryTables[relation]; ok {
+		return true
+	}
+
+	if strings.Contains(nodeType, "cte scan") ||
+		strings.Contains(nodeType, "subquery scan") ||
+		strings.Contains(nodeType, "values scan") ||
+		strings.Contains(nodeType, "function scan") ||
+		strings.Contains(nodeType, "worktable scan") {
+		return true
+	}
+
+	return false
+}
+
+func scorePlanNode(node PlanNode, depth int, options MainTableResolveOptions) (mainTableCandidate, bool) {
+	name := relationDisplayName(node)
+	if name == "" {
+		return mainTableCandidate{}, false
+	}
+
+	isPhysical := strings.TrimSpace(node.RelationName) != ""
+	isTemp := isTemporaryPlanNode(node, options)
+
+	score := 0
+	if isPhysical {
+		score += 100
+	}
+	if isTemp {
+		score -= 80
+	}
+
+	nodeType := strings.ToLower(strings.TrimSpace(node.NodeType))
+	if strings.Contains(nodeType, "seq scan") ||
+		strings.Contains(nodeType, "index scan") ||
+		strings.Contains(nodeType, "bitmap heap scan") ||
+		strings.Contains(nodeType, "tid scan") {
+		score += 20
+	}
+	if strings.Contains(nodeType, "append") || strings.Contains(nodeType, "merge append") {
+		score -= 10
+	}
+
+	score -= depth
+
+	return mainTableCandidate{
+		Name:       name,
+		Score:      score,
+		IsPhysical: isPhysical,
+		IsTemp:     isTemp,
+		Depth:      depth,
+	}, true
+}
+
+func collectMainTableCandidates(node PlanNode, depth int, options MainTableResolveOptions, out *[]mainTableCandidate) {
+	if c, ok := scorePlanNode(node, depth, options); ok {
+		*out = append(*out, c)
+	}
+	for _, child := range node.Plans {
+		collectMainTableCandidates(child, depth+1, options, out)
+	}
+}
+
+func pickBestCandidate(candidates []mainTableCandidate, accept func(mainTableCandidate) bool) (mainTableCandidate, bool) {
+	var best mainTableCandidate
+	found := false
+	for _, c := range candidates {
+		if !accept(c) {
+			continue
+		}
+		if !found || c.Score > best.Score || (c.Score == best.Score && c.Depth < best.Depth) {
+			best = c
+			found = true
+		}
+	}
+	return best, found
+}
+
+func logMainTableCandidates(candidates []mainTableCandidate) {
+	for _, c := range candidates {
+		log.Printf(
+			"Explain candidate: name=%s score=%d physical=%t temp=%t depth=%d",
+			c.Name,
+			c.Score,
+			c.IsPhysical,
+			c.IsTemp,
+			c.Depth,
+		)
+	}
+}
+
+func GetMainTableFromExplain(jsonData []byte, options MainTableResolveOptions) (string, error) {
 	var explainOutput []Explain
 	if err := json.Unmarshal(jsonData, &explainOutput); err != nil {
 		return "", err
@@ -2068,9 +2180,26 @@ func GetMainTableFromExplain(jsonData []byte) (string, error) {
 		return "", fmt.Errorf("nenhum plano encontrado")
 	}
 
-	if table, found := getMainTable(explainOutput[0].Plan); found {
-		return table, nil
+	candidates := make([]mainTableCandidate, 0, 16)
+	collectMainTableCandidates(explainOutput[0].Plan, 0, options, &candidates)
+	logMainTableCandidates(candidates)
+
+	if best, ok := pickBestCandidate(candidates, func(c mainTableCandidate) bool { return c.IsPhysical && !c.IsTemp }); ok {
+		log.Printf("Explain mainTable selected: %s (rule=physical_not_temp score=%d depth=%d)", best.Name, best.Score, best.Depth)
+		return best.Name, nil
+	}
+	if best, ok := pickBestCandidate(candidates, func(c mainTableCandidate) bool { return c.IsPhysical }); ok {
+		log.Printf("Explain mainTable selected: %s (rule=physical score=%d depth=%d)", best.Name, best.Score, best.Depth)
+		return best.Name, nil
+	}
+	if best, ok := pickBestCandidate(candidates, func(c mainTableCandidate) bool { return !c.IsTemp }); ok {
+		log.Printf("Explain mainTable selected: %s (rule=not_temp score=%d depth=%d)", best.Name, best.Score, best.Depth)
+		return best.Name, nil
+	}
+	if best, ok := pickBestCandidate(candidates, func(c mainTableCandidate) bool { return true }); ok {
+		log.Printf("Explain mainTable selected: %s (rule=any score=%d depth=%d)", best.Name, best.Score, best.Depth)
+		return best.Name, nil
 	}
 
-	return "", fmt.Errorf("tabela principal não encontrada")
+	return "", fmt.Errorf("tabela principal nao encontrada")
 }

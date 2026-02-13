@@ -1,7 +1,7 @@
 {
   "id": "3dfc7efc-5e56-47c7-87e2-8036140749ea",
   "jobName": "Enable Trigger Arrecadação Inconsistência / Pagamento",
-  "selectSql": "ALTER TABLE ${SCHEMA}.arrecadacao_inconsistencia ENABLE TRIGGER ALL;\r\nALTER TABLE ${SCHEMA}.arrecadacao_pagamento ENABLE TRIGGER ALL;",
+  "selectSql": "ALTER TABLE ${SCHEMA}.arrecadacao_inconsistencia ENABLE TRIGGER ALL;\r\nALTER TABLE ${SCHEMA}.arrecadacao_pagamento ENABLE TRIGGER ALL;\r\nALTER TABLE ${SCHEMA}.guia_fatura ENABLE TRIGGER ALL;",
   "insertSql": "",
   "columns": [],
   "primaryKeys": null,
