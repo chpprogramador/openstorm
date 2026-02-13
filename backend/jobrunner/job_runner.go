@@ -48,6 +48,13 @@ type JobRunner struct {
 	countInit      sync.Once
 	memoryStoreMu  sync.RWMutex
 	memoryStore    map[string]memoryDataset
+	logFlushMu     sync.Mutex
+	lastLogFlush   time.Time
+	logDirty       bool
+	preCount       bool
+	mapParallel    bool
+	logFlushEvery  time.Duration
+	recordMapPool  sync.Pool
 }
 
 func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect dialects.SQLDialect, concurrency int, project string, projectID string) *JobRunner {
@@ -79,6 +86,12 @@ func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect d
 		PipelineLog:    pipelineLog,
 		ProjectID:      projectID,
 		memoryStore:    make(map[string]memoryDataset),
+		preCount:       envBoolDefault("ETL_PRECOUNT_ENABLED", true),
+		mapParallel:    envBoolDefault("ETL_MAP_PARALLEL_ENABLED", false),
+		logFlushEvery:  envDurationMsDefault("ETL_LOG_FLUSH_MS", 500),
+	}
+	jr.recordMapPool.New = func() interface{} {
+		return make(map[string]interface{})
 	}
 	jr.ctx, jr.cancel = context.WithCancel(context.Background())
 
@@ -217,6 +230,11 @@ func (jr *JobRunner) buildExecutionOrder(startIDs []string) []string {
 }
 
 func (jr *JobRunner) preloadCounts(startIDs []string) {
+	if !jr.preCount {
+		status.ResetCountStatus()
+		status.SetCountTotal(0)
+		return
+	}
 	jr.initCountManager()
 	order := jr.buildExecutionOrder(startIDs)
 	status.ResetCountStatus()
@@ -361,35 +379,45 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			log.Printf("Job %s (%s): %d diretiva(s) Map detectadas no select", job.ID, job.JobName, len(mapDirectives))
 		}
 
-		// total de registros (count calculado em worker sequencial)
-		total := 0
-		if len(mapDirectives) > 0 {
-			countStart := time.Now()
-			total, err = jr.countSelectWithMapDirectives(job, mapDirectives)
-			if err != nil {
-				log.Printf("Erro ao contar registros com Map: %v\n", err)
-				jr.markJobFinalStatus(jobID, job, "error", err.Error(), time.Now())
-				return
-			}
-			log.Printf("Job %s (%s): count com Map concluido em %s (total=%d)", job.ID, job.JobName, time.Since(countStart), total)
-		} else {
-			countFuture := jr.requestCount(jobID, job)
-			total, err = jr.awaitCount(countFuture)
-			if err != nil {
-				log.Printf("Erro ao contar registros: %v\n", err)
-				jr.markJobFinalStatus(jobID, job, "error", err.Error(), time.Now())
-				return
+		// total de registros (opcional; pode ser desabilitado para evitar varredura extra)
+		total := -1
+		if jr.preCount {
+			if len(mapDirectives) > 0 {
+				countStart := time.Now()
+				total, err = jr.countSelectWithMapDirectives(job, mapDirectives)
+				if err != nil {
+					log.Printf("Erro ao contar registros com Map: %v\n", err)
+					jr.markJobFinalStatus(jobID, job, "error", err.Error(), time.Now())
+					return
+				}
+				log.Printf("Job %s (%s): count com Map concluido em %s (total=%d)", job.ID, job.JobName, time.Since(countStart), total)
+			} else {
+				countFuture := jr.requestCount(jobID, job)
+				total, err = jr.awaitCount(countFuture)
+				if err != nil {
+					log.Printf("Erro ao contar registros: %v\n", err)
+					jr.markJobFinalStatus(jobID, job, "error", err.Error(), time.Now())
+					return
+				}
 			}
 		}
 
 		// Atualiza total no log
 		logger.UpdateJob(jr.PipelineLog, jobID, func(jl *logger.JobLog) {
-			jl.Total = total
+			if total > 0 {
+				jl.Total = total
+			} else {
+				jl.Total = 0
+			}
 		})
 		jr.savePipelineLog()
 
 		status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
-			js.Total = total
+			if total > 0 {
+				js.Total = total
+			} else {
+				js.Total = 0
+			}
 			status.NotifySubscribers()
 		})
 
@@ -397,13 +425,20 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 		// Ajusta concurrency: se total < batchSize, usa apenas 1 worker
 		concurrency := jr.Concurrency
-		if total <= job.RecordsPerPage {
+		if total > 0 && total <= job.RecordsPerPage {
 			concurrency = 1
 			log.Printf("Total (%d) menor que batchSize (%d), usando apenas 1 worker", total, job.RecordsPerPage)
+		}
+		if len(mapDirectives) > 0 && !jr.mapParallel {
+			concurrency = 1
+			log.Printf("Map[%d] ativo: paralelismo de leitura desabilitado para evitar rematerializacao por worker", len(mapDirectives))
 		}
 
 		writerConcurrency := jr.Concurrency
 		if writerConcurrency < 1 {
+			writerConcurrency = 1
+		}
+		if len(mapDirectives) > 0 && !jr.mapParallel {
 			writerConcurrency = 1
 		}
 
@@ -475,6 +510,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 				for batch := range batchChan {
 					if jobHadError.Load() || jr.shouldStop() || jobCtx.Err() != nil {
+						jr.releaseBatchRecordMaps(batch)
 						return
 					}
 					batchStart := time.Now()
@@ -501,6 +537,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 						batchLog.EndedAt = time.Now()
 						logger.AddBatch(jr.PipelineLog, jobID, batchLog)
 						jr.savePipelineLog()
+						jr.releaseBatchRecordMaps(batch)
 						jobCancel()
 						return
 					}
@@ -518,9 +555,14 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 					status.UpdateJobStatus(job.ID, func(js *status.JobStatus) {
 						js.Processed = int(processed)
-						js.Progress = float64(processed) / float64(total) * 100
+						if total > 0 {
+							js.Progress = float64(processed) / float64(total) * 100
+						} else {
+							js.Progress = 0
+						}
 						status.NotifySubscribers()
 					})
+					jr.releaseBatchRecordMaps(batch)
 				}
 
 				if jobHadError.Load() || jr.shouldStop() || jobCtx.Err() != nil {
@@ -536,13 +578,13 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 		}
 
 		// Resolve tabela principal uma única vez (EXPLAIN)
-		mainTable := ""
+		hashKeyExpr := ""
 		if len(mapDirectives) > 0 {
 			explainStart := time.Now()
-			mainTable, err = jr.getMainTableFromExplainWithMapDirectives(job, mapDirectives, jobCtx)
-			log.Printf("Job %s (%s): explain com Map concluido em %s (mainTable=%s)", job.ID, job.JobName, time.Since(explainStart), mainTable)
+			hashKeyExpr, err = jr.getHashKeyExprFromExplainWithMapDirectives(job, mapDirectives, jobCtx)
+			log.Printf("Job %s (%s): hash key com Map resolvido em %s (hashKeyExpr=%s)", job.ID, job.JobName, time.Since(explainStart), hashKeyExpr)
 		} else {
-			mainTable, err = jr.getMainTableFromExplain(job)
+			hashKeyExpr, err = jr.getHashKeyExprFromExplain(job)
 		}
 		if err != nil {
 			log.Printf("Erro no EXPLAIN do job %s: %v", job.ID, err)
@@ -565,7 +607,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 
 				query := strings.TrimSpace(job.SelectSQL)
 				if concurrency > 1 {
-					query = jr.Dialect.BuildSelectQueryByHash(job, workerID, concurrency, mainTable)
+					query = jr.Dialect.BuildSelectQueryByHash(job, workerID, concurrency, hashKeyExpr)
 				} else {
 					log.Printf("Job %s (%s): leitura sem hash (worker unico)", job.ID, job.JobName)
 				}
@@ -619,15 +661,15 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 				cols, _ := rows.Columns()
 				batchSize := job.RecordsPerPage
 				buffer := make([]map[string]interface{}, 0, batchSize)
+				values := make([]interface{}, len(cols))
+				ptrs := make([]interface{}, len(cols))
+				for i := range cols {
+					ptrs[i] = &values[i]
+				}
 
 				for rows.Next() {
 					if jr.shouldStop() || jobCtx.Err() != nil {
 						return
-					}
-					values := make([]interface{}, len(cols))
-					ptrs := make([]interface{}, len(cols))
-					for i := range cols {
-						ptrs[i] = &values[i]
 					}
 					if err := rows.Scan(ptrs...); err != nil {
 						setJobError(err)
@@ -635,7 +677,7 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 						return
 					}
 
-					rec := make(map[string]interface{})
+					rec := jr.acquireRecordMap()
 					for i, col := range cols {
 						rec[col] = values[i]
 					}
@@ -693,11 +735,11 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 				status.NotifySubscribers()
 			})
 		}
-		if !jobHadError.Load() && finalProcessed < total {
+		if total > 0 && !jobHadError.Load() && finalProcessed < total {
 			jobHadError.Store(true)
 			mismatchErr := fmt.Sprintf("inconsistencia: processados %d de %d registros sem erro SQL", finalProcessed, total)
 			if concurrency > 1 {
-				mismatchErr += " (possivel divergencia no particionamento hash por ctid)"
+				mismatchErr += " (possivel divergencia no particionamento hash por chave)"
 			} else {
 				mismatchErr += " (leitura sem hash; verifique joins/filtros da query)"
 			}
@@ -1277,6 +1319,27 @@ func normalizeColumnName(name string) string {
 	return b.String()
 }
 
+func (jr *JobRunner) acquireRecordMap() map[string]interface{} {
+	rec := jr.recordMapPool.Get().(map[string]interface{})
+	for k := range rec {
+		delete(rec, k)
+	}
+	return rec
+}
+
+func (jr *JobRunner) releaseRecordMap(rec map[string]interface{}) {
+	for k := range rec {
+		delete(rec, k)
+	}
+	jr.recordMapPool.Put(rec)
+}
+
+func (jr *JobRunner) releaseBatchRecordMaps(batch []map[string]interface{}) {
+	for _, rec := range batch {
+		jr.releaseRecordMap(rec)
+	}
+}
+
 func (jr *JobRunner) resolveExecutionDB(job models.Job) (*sql.DB, string) {
 	conn := strings.ToLower(strings.TrimSpace(job.Connection))
 	switch conn {
@@ -1721,6 +1784,9 @@ func (jr *JobRunner) markJobFinalStatus(jobID string, job models.Job, statusStr,
 func (jr *JobRunner) Run(startIDs []string) {
 	log.Printf("Iniciando pipeline %s para projeto %s\n", jr.PipelineLog.PipelineID, jr.PipelineLog.Project)
 	defer jr.clearMemoryStore()
+	stopLogFlusher := jr.startLogFlusher()
+	defer stopLogFlusher()
+	defer jr.flushPipelineLogNow()
 
 	jr.preloadCounts(startIDs)
 
@@ -1749,6 +1815,23 @@ func (jr *JobRunner) Run(startIDs []string) {
 	log.Printf("Pipeline %s finalizado com status: %s\n", jr.PipelineLog.PipelineID, jr.PipelineLog.Status)
 }
 
+func (jr *JobRunner) startLogFlusher() func() {
+	ticker := time.NewTicker(jr.logFlushEvery)
+	done := make(chan struct{})
+	go func() {
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				jr.savePipelineLog()
+			case <-done:
+				return
+			}
+		}
+	}()
+	return func() { close(done) }
+}
+
 func (jr *JobRunner) Stop(reason string) {
 	if jr.stopped.Swap(true) {
 		return
@@ -1760,6 +1843,7 @@ func (jr *JobRunner) Stop(reason string) {
 	jr.PipelineLog.Status = "stopped"
 	jr.PipelineLog.EndedAt = time.Now()
 	jr.savePipelineLog()
+	jr.flushPipelineLogNow()
 	status.UpdateProjectStatus("stop")
 	status.AppendLog(fmt.Sprintf("%s - Pipeline interrompida: %s", jr.PipelineLog.Project, reason))
 	jr.cancel()
@@ -1786,13 +1870,36 @@ func (jr *JobRunner) shouldStop() bool {
 
 // Método auxiliar para salvar o log do pipeline
 func (jr *JobRunner) savePipelineLog() {
+	jr.logFlushMu.Lock()
+	jr.logDirty = true
+	jr.logFlushMu.Unlock()
+	jr.persistPipelineLog(false)
+}
+
+func (jr *JobRunner) flushPipelineLogNow() {
+	jr.persistPipelineLog(true)
+}
+
+func (jr *JobRunner) persistPipelineLog(force bool) {
+	jr.logFlushMu.Lock()
+	dirty := jr.logDirty
+	now := time.Now()
+	if !dirty {
+		jr.logFlushMu.Unlock()
+		return
+	}
+	if !force && !jr.lastLogFlush.IsZero() && now.Sub(jr.lastLogFlush) < jr.logFlushEvery {
+		jr.logFlushMu.Unlock()
+		return
+	}
+	jr.logDirty = false
+	jr.lastLogFlush = now
+	jr.logFlushMu.Unlock()
+
 	if err := logger.SavePipelineLog(jr.PipelineLog); err != nil {
 		log.Printf("Erro ao salvar log do pipeline: %v\n", err)
-		// Debug: mostra detalhes do erro
 		log.Printf("PipelineID: %s, Status: %s, Jobs count: %d\n",
 			jr.PipelineLog.PipelineID, jr.PipelineLog.Status, len(jr.PipelineLog.Jobs))
-	} else {
-		log.Printf("Log do pipeline salvo com sucesso: %s\n", jr.PipelineLog.PipelineID)
 	}
 }
 
@@ -1837,6 +1944,33 @@ func LoadProjectVariables(projectID string) map[string]string {
 
 	log.Printf("Carregadas %d variáveis do projeto %s\n", len(variables), projectID)
 	return variables
+}
+
+func envBoolDefault(key string, def bool) bool {
+	raw := strings.TrimSpace(strings.ToLower(os.Getenv(key)))
+	if raw == "" {
+		return def
+	}
+	switch raw {
+	case "1", "true", "t", "yes", "y", "on":
+		return true
+	case "0", "false", "f", "no", "n", "off":
+		return false
+	default:
+		return def
+	}
+}
+
+func envDurationMsDefault(key string, defMs int) time.Duration {
+	raw := strings.TrimSpace(os.Getenv(key))
+	if raw == "" {
+		return time.Duration(defMs) * time.Millisecond
+	}
+	ms, err := strconv.Atoi(raw)
+	if err != nil || ms <= 0 {
+		return time.Duration(defMs) * time.Millisecond
+	}
+	return time.Duration(ms) * time.Millisecond
 }
 
 // SubstituteVariables substitui placeholders nas queries SQL com os valores das variáveis
@@ -1894,7 +2028,11 @@ func (jr *JobRunner) deleteInsertTarget(job models.Job) error {
 	return err
 }
 
-func (jr *JobRunner) getMainTableFromExplain(job models.Job) (string, error) {
+type queryContextExecutor interface {
+	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
+}
+
+func (jr *JobRunner) getHashKeyExprFromExplain(job models.Job) (string, error) {
 	queryExplain := jr.Dialect.BuildExplainSelectQueryByHash(job)
 	rowsExplain, err := jr.SourceDB.Query(queryExplain)
 	if err != nil {
@@ -1915,14 +2053,10 @@ func (jr *JobRunner) getMainTableFromExplain(job models.Job) (string, error) {
 		return "", err
 	}
 
-	mainTable, err := GetMainTableFromExplain(explainJSON, MainTableResolveOptions{})
-	if err != nil {
-		return "", err
-	}
-	return mainTable, nil
+	return jr.resolveHashKeyExprFromExplainJSON(jr.ctx, explainJSON, MainTableResolveOptions{}, job.SelectSQL, jr.SourceDB)
 }
 
-func (jr *JobRunner) getMainTableFromExplainWithMapDirectives(job models.Job, directives []mapDirective, ctx context.Context) (string, error) {
+func (jr *JobRunner) getHashKeyExprFromExplainWithMapDirectives(job models.Job, directives []mapDirective, ctx context.Context) (string, error) {
 	conn, err := jr.SourceDB.Conn(ctx)
 	if err != nil {
 		return "", err
@@ -1964,13 +2098,239 @@ func (jr *JobRunner) getMainTableFromExplainWithMapDirectives(job models.Job, di
 		tempTables[strings.ToLower(strings.TrimSpace(d.Key))] = struct{}{}
 	}
 
-	mainTable, err := GetMainTableFromExplain(explainJSON, MainTableResolveOptions{
+	options := MainTableResolveOptions{
 		TemporaryTables: tempTables,
-	})
+	}
+	return jr.resolveHashKeyExprFromExplainJSON(ctx, explainJSON, options, job.SelectSQL, tx)
+}
+
+func (jr *JobRunner) resolveHashKeyExprFromExplainJSON(ctx context.Context, explainJSON []byte, options MainTableResolveOptions, selectSQL string, pkExecutor queryContextExecutor) (string, error) {
+	mainTable, err := ResolveMainTableFromExplain(explainJSON, options)
 	if err != nil {
 		return "", err
 	}
-	return mainTable, nil
+
+	// Sem tabela fisica resolvida: deixa o dialeto usar fallback de hash por linha.
+	if !mainTable.IsPhysical || mainTable.Schema == "" || mainTable.RelationName == "" {
+		log.Printf("Hash key: tabela principal sem relacao fisica resolvida (name=%s). Usando fallback.", mainTable.Name)
+		return "", nil
+	}
+
+	// So usa PK quando o alias da tabela principal aparece no escopo top-level da query.
+	if strings.TrimSpace(mainTable.Alias) == "" || !hasTopLevelAliasRef(selectSQL, mainTable.Alias) {
+		log.Printf("Hash key: alias principal fora do escopo top-level (alias=%s table=%s.%s). Usando fallback.", mainTable.Alias, mainTable.Schema, mainTable.RelationName)
+		return "", nil
+	}
+
+	pkColumns, err := fetchPrimaryKeyColumns(ctx, pkExecutor, mainTable.Schema, mainTable.RelationName)
+	if err != nil {
+		return "", err
+	}
+	if len(pkColumns) == 0 {
+		log.Printf("Hash key: tabela principal sem PK (table=%s.%s). Usando fallback.", mainTable.Schema, mainTable.RelationName)
+		return "", nil
+	}
+
+	hashKeyExpr := buildPKHashKeyExpr(mainTable.Alias, pkColumns)
+	log.Printf("Hash key resolvida por PK: table=%s.%s alias=%s pk=%v expr=%s", mainTable.Schema, mainTable.RelationName, mainTable.Alias, pkColumns, hashKeyExpr)
+	return hashKeyExpr, nil
+}
+
+func fetchPrimaryKeyColumns(ctx context.Context, executor queryContextExecutor, schema, table string) ([]string, error) {
+	const pkSQL = `
+SELECT a.attname
+FROM pg_index i
+JOIN pg_class t ON t.oid = i.indrelid
+JOIN pg_namespace n ON n.oid = t.relnamespace
+JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = ANY(i.indkey)
+WHERE i.indisprimary
+  AND n.nspname = $1
+  AND t.relname = $2
+ORDER BY array_position(i.indkey, a.attnum)`
+
+	rows, err := executor.QueryContext(ctx, pkSQL, schema, table)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	cols := make([]string, 0, 4)
+	for rows.Next() {
+		var c string
+		if err := rows.Scan(&c); err != nil {
+			return nil, err
+		}
+		cols = append(cols, c)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return cols, nil
+}
+
+func quotePgIdent(name string) string {
+	return `"` + strings.ReplaceAll(name, `"`, `""`) + `"`
+}
+
+func buildPKHashKeyExpr(alias string, pkColumns []string) string {
+	parts := make([]string, 0, len(pkColumns))
+	qualifiedAlias := quotePgIdent(alias)
+	for _, col := range pkColumns {
+		qualifiedCol := fmt.Sprintf("%s.%s", qualifiedAlias, quotePgIdent(col))
+		parts = append(parts, fmt.Sprintf("coalesce((%s)::text, '')", qualifiedCol))
+	}
+	if len(parts) == 1 {
+		return parts[0]
+	}
+	return "(" + strings.Join(parts, ` || '|' || `) + ")"
+}
+
+func hasTopLevelAliasRef(query, alias string) bool {
+	if strings.TrimSpace(alias) == "" {
+		return false
+	}
+	lowerAlias := strings.ToLower(strings.TrimSpace(alias))
+	lowerQuery := strings.ToLower(stripSQLComments(query))
+
+	depth := 0
+	inSingle := false
+	inDouble := false
+	for i := 0; i < len(lowerQuery); i++ {
+		ch := lowerQuery[i]
+		if inSingle {
+			if ch == '\'' {
+				if i+1 < len(lowerQuery) && lowerQuery[i+1] == '\'' {
+					i++
+					continue
+				}
+				inSingle = false
+			}
+			continue
+		}
+		if inDouble {
+			if ch == '"' {
+				if i+1 < len(lowerQuery) && lowerQuery[i+1] == '"' {
+					i++
+					continue
+				}
+				inDouble = false
+			}
+			continue
+		}
+		switch ch {
+		case '\'':
+			inSingle = true
+			continue
+		case '"':
+			inDouble = true
+			continue
+		case '(':
+			depth++
+			continue
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+			continue
+		}
+
+		if depth == 0 {
+			candidate := lowerAlias + "."
+			if strings.HasPrefix(lowerQuery[i:], candidate) {
+				prevOK := i == 0 || !isIdentRune(rune(lowerQuery[i-1]))
+				if prevOK {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isIdentRune(r rune) bool {
+	return (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '_' || r == '"'
+}
+
+func stripSQLComments(sqlText string) string {
+	var b strings.Builder
+	inSingle := false
+	inDouble := false
+	inLineComment := false
+	inBlockComment := false
+
+	for i := 0; i < len(sqlText); i++ {
+		ch := sqlText[i]
+
+		if inLineComment {
+			if ch == '\n' || ch == '\r' {
+				inLineComment = false
+				b.WriteByte(' ')
+				if ch == '\r' && i+1 < len(sqlText) && sqlText[i+1] == '\n' {
+					i++
+				}
+			}
+			continue
+		}
+		if inBlockComment {
+			if ch == '*' && i+1 < len(sqlText) && sqlText[i+1] == '/' {
+				inBlockComment = false
+				b.WriteByte(' ')
+				i++
+			}
+			continue
+		}
+		if inSingle {
+			if ch == '\'' {
+				if i+1 < len(sqlText) && sqlText[i+1] == '\'' {
+					b.WriteByte(ch)
+					b.WriteByte(sqlText[i+1])
+					i++
+					continue
+				}
+				inSingle = false
+			}
+			b.WriteByte(ch)
+			continue
+		}
+		if inDouble {
+			if ch == '"' {
+				if i+1 < len(sqlText) && sqlText[i+1] == '"' {
+					b.WriteByte(ch)
+					b.WriteByte(sqlText[i+1])
+					i++
+					continue
+				}
+				inDouble = false
+			}
+			b.WriteByte(ch)
+			continue
+		}
+
+		if ch == '\'' {
+			inSingle = true
+			b.WriteByte(ch)
+			continue
+		}
+		if ch == '"' {
+			inDouble = true
+			b.WriteByte(ch)
+			continue
+		}
+		if ch == '-' && i+1 < len(sqlText) && sqlText[i+1] == '-' {
+			inLineComment = true
+			i++
+			continue
+		}
+		if ch == '/' && i+1 < len(sqlText) && sqlText[i+1] == '*' {
+			inBlockComment = true
+			i++
+			continue
+		}
+
+		b.WriteByte(ch)
+	}
+
+	return b.String()
 }
 
 func (jr *JobRunner) countSelectWithMapDirectives(job models.Job, directives []mapDirective) (int, error) {
@@ -2050,12 +2410,23 @@ type MainTableResolveOptions struct {
 	TemporaryTables map[string]struct{}
 }
 
+type MainTableResolved struct {
+	Name         string
+	Alias        string
+	Schema       string
+	RelationName string
+	IsPhysical   bool
+}
+
 type mainTableCandidate struct {
-	Name       string
-	Score      int
-	IsPhysical bool
-	IsTemp     bool
-	Depth      int
+	Name         string
+	Alias        string
+	Schema       string
+	RelationName string
+	Score        int
+	IsPhysical   bool
+	IsTemp       bool
+	Depth        int
 }
 
 func relationDisplayName(node PlanNode) string {
@@ -2125,11 +2496,14 @@ func scorePlanNode(node PlanNode, depth int, options MainTableResolveOptions) (m
 	score -= depth
 
 	return mainTableCandidate{
-		Name:       name,
-		Score:      score,
-		IsPhysical: isPhysical,
-		IsTemp:     isTemp,
-		Depth:      depth,
+		Name:         name,
+		Alias:        strings.TrimSpace(node.Alias),
+		Schema:       strings.TrimSpace(node.Schema),
+		RelationName: strings.TrimSpace(node.RelationName),
+		Score:        score,
+		IsPhysical:   isPhysical,
+		IsTemp:       isTemp,
+		Depth:        depth,
 	}, true
 }
 
@@ -2171,13 +2545,21 @@ func logMainTableCandidates(candidates []mainTableCandidate) {
 }
 
 func GetMainTableFromExplain(jsonData []byte, options MainTableResolveOptions) (string, error) {
+	main, err := ResolveMainTableFromExplain(jsonData, options)
+	if err != nil {
+		return "", err
+	}
+	return main.Name, nil
+}
+
+func ResolveMainTableFromExplain(jsonData []byte, options MainTableResolveOptions) (MainTableResolved, error) {
 	var explainOutput []Explain
 	if err := json.Unmarshal(jsonData, &explainOutput); err != nil {
-		return "", err
+		return MainTableResolved{}, err
 	}
 
 	if len(explainOutput) == 0 {
-		return "", fmt.Errorf("nenhum plano encontrado")
+		return MainTableResolved{}, fmt.Errorf("nenhum plano encontrado")
 	}
 
 	candidates := make([]mainTableCandidate, 0, 16)
@@ -2186,20 +2568,44 @@ func GetMainTableFromExplain(jsonData []byte, options MainTableResolveOptions) (
 
 	if best, ok := pickBestCandidate(candidates, func(c mainTableCandidate) bool { return c.IsPhysical && !c.IsTemp }); ok {
 		log.Printf("Explain mainTable selected: %s (rule=physical_not_temp score=%d depth=%d)", best.Name, best.Score, best.Depth)
-		return best.Name, nil
+		return MainTableResolved{
+			Name:         best.Name,
+			Alias:        best.Alias,
+			Schema:       best.Schema,
+			RelationName: best.RelationName,
+			IsPhysical:   best.IsPhysical,
+		}, nil
 	}
 	if best, ok := pickBestCandidate(candidates, func(c mainTableCandidate) bool { return c.IsPhysical }); ok {
 		log.Printf("Explain mainTable selected: %s (rule=physical score=%d depth=%d)", best.Name, best.Score, best.Depth)
-		return best.Name, nil
+		return MainTableResolved{
+			Name:         best.Name,
+			Alias:        best.Alias,
+			Schema:       best.Schema,
+			RelationName: best.RelationName,
+			IsPhysical:   best.IsPhysical,
+		}, nil
 	}
 	if best, ok := pickBestCandidate(candidates, func(c mainTableCandidate) bool { return !c.IsTemp }); ok {
 		log.Printf("Explain mainTable selected: %s (rule=not_temp score=%d depth=%d)", best.Name, best.Score, best.Depth)
-		return best.Name, nil
+		return MainTableResolved{
+			Name:         best.Name,
+			Alias:        best.Alias,
+			Schema:       best.Schema,
+			RelationName: best.RelationName,
+			IsPhysical:   best.IsPhysical,
+		}, nil
 	}
 	if best, ok := pickBestCandidate(candidates, func(c mainTableCandidate) bool { return true }); ok {
 		log.Printf("Explain mainTable selected: %s (rule=any score=%d depth=%d)", best.Name, best.Score, best.Depth)
-		return best.Name, nil
+		return MainTableResolved{
+			Name:         best.Name,
+			Alias:        best.Alias,
+			Schema:       best.Schema,
+			RelationName: best.RelationName,
+			IsPhysical:   best.IsPhysical,
+		}, nil
 	}
 
-	return "", fmt.Errorf("tabela principal nao encontrada")
+	return MainTableResolved{}, fmt.Errorf("tabela principal nao encontrada")
 }

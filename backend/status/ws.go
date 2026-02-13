@@ -68,6 +68,11 @@ var (
 	workerSubs     = make(map[*websocket.Conn]chan struct{})
 	workerSubsMu   sync.Mutex
 	workerStatusMu sync.Mutex
+
+	notifyDebounceMu   sync.Mutex
+	lastNotifyAt       time.Time
+	notifyScheduled    bool
+	notifyDebounceSpan = 250 * time.Millisecond
 )
 
 func ClearJobLogs() {
@@ -156,6 +161,36 @@ func notifyProjectSubscribers() {
 }
 
 func NotifySubscribers() {
+	notifyDebounced()
+}
+
+func notifyDebounced() {
+	notifyDebounceMu.Lock()
+	now := time.Now()
+	wait := notifyDebounceSpan - now.Sub(lastNotifyAt)
+	if wait <= 0 {
+		lastNotifyAt = now
+		notifyDebounceMu.Unlock()
+		notifyNow()
+		return
+	}
+	if notifyScheduled {
+		notifyDebounceMu.Unlock()
+		return
+	}
+	notifyScheduled = true
+	notifyDebounceMu.Unlock()
+
+	time.AfterFunc(wait, func() {
+		notifyDebounceMu.Lock()
+		notifyScheduled = false
+		lastNotifyAt = time.Now()
+		notifyDebounceMu.Unlock()
+		notifyNow()
+	})
+}
+
+func notifyNow() {
 	subscribersMu.Lock()
 	defer subscribersMu.Unlock()
 	for _, ch := range subscribers {
