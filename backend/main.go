@@ -12,6 +12,9 @@ import (
 
 func main() {
 	router := gin.Default()
+	if err := router.SetTrustedProxies(nil); err != nil {
+		panic(err)
+	}
 
 	// Projetos
 	router.GET("/projects", handlers.ListProjects)
