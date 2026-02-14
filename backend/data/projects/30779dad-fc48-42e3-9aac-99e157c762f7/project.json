@@ -165,7 +165,8 @@
     "jobs/8719be55-9812-4b48-9954-9b6b0021fe2e.json",
     "jobs/f4e36f83-2ac8-4641-8381-e4388c3de127.json",
     "jobs/74ab7547-aa66-48a4-9d84-df4c8facc4eb.json",
-    "jobs/73425127-e29f-4e6d-b1bd-6dbb2e950e1e.json"
+    "jobs/73425127-e29f-4e6d-b1bd-6dbb2e950e1e.json",
+    "jobs/b3fa82c9-397d-4db1-b070-174b386f27f5.json"
   ],
   "connections": [
     {
@@ -819,22 +820,26 @@
     {
       "source": "73425127-e29f-4e6d-b1bd-6dbb2e950e1e",
       "target": "83dbc9d6-18a7-435c-9597-bc48b2806951"
+    },
+    {
+      "source": "123b0383-5f45-4afb-aa5e-e7d755cbfc2c",
+      "target": "b3fa82c9-397d-4db1-b070-174b386f27f5"
     }
   ],
   "sourceDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5432,
-    "user": "41v1YvIyAWkIuC5pDdQE3njfnr5L",
-    "password": "tqA7uOj/IK8n+N8nq94pNVgFpee9cr+pgV8dHZM=",
+    "user": "WkklS3TcPms2lzHkgnEsmcClxkoH",
+    "password": "7uLB/bU5WphLxEhByXy8EKIZj34YUjNE2ZnqxVg=",
     "database": "sanel"
   },
   "destinationDatabase": {
     "type": "postgres",
     "host": "100.88.11.112",
     "port": 5433,
-    "user": "ZAZwJ3gvtGwaPtW2xC7aKTMUXw==",
-    "password": "wVpxOoiK6HZPOiedxNNtTAWDSAGI+w==",
+    "user": "11VusRpyZO7XBu0ELrBjJ5Fkng==",
+    "password": "WOqHYnm7cCtV+Lcj/HL396NBsH4kLA==",
     "database": "vzmsaneamento"
   },
   "concurrency": 10,

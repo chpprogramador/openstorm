@@ -1,7 +1,7 @@
 {
   "id": "30685e95-e6d7-4819-90e9-3f24a2257931",
   "jobName": "Arrecadação Inconsistência",
-  "selectSql": "select\n\ta.id id,\n\tcase WHEN a.datacredito ~ '^0+$' THEN null ELSE to_date(nullif(a.datacredito,''), 'YYYYMMDD') END AS data_credito,\n\ta.situacao mensagem_erro,\n\ta.slip slip,\n \ta.valorfatura valor_fatura,\n\ta.valorguia valor_guia,\n\ta.valor valor_retornado,\n\ta.idarrecadacao id_arrecadacao,\n\ta.idinconsistenciaarrec id_arrecadacao_tipo_inconsistencia,\n\ta.idtiporegistro id_arrecadacao_tipo_registro,\n\ta.idfatura id_fatura,\n\ta.idguia id_guia,\n\ta.idligacao id_ligacao_imovel,\n\ta.idperiodo id_periodo\nfrom arrecadacaoinconsistencia a ",
+  "selectSql": "select\n\ta.id id,\n\ttext_to_date(a.datacredito) AS data_credito,\n\ta.situacao mensagem_erro,\n\ta.slip slip,\n \ta.valorfatura valor_fatura,\n\ta.valorguia valor_guia,\n\ta.valor valor_retornado,\n\ta.idarrecadacao id_arrecadacao,\n\ta.idinconsistenciaarrec id_arrecadacao_tipo_inconsistencia,\n\ta.idtiporegistro id_arrecadacao_tipo_registro,\n\ta.idfatura id_fatura,\n\ta.idguia id_guia,\n\ta.idligacao id_ligacao_imovel,\n\ta.idperiodo id_periodo\nfrom arrecadacaoinconsistencia a ",
   "insertSql": "insert into ${SCHEMA}.arrecadacao_inconsistencia (\n\tid,\n\tdata_credito,\n\tmensagem_erro,\n\tslip,\n\tvalor_fatura,\n\tvalor_guia,\n\tvalor_retornado,\n\tid_arrecadacao,\n\tid_arrecadacao_tipo_inconsistencia,\n\tid_arrecadacao_tipo_registro,\n\tid_fatura,\n\tid_guia,\n\tid_ligacao_imovel,\n\tid_periodo)",
   "columns": [
     "id",

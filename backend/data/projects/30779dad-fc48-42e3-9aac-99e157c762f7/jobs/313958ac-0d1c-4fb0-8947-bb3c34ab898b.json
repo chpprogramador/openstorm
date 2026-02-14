@@ -1,7 +1,7 @@
 {
   "id": "313958ac-0d1c-4fb0-8947-bb3c34ab898b",
   "jobName": "Consolidação",
-  "selectSql": "Map['temp_usuario'];\n\nselect\n\tc.id id,\n\tcase when c.ativo = 'S' then true else false end as ativo,\n\tto_date(nullif(c.datainativacao,''),'YYYYMMDD') data_inativacao,\n\tto_date(nullif(c.datainclusao,''),'YYYYMMDD') data_inclusao,\n\tc.datavencimento dia_vencimento_fatura,\n\tc.cnpj documento_identificacao,\n\tc.nomeresponsavel nome_consolidacao,\n\tc.idligacao id_ligacao_imovel,\n\tt.id id_usuario_criacao\nfrom consolidacaoarrecadacao c \njoin temp_usuario t on (t.mig_id_usuario_original = c.idusuarioinclusao)",
+  "selectSql": "Map['temp_usuario'];\n\nselect\n\tc.id id,\n\tcase when c.ativo = 'S' then true else false end as ativo,\n\ttext_to_date(c.datainativacao) data_inativacao,\n\ttext_to_date(c.datainclusao) data_inclusao,\n\tc.datavencimento dia_vencimento_fatura,\n\tc.cnpj documento_identificacao,\n\tc.nomeresponsavel nome_consolidacao,\n\tc.idligacao id_ligacao_imovel,\n\tt.id id_usuario_criacao\nfrom consolidacaoarrecadacao c \njoin temp_usuario t on (t.mig_id_usuario_original = c.idusuarioinclusao)",
   "insertSql": "insert into ${SCHEMA}.consolidacao (\n\tid,\n\tativo,\n\tdata_inativacao,\n\tdata_inclusao,\n\tdia_vencimento_fatura,\n\tdocumento_identificacao,\n\tnome_consolidacao,\n\tid_ligacao_imovel,\n\tid_usuario_criacao)",
   "columns": [
     "id",

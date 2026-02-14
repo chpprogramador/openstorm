@@ -1,0 +1,14 @@
+{
+  "id": "b3fa82c9-397d-4db1-b070-174b386f27f5",
+  "jobName": "Drop Funções Auxíliares",
+  "connection": "source",
+  "selectSql": "DROP FUNCTION IF EXISTS public.text_to_date(text);\nDROP FUNCTION IF EXISTS public.text_to_timestamp(text);\n",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 900,
+  "top": 10680
+}

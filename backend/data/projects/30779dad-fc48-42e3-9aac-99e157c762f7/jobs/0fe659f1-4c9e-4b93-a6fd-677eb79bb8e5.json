@@ -1,7 +1,7 @@
 {
   "id": "0fe659f1-4c9e-4b93-a6fd-677eb79bb8e5",
   "jobName": "Medição Cronograma Detalhe",
-  "selectSql": "Map['temp_usuario'];\n\t\nselect\n\tc.id id,\n\tto_date(nullif(c.dataexec,''),'YYYYMMDD') data_execucao,\n\tto_date(nullif(c.dataprev,''),'YYYYMMDD') data_prevista_execucao,\n\tpg.id id_medicao_cronograma,\n\tcase when c.idfase = 7 then 4 else c.idfase end as id_medicao_cronograma_fase,\n\tcase \n\t\twhen c.status = 'P' then 1\n\t\twhen c.status = 'E' then 2\n\t\twhen c.status = 'I' then 3\n\tend id_status,\n\tt.id id_usuario_execucao\nfrom cronograma c\njoin periodogrupo pg \n\ton (c.idgrupo = pg.idgrupo\n\tand c.idperiodo = pg.idperiodo)\njoin temp_usuario t on (t.mig_id_usuario_original = c.idusuarioexec)\nwhere c.idfase in (1,2,3,7)",
+  "selectSql": "Map['temp_usuario'];\n\t\nselect\n\tc.id id,\n\ttext_to_date(c.dataexec) data_execucao,\n\ttext_to_date(c.dataprev) data_prevista_execucao,\n\tpg.id id_medicao_cronograma,\n\tcase when c.idfase = 7 then 4 else c.idfase end as id_medicao_cronograma_fase,\n\tcase \n\t\twhen c.status = 'P' then 1\n\t\twhen c.status = 'E' then 2\n\t\twhen c.status = 'I' then 3\n\tend id_status,\n\tt.id id_usuario_execucao\nfrom cronograma c\njoin periodogrupo pg \n\ton (c.idgrupo = pg.idgrupo\n\tand c.idperiodo = pg.idperiodo)\njoin temp_usuario t on (t.mig_id_usuario_original = c.idusuarioexec)\nwhere c.idfase in (1,2,3,7)",
   "insertSql": "insert into ${SCHEMA}.medicao_cronograma_detalhe (\n\tid,\n\tdata_execucao,\n\tdata_prevista_execucao,\n\tid_medicao_cronograma,\n\tid_medicao_cronograma_fase,\n\tid_status,\n\tid_usuario_execucao)",
   "columns": [
     "id",

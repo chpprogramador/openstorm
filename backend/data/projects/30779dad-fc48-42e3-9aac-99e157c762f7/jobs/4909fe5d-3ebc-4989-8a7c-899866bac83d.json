@@ -1,7 +1,7 @@
 {
   "id": "4909fe5d-3ebc-4989-8a7c-899866bac83d",
   "jobName": "Medição Detalhe Ocorrência",
-  "selectSql": "select\n  src.id AS id,\n  to_timestamp(md.datahoraleitura,'YYYYMMDD HH24:MI:SS') AS data_hora_cadastro,\n  src.foto1 AS foto_ocorrencia,\n  src.observacao AS observacao_ocorrencia,\n  md.idcodleitura AS id_medicao_codigo_leitura,\n  src.idmedicaodetalhe AS id_medicao_detalhe\nFROM medicaodetalheocorrencia src\njoin medicaodetalhe md on (src.idmedicaodetalhe = md.id)",
+  "selectSql": "select\n  src.id AS id,\n  text_to_timestamp(md.datahoraleitura) AS data_hora_cadastro,\n  src.foto1 AS foto_ocorrencia,\n  src.observacao AS observacao_ocorrencia,\n  md.idcodleitura AS id_medicao_codigo_leitura,\n  src.idmedicaodetalhe AS id_medicao_detalhe\nFROM medicaodetalheocorrencia src\njoin medicaodetalhe md on (src.idmedicaodetalhe = md.id)",
   "insertSql": "INSERT INTO\n  ${SCHEMA}.medicao_detalhe_ocorrencia (\n    id,\n    data_hora_cadastro,\n    foto_ocorrencia,\n    observacao_ocorrencia,\n    id_medicao_codigo_leitura,\n    id_medicao_detalhe\n  )",
   "columns": [
     "id",

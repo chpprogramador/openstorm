@@ -1,7 +1,7 @@
 {
   "id": "faf5f057-4053-4279-ae11-256f8d621616",
   "jobName": "Serviço Protocolo Atendimento",
-  "selectSql": "Map['temp_usuario'];\n\nselect\n\tos.id id,\n\tto_timestamp(nullif(trim(os.datahorafinalatendimento),''),'YYYY-MM-DD HH24:MI:SS') data_hora_fim,\n\tto_timestamp(nullif(trim(os.datahorafinalatendimento),''),'YYYY-MM-DD HH24:MI:SS') data_hora_inicio,\n\tnull numero_senha_atendimento,\n\tleft(os.obs,254) observacao,\n\tnull protocolo,\n\tos.idligacao id_ligacao_imovel,\n\tos.idtipoprotocoloatendimento id_servico_tipo_protocolo_atendimento,\n\tt.id id_usuario_atendimento\nfrom ordemservico os \nleft join temp_usuario t on (t.mig_id_usuario_original = os.idusuarioabertura)",
+  "selectSql": "Map['temp_usuario'];\n\nselect\n\tos.id id,\n\ttext_to_timestamp(trim(os.datahorafinalatendimento)) data_hora_fim,\n\ttext_to_timestamp(trim(os.datahorafinalatendimento)) data_hora_inicio,\n\tnull numero_senha_atendimento,\n\tleft(os.obs,254) observacao,\n\tnull protocolo,\n\tos.idligacao id_ligacao_imovel,\n\tos.idtipoprotocoloatendimento id_servico_tipo_protocolo_atendimento,\n\tt.id id_usuario_atendimento\nfrom ordemservico os \nleft join temp_usuario t on (t.mig_id_usuario_original = os.idusuarioabertura)",
   "insertSql": "insert into ${SCHEMA}.servico_protocolo_atendimento (\n\tid,\n\tdata_hora_fim,\n\tdata_hora_inicio,\n\tnumero_senha_atendimento,\n\tobservacao,\n\tprotocolo,\n\tid_ligacao_imovel,\n\tid_servico_tipo_protocolo_atendimento,\n\tid_usuario_atendimento)",
   "columns": [
     "id",
