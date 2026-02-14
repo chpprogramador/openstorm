@@ -28,15 +28,15 @@ var benchmarkTheme = struct {
 	orange     color
 	red        color
 }{
-	bg:         color{11, 18, 32},
-	card:       color{16, 27, 48},
-	cardAlt:    color{18, 32, 54},
-	cardBorder: color{32, 49, 78},
-	textMain:   color{231, 238, 247},
-	textMuted:  color{151, 168, 192},
-	green:      color{33, 160, 98},
-	orange:     color{196, 140, 64},
-	red:        color{180, 72, 72},
+	bg:         color{249, 250, 251},
+	card:       color{255, 255, 255},
+	cardAlt:    color{249, 250, 251},
+	cardBorder: color{229, 231, 235},
+	textMain:   color{33, 37, 41},
+	textMuted:  color{120, 126, 131},
+	green:      color{40, 167, 69},
+	orange:     color{255, 193, 7},
+	red:        color{220, 53, 69},
 }
 
 // BenchmarkReportHandler endpoint para gerar e retornar PDF do benchmark
@@ -390,10 +390,14 @@ func (e *PDFExporter) renderBenchmarkReportUI(projectName string, run *models.Be
 
 	margin := 12.0
 	gap := 6.0
-	topY := 12.0
-	topH := 72.0
+	headerY := 12.0
+	headerH := 20.0
+	topY := headerY + headerH + 6
+	topH := 68.0
 	leftW := 112.0
 	rightW := pageW - (2 * margin) - gap - leftW
+
+	e.addBenchmarkUIHeader(margin, headerY, pageW-(2*margin), headerH, projectName, run)
 
 	e.drawCard(margin, topY, leftW, topH, benchmarkTheme.card)
 	e.drawCard(margin+leftW+gap, topY, rightW, topH, benchmarkTheme.cardAlt)
@@ -415,6 +419,37 @@ func (e *PDFExporter) renderBenchmarkReportUI(projectName string, run *models.Be
 	e.addBenchmarkHostCard(margin, cardY, cardW, cardH, run)
 	e.addBenchmarkOriginCard(margin+cardW+gap, cardY, cardW, cardH, run)
 	e.addBenchmarkDestinationCard(margin+(cardW+gap)*2, cardY, cardW, cardH, run)
+}
+
+func (e *PDFExporter) addBenchmarkUIHeader(x, y, w, h float64, projectName string, run *models.BenchmarkRun) {
+	e.drawCard(x, y, w, h, benchmarkTheme.card)
+
+	padding := 6.0
+	curX := x + padding
+	curY := y + 4
+
+	statusText, statusColor := benchmarkStatusLabel(run.Status)
+	e.drawPill(x+w-padding-26, y+3, 24, 6, statusText, statusColor)
+
+	e.pdf.SetTextColor(benchmarkTheme.textMain.r, benchmarkTheme.textMain.g, benchmarkTheme.textMain.b)
+	e.pdf.SetFont("Arial", "B", 12)
+	e.pdf.SetXY(curX, curY)
+	e.pdf.CellFormat(0, 5, removeAccents("Relatorio de Benchmark"), "", 1, "L", false, 0, "")
+
+	curY += 6
+	e.pdf.SetFont("Arial", "", 8)
+	e.pdf.SetTextColor(benchmarkTheme.textMuted.r, benchmarkTheme.textMuted.g, benchmarkTheme.textMuted.b)
+	projectLine, projectSize := e.fitTextToWidth("Projeto: "+removeAccents(valueOrNA(projectName)), w-40, "", 8, 7)
+	e.pdf.SetFont("Arial", "", projectSize)
+	e.pdf.SetXY(curX, curY)
+	e.pdf.CellFormat(w-(padding*2)-26, 4, projectLine, "", 1, "L", false, 0, "")
+
+	curY += 4
+	metaText := fmt.Sprintf("Run ID: %s | Gerado em: %s", shortID(run.RunID), time.Now().Format("02/01/2006 15:04:05"))
+	metaLine, metaSize := e.fitTextToWidth(removeAccents(metaText), w-40, "", 8, 6.5)
+	e.pdf.SetFont("Arial", "", metaSize)
+	e.pdf.SetXY(curX, curY)
+	e.pdf.CellFormat(w-(padding*2)-26, 4, metaLine, "", 1, "L", false, 0, "")
 }
 
 func (e *PDFExporter) drawCard(x, y, w, h float64, fill color) {
@@ -627,27 +662,31 @@ func (e *PDFExporter) addBenchmarkDestinationCard(x, y, w, h float64, run *model
 }
 
 func (e *PDFExporter) drawLabelValue(x, y, w float64, label, value string) {
-	e.pdf.SetFont("Arial", "B", 7)
+	labelText, labelSize := e.fitTextToWidth(removeAccents(label), w, "B", 7, 6)
+	e.pdf.SetFont("Arial", "B", labelSize)
 	e.pdf.SetTextColor(benchmarkTheme.textMuted.r, benchmarkTheme.textMuted.g, benchmarkTheme.textMuted.b)
 	e.pdf.SetXY(x, y)
-	e.pdf.CellFormat(w, 4, removeAccents(label), "", 0, "L", false, 0, "")
+	e.pdf.CellFormat(w, 4, labelText, "", 0, "L", false, 0, "")
 
-	e.pdf.SetFont("Arial", "B", 9)
+	valueText, valueSize := e.fitTextToWidth(removeAccents(value), w, "B", 9, 7)
+	e.pdf.SetFont("Arial", "B", valueSize)
 	e.pdf.SetTextColor(benchmarkTheme.textMain.r, benchmarkTheme.textMain.g, benchmarkTheme.textMain.b)
 	e.pdf.SetXY(x, y+4)
-	e.pdf.CellFormat(w, 4, removeAccents(value), "", 0, "L", false, 0, "")
+	e.pdf.CellFormat(w, 4, valueText, "", 0, "L", false, 0, "")
 }
 
 func (e *PDFExporter) drawIndicator(x, y, w float64, label, value string) {
-	e.pdf.SetFont("Arial", "B", 7)
+	labelText, labelSize := e.fitTextToWidth(removeAccents(label), w, "B", 7, 5.5)
+	e.pdf.SetFont("Arial", "B", labelSize)
 	e.pdf.SetTextColor(benchmarkTheme.textMuted.r, benchmarkTheme.textMuted.g, benchmarkTheme.textMuted.b)
 	e.pdf.SetXY(x, y)
-	e.pdf.CellFormat(w, 4, removeAccents(label), "", 0, "L", false, 0, "")
+	e.pdf.CellFormat(w, 4, labelText, "", 0, "L", false, 0, "")
 
-	e.pdf.SetFont("Arial", "B", 9)
+	valueText, valueSize := e.fitTextToWidth(removeAccents(value), w, "B", 9, 7)
+	e.pdf.SetFont("Arial", "B", valueSize)
 	e.pdf.SetTextColor(benchmarkTheme.textMain.r, benchmarkTheme.textMain.g, benchmarkTheme.textMain.b)
 	e.pdf.SetXY(x, y+4)
-	e.pdf.CellFormat(w, 5, removeAccents(value), "", 0, "L", false, 0, "")
+	e.pdf.CellFormat(w, 5, valueText, "", 0, "L", false, 0, "")
 }
 
 func (e *PDFExporter) drawScoreChip(x, y, w, h float64, label string, score float64) {
