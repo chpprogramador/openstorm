@@ -1,0 +1,22 @@
+{
+  "id": "74ab7547-aa66-48a4-9d84-df4c8facc4eb",
+  "jobName": "Serviço Ordem Cobrança",
+  "selectSql": "select\n\tosc.id id,\n\tosc.qtdparcelas::int quantidade_parcelas,\n\tosc.valorservico valor_servico,\n\tosc.idrubrica id_rubrica,\n\tosc.idservico id_servico,\n\tcase when osc.tipo = 'I' then 1 else 2 end as id_servico_cobranca_tipo,\n\tosc.idordemservico id_servico_ordem,\n\tosc.idordemservicodetalhe id_servico_ordem_detalhe\nfrom ordemservicocobranca osc ",
+  "insertSql": "insert into ${SCHEMA}.servico_ordem_cobranca (\n\tid,\n\tquantidade_parcelas,\n\tvalor_servico,\n\tid_rubrica,\n\tid_servico,\n\tid_servico_cobranca_tipo,\n\tid_servico_ordem,\n\tid_servico_ordem_detalhe)",
+  "columns": [
+    "id",
+    "quantidade_parcelas",
+    "valor_servico",
+    "id_rubrica",
+    "id_servico",
+    "id_servico_cobranca_tipo",
+    "id_servico_ordem",
+    "id_servico_ordem_detalhe"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 10380
+}

@@ -1,0 +1,17 @@
+{
+  "id": "8719be55-9812-4b48-9954-9b6b0021fe2e",
+  "jobName": "Serviço Tipo Protocolo Atendimento",
+  "selectSql": "select\n\tt.id id,\n\ttrue exibe_dispensador_senha,\n\tt.tipoprotocoloatendimento nome_servico_tipo_protocolo_atendimento\nfrom tipoprotocoloatendimento t ",
+  "insertSql": "insert into ${SCHEMA}.servico_tipo_protocolo_atendimento (\n\tid,\n\texibe_dispensador_senha,\n\tnome_servico_tipo_protocolo_atendimento)",
+  "columns": [
+    "id",
+    "exibe_dispensador_senha",
+    "nome_servico_tipo_protocolo_atendimento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 10200
+}

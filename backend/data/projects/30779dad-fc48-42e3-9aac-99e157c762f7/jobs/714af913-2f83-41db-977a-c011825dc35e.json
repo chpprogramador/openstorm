@@ -1,0 +1,16 @@
+{
+  "id": "714af913-2f83-41db-977a-c011825dc35e",
+  "jobName": "Serviço Ordem Status",
+  "selectSql": "select\n\ts.id id,\n\ts.statusordemservico nome_servico_ordem_status\nfrom statusordemservico s ",
+  "insertSql": "insert into ${SCHEMA}.servico_ordem_status (\n\tid,\n\tnome_servico_ordem_status)",
+  "columns": [
+    "id",
+    "nome_servico_ordem_status"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 10200
+}

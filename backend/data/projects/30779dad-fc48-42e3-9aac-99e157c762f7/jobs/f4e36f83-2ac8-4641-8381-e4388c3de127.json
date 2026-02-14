@@ -1,0 +1,25 @@
+{
+  "id": "f4e36f83-2ac8-4641-8381-e4388c3de127",
+  "jobName": "Serviço Ordem Detalhe",
+  "selectSql": "Map['temp_usuario'];\n\nselect\n\tosd.id id,\n\tto_timestamp(nullif(trim(osd.datahorainicioexecucao),''),'YYYY-MM-DD HH24:MI:SS') data_hora_execucao,\n\tto_timestamp(nullif(trim(osd.datahoraprevista),''),'YYYY-MM-DD HH24:MI:SS') data_hora_prevista_execucao,\n\tleft(osd.observacaoatendimento,254) observacao_execucao,\n\tcase when osd.agendada = 'S' then true else false end as servico_agendado,\n\tosd.valorservico valor_servico,\n\tosd.idservico id_servico,\n\tosd.idordemservico id_servico_ordem,\n\tosd.idstatusordemservicodetalhe id_servico_ordem_status,\n\tosd.idprioridade id_servico_prioridade,\n\tt.id id_usuario_encerramento\nfrom ordemservicodetalhe osd\nleft join temp_usuario t on (t.mig_id_usuario_original = osd.idusuariobaixa)",
+  "insertSql": "insert into ${SCHEMA}.servico_ordem_detalhe (\n\tid,\n\tdata_hora_execucao,\n\tdata_hora_prevista_execucao,\n\tobservacao_execucao,\n\tservico_agendado,\n\tvalor_servico,\n\tid_servico,\n\tid_servico_ordem,\n\tid_servico_ordem_status,\n\tid_servico_prioridade,\n\tid_usuario_encerramento)",
+  "columns": [
+    "id",
+    "data_hora_execucao",
+    "data_hora_prevista_execucao",
+    "observacao_execucao",
+    "servico_agendado",
+    "valor_servico",
+    "id_servico",
+    "id_servico_ordem",
+    "id_servico_ordem_status",
+    "id_servico_prioridade",
+    "id_usuario_encerramento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 10380
+}

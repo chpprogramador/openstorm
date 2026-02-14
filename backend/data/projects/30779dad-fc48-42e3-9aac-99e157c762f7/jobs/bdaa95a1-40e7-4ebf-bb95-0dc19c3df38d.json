@@ -1,0 +1,16 @@
+{
+  "id": "bdaa95a1-40e7-4ebf-bb95-0dc19c3df38d",
+  "jobName": "Serviço Ordem Atendimento",
+  "selectSql": "select\n\tfa.id id,\n\tfa.formaatendimento nome_servico_ordem_atendimento\nfrom formaatendimento fa",
+  "insertSql": "insert into ${SCHEMA}.servico_ordem_atendimento (\n\tid,\n\tnome_servico_ordem_atendimento)",
+  "columns": [
+    "id",
+    "nome_servico_ordem_atendimento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 10200
+}

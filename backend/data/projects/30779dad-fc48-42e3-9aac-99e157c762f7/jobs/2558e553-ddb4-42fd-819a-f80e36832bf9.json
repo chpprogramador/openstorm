@@ -1,0 +1,20 @@
+{
+  "id": "2558e553-ddb4-42fd-819a-f80e36832bf9",
+  "jobName": "Serviço Departamento Tramite",
+  "selectSql": "select\n\tst.id id,\n\tcase when st.deptoinicial = 'S' then true else false end as departamento_inicial,\n\tcase when st.enviarmobile = 'S' then true else false end as enviar_desdobro_mobile,\n\tcase when st.enviarmobile = 'S' then true else false end as enviar_mobile,\n\tst.idtipo id_departamento,\n\tst.idservico id_servico\nfrom servicotramite st",
+  "insertSql": "insert into ${SCHEMA}.servico_departamento_tramite (\n\tid,\n\tdepartamento_inicial,\n\tenviar_desdobro_mobile,\n\tenviar_mobile,\n\tid_departamento,\n\tid_servico)",
+  "columns": [
+    "id",
+    "departamento_inicial",
+    "enviar_desdobro_mobile",
+    "enviar_mobile",
+    "id_departamento",
+    "id_servico"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 9840
+}
