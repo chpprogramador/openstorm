@@ -886,6 +886,7 @@ func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 
 	// Substitui variáveis no SQL
 	job.SelectSQL = jr.SubstituteVariables(job.SelectSQL)
+	targetDB, dbType := jr.resolveExecutionDB(job)
 	resolvedSQL, directives, err := extractMapDirectives(job.SelectSQL)
 	if err != nil {
 		end := time.Now()
@@ -902,7 +903,7 @@ func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 
 	var result bool
 	if len(directives) > 0 {
-		job.SelectSQL, err = jr.compileSQLWithMapDirectives(job.SelectSQL, directives, normalizeDBTypeFromDSN(jr.SourceDSN))
+		job.SelectSQL, err = jr.compileSQLWithMapDirectives(job.SelectSQL, directives, dbType)
 		if err != nil {
 			end := time.Now()
 			jr.markJobFinalStatus(jobID, job, "error", err.Error(), end)
@@ -915,7 +916,7 @@ func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 			return
 		}
 	}
-	err = jr.SourceDB.QueryRow(job.SelectSQL).Scan(&result)
+	err = targetDB.QueryRowContext(jr.ctx, job.SelectSQL).Scan(&result)
 	end := time.Now()
 
 	if jr.shouldStop() {
@@ -1228,6 +1229,11 @@ func normalizeMemoryMapKey(jobName string) (string, error) {
 	return normalized, nil
 }
 
+// NormalizeMemoryMapKey converte o nome do job memory-select para a chave usada por Map['...'].
+func NormalizeMemoryMapKey(jobName string) (string, error) {
+	return normalizeMemoryMapKey(jobName)
+}
+
 func removeDiacritics(input string) string {
 	decomposed := norm.NFD.String(input)
 	var b strings.Builder
@@ -1325,6 +1331,20 @@ func extractMapDirectives(sqlText string) (string, []mapDirective, error) {
 
 	cleanSQL := mapDirectiveRegex.ReplaceAllString(sqlText, "")
 	return cleanSQL, directives, nil
+}
+
+// ExtractMapDirectiveKeys retorna as chaves declaradas em diretivas Map['chave'].
+func ExtractMapDirectiveKeys(sqlText string) ([]string, error) {
+	_, directives, err := extractMapDirectives(sqlText)
+	if err != nil {
+		return nil, err
+	}
+
+	keys := make([]string, 0, len(directives))
+	for _, directive := range directives {
+		keys = append(keys, directive.Key)
+	}
+	return keys, nil
 }
 
 func (jr *JobRunner) compileSQLWithMapDirectives(sqlText string, directives []mapDirective, targetDBType string) (string, error) {

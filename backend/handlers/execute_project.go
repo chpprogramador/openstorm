@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 
 	"etl/jobrunner"
 
@@ -148,7 +150,6 @@ func RunProject(c *gin.Context) {
 	log.Printf("Execução do projeto %s iniciada com %d jobs", project.ProjectName, len(startJobs))
 }
 
-
 func ResumeJob(c *gin.Context) {
 	status.ClearJobLogs()
 	status.ResetCountStatus()
@@ -233,7 +234,38 @@ func ResumeJob(c *gin.Context) {
 
 	// Marca apenas o job inicial e seus dependentes como pendentes
 	reachable := collectDownstreamJobs(jobID, runner.ConnMap)
+	requiredMapKeys, err := collectMapKeysForJobs(reachable, runner.JobMap)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	requiredMemoryJobs, err := collectRequiredMemorySelectJobs(requiredMapKeys, runner.JobOrder, runner.JobMap)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	preloadMemoryJobs := make([]string, 0, len(requiredMemoryJobs))
+	for _, id := range requiredMemoryJobs {
+		if id == jobID {
+			continue
+		}
+		if _, isDownstream := reachable[id]; isDownstream {
+			continue
+		}
+		preloadMemoryJobs = append(preloadMemoryJobs, id)
+	}
+
+	pendingSet := make(map[string]struct{}, len(reachable)+len(preloadMemoryJobs))
 	for id := range reachable {
+		pendingSet[id] = struct{}{}
+	}
+	for _, id := range preloadMemoryJobs {
+		pendingSet[id] = struct{}{}
+	}
+
+	for _, id := range orderedJobIDs(pendingSet, runner.JobOrder) {
 		status.UpdateJobStatus(id, func(js *status.JobStatus) {
 			js.Status = "pending"
 			js.StartedAt = nil
@@ -246,10 +278,16 @@ func ResumeJob(c *gin.Context) {
 		})
 	}
 
-	startJobs := []string{jobID}
+	for _, id := range preloadMemoryJobs {
+		runner.ConnMap[id] = nil
+	}
+
+	startJobs := make([]string, 0, len(preloadMemoryJobs)+1)
+	startJobs = append(startJobs, preloadMemoryJobs...)
+	startJobs = append(startJobs, jobID)
 	go runner.Run(startJobs)
 	c.JSON(http.StatusAccepted, gin.H{"message": "Retomada iniciada", "startJobs": startJobs})
-	log.Printf("Retomada do job %s iniciada para o projeto %s", jobID, project.ProjectName)
+	log.Printf("Retomada do job %s iniciada para o projeto %s (preload memory-select: %v)", jobID, project.ProjectName, preloadMemoryJobs)
 }
 
 func StopProject(c *gin.Context) {
@@ -290,4 +328,75 @@ func collectDownstreamJobs(startID string, connMap map[string][]string) map[stri
 		}
 	}
 	return visited
+}
+
+func collectMapKeysForJobs(jobIDs map[string]struct{}, jobMap map[string]models.Job) (map[string]struct{}, error) {
+	keys := make(map[string]struct{})
+	for id := range jobIDs {
+		job, ok := jobMap[id]
+		if !ok {
+			continue
+		}
+
+		mapKeys, err := jobrunner.ExtractMapDirectiveKeys(job.SelectSQL)
+		if err != nil {
+			return nil, fmt.Errorf("job %s (%s): %w", job.ID, job.JobName, err)
+		}
+		for _, key := range mapKeys {
+			keys[key] = struct{}{}
+		}
+	}
+	return keys, nil
+}
+
+func collectRequiredMemorySelectJobs(requiredKeys map[string]struct{}, jobOrder []string, jobMap map[string]models.Job) ([]string, error) {
+	if len(requiredKeys) == 0 {
+		return nil, nil
+	}
+
+	missingKeys := make(map[string]struct{}, len(requiredKeys))
+	for key := range requiredKeys {
+		missingKeys[key] = struct{}{}
+	}
+
+	requiredJobs := make([]string, 0, len(requiredKeys))
+	for _, id := range jobOrder {
+		job, ok := jobMap[id]
+		if !ok || strings.ToLower(job.Type) != "memory-select" {
+			continue
+		}
+
+		mapKey, err := jobrunner.NormalizeMemoryMapKey(job.JobName)
+		if err != nil {
+			return nil, fmt.Errorf("job %s (%s): %w", job.ID, job.JobName, err)
+		}
+
+		if _, needed := missingKeys[mapKey]; !needed {
+			continue
+		}
+
+		requiredJobs = append(requiredJobs, id)
+		delete(missingKeys, mapKey)
+	}
+
+	if len(missingKeys) > 0 {
+		keys := make([]string, 0, len(missingKeys))
+		for key := range missingKeys {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+		return nil, fmt.Errorf("nenhum job memory-select encontrado para map(s): %s", strings.Join(keys, ", "))
+	}
+
+	return requiredJobs, nil
+}
+
+func orderedJobIDs(ids map[string]struct{}, jobOrder []string) []string {
+	ordered := make([]string, 0, len(ids))
+	for _, id := range jobOrder {
+		if _, ok := ids[id]; ok {
+			ordered = append(ordered, id)
+		}
+	}
+	return ordered
 }
