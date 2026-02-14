@@ -42,6 +42,18 @@ import { WorkersUsage } from '../../../core/services/workers-status.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { DialogJobs } from '../dialog-jobs/dialog-jobs.component';
 
+interface JobSearchMatch {
+  field: string;
+  preview: string;
+}
+
+interface JobSearchResult {
+  job: JobExtended;
+  jobId: string;
+  jobName: string;
+  matches: JobSearchMatch[];
+}
+
 @Component({
   selector: 'app-diagram',
   standalone: true,
@@ -73,6 +85,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChildren('jobEl') jobElements!: QueryList<ElementRef>;
   @ViewChild('diagramContainer') containerRef!: ElementRef;
   @ViewChild('scrollContainer', { static: true }) scrollContainer!: ElementRef;
+  @ViewChild('toolbarSearchContainer') toolbarSearchContainer?: ElementRef<HTMLElement>;
+  @ViewChild('toolbarSearchInput') toolbarSearchInput?: ElementRef<HTMLInputElement>;
 
   isDragging = false;
   startX = 0;
@@ -128,6 +142,12 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   pipelineElapsed = '00:00:00';
   visualElements: VisualElement[] = [];
   selectedVisualElement: VisualElement | null = null;
+  searchQuery = '';
+  searchResults: JobSearchResult[] = [];
+  readonly minSearchChars = 2;
+  isSearchExpanded = false;
+  isSearchDropdownOpen = false;
+  highlightedSearchJobId: string | null = null;
   snapEnabled = true;
   lastSavedAt: Date | null = null;
   showShortcuts = true;
@@ -175,6 +195,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   private suppressConnectionEvents = false;
   private repaintTimer: ReturnType<typeof setTimeout> | null = null;
   private jobElementsSub: Subscription | null = null;
+  private searchHighlightTimer: ReturnType<typeof setTimeout> | null = null;
   fontOptions: string[] = [
     'Space Grotesk, sans-serif',
     'IBM Plex Sans, sans-serif',
@@ -255,6 +276,19 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       if (container) {
         container.style.cursor = 'default';
       }
+    }
+  }
+
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentMouseDown(event: MouseEvent) {
+    if (!this.isSearchDropdownOpen) return;
+    const container = this.toolbarSearchContainer?.nativeElement;
+    const target = event.target;
+    if (!container || !target || !(target instanceof Node)) {
+      return;
+    }
+    if (!container.contains(target)) {
+      this.isSearchDropdownOpen = false;
     }
   }
 
@@ -350,6 +384,11 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     if (jobsChange) {
       this.refreshElapsedTracking();
       this.refreshPipelineTracking();
+      this.recomputeSearchResults();
+      if (this.highlightedSearchJobId && !this.jobs.some((job) => job.id === this.highlightedSearchJobId)) {
+        this.highlightedSearchJobId = null;
+        this.clearSearchHighlightTimer();
+      }
     }
     if (isRunningChange) {
       this.refreshPipelineTracking();
@@ -428,6 +467,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     }
     this.stopElapsedTimer();
     this.stopPipelineTimer();
+    this.clearSearchHighlightTimer();
   }
 
   onWheel(event: WheelEvent) {
@@ -752,6 +792,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     const newJob: Job = {
       id: uuidv4(),
       jobName: 'Novo Job',
+      connection: 'destination',
       selectSql: '',
       insertSql: '',
       posInsertSql: '',
@@ -839,7 +880,13 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     if (!job || !this.project?.id) return;
     this.isSaving = true;
     this.jobService.resumeJob(this.project.id, job.id).subscribe({
-      next: () => {
+      next: (response) => {
+        const startJobs = Array.isArray(response?.startJobs) ? response.startJobs : [];
+        if (startJobs.length > 1) {
+          this.snackBar.open(`Retomada iniciada com ${startJobs.length} jobs (inclui pre-carga).`, 'Fechar', {
+            duration: 4500
+          });
+        }
         this.isSaved();
       },
       error: (error) => {
@@ -1625,6 +1672,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     const newJob: Job = {
       id: uuidv4(),
       jobName: job.jobName,
+      connection: job.connection === 'source' ? 'source' : 'destination',
       selectSql: job.selectSql,
       insertSql: job.insertSql,
       posInsertSql: job.posInsertSql,
@@ -2110,6 +2158,306 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
   shouldDisplayRecordsPerPage(job: JobExtended): boolean {
     return job.type !== 'memory-select';
+  }
+
+  onSearchQueryChange(query: string) {
+    this.searchQuery = query ?? '';
+    this.recomputeSearchResults();
+    this.isSearchDropdownOpen = this.searchQuery.trim().length > 0;
+  }
+
+  toggleSearchExpanded(force?: boolean) {
+    const nextState = force ?? !this.isSearchExpanded;
+    this.isSearchExpanded = nextState;
+    if (nextState) {
+      setTimeout(() => {
+        this.toolbarSearchInput?.nativeElement.focus();
+      }, 0);
+      this.isSearchDropdownOpen = this.searchQuery.trim().length > 0;
+    } else {
+      this.isSearchDropdownOpen = false;
+    }
+  }
+
+  onSearchInputFocus() {
+    if (this.searchQuery.trim().length > 0) {
+      this.isSearchDropdownOpen = true;
+    }
+  }
+
+  onSearchEnter() {
+    const firstResult = this.searchResults[0];
+    if (firstResult) {
+      this.focusSearchResult(firstResult);
+    }
+  }
+
+  clearSearchQuery() {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.isSearchDropdownOpen = false;
+    if (this.isSearchExpanded) {
+      setTimeout(() => {
+        this.toolbarSearchInput?.nativeElement.focus();
+      }, 0);
+    }
+  }
+
+  focusSearchResult(result: JobSearchResult) {
+    const selected = this.jobs.find((job) => job.id === result.jobId);
+    if (!selected) return;
+    this.setJobSelection([selected]);
+    this.selectedJob = selected;
+    this.centerViewOnJob(selected);
+    this.highlightSearchResult(selected.id);
+    this.isSearchDropdownOpen = false;
+  }
+
+  private recomputeSearchResults() {
+    const term = this.searchQuery.trim();
+    if (term.length < this.minSearchChars) {
+      this.searchResults = [];
+      return;
+    }
+    const normalizedQuery = term.toLocaleLowerCase();
+    const executionOrder = this.buildExecutionOrderIndex();
+    const results = this.jobs
+      .map((job) => this.buildJobSearchResult(job, normalizedQuery))
+      .filter((result): result is JobSearchResult => result !== null)
+      .sort((a, b) => {
+        const orderA = executionOrder.get(a.jobId) ?? Number.MAX_SAFE_INTEGER;
+        const orderB = executionOrder.get(b.jobId) ?? Number.MAX_SAFE_INTEGER;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        if (b.matches.length !== a.matches.length) {
+          return b.matches.length - a.matches.length;
+        }
+        return a.jobName.localeCompare(b.jobName);
+      });
+    this.searchResults = results.slice(0, 100);
+  }
+
+  private buildExecutionOrderIndex(): Map<string, number> {
+    const jobOrder = this.jobs.map((job) => job.id).filter((id) => !!id);
+    const adjacency = new Map<string, string[]>();
+    const incoming = new Set<string>();
+
+    jobOrder.forEach((id) => adjacency.set(id, []));
+
+    for (const conn of this.project?.connections ?? []) {
+      if (!conn?.source || !conn?.target) continue;
+      if (!adjacency.has(conn.source) || !adjacency.has(conn.target)) continue;
+      adjacency.get(conn.source)!.push(conn.target);
+      incoming.add(conn.target);
+    }
+
+    let startIds = jobOrder.filter((id) => !incoming.has(id));
+    if (!startIds.length) {
+      startIds = [...jobOrder];
+    }
+
+    const reachable = new Set<string>();
+    const queue = [...startIds];
+    while (queue.length) {
+      const current = queue.shift()!;
+      if (reachable.has(current)) continue;
+      reachable.add(current);
+      for (const next of adjacency.get(current) ?? []) {
+        queue.push(next);
+      }
+    }
+
+    const indegree = new Map<string, number>();
+    reachable.forEach((id) => indegree.set(id, 0));
+
+    adjacency.forEach((targets, source) => {
+      if (!reachable.has(source)) return;
+      for (const target of targets) {
+        if (!reachable.has(target)) continue;
+        indegree.set(target, (indegree.get(target) ?? 0) + 1);
+      }
+    });
+
+    let pending = startIds.filter((id) => reachable.has(id) && (indegree.get(id) ?? 0) === 0);
+    if (!pending.length) {
+      pending = jobOrder.filter((id) => reachable.has(id) && (indegree.get(id) ?? 0) === 0);
+    }
+
+    const ordered: string[] = [];
+    const visited = new Set<string>();
+    while (pending.length) {
+      const id = pending.shift()!;
+      if (visited.has(id)) continue;
+      visited.add(id);
+      ordered.push(id);
+
+      for (const next of adjacency.get(id) ?? []) {
+        if (!reachable.has(next)) continue;
+        const nextDegree = (indegree.get(next) ?? 0) - 1;
+        indegree.set(next, nextDegree);
+        if (nextDegree === 0) {
+          pending.push(next);
+        }
+      }
+    }
+
+    if (ordered.length < reachable.size) {
+      for (const id of jobOrder) {
+        if (reachable.has(id) && !visited.has(id)) {
+          ordered.push(id);
+        }
+      }
+    }
+
+    for (const id of jobOrder) {
+      if (!ordered.includes(id)) {
+        ordered.push(id);
+      }
+    }
+
+    return new Map(ordered.map((id, index) => [id, index]));
+  }
+
+  private buildJobSearchResult(job: JobExtended, normalizedQuery: string): JobSearchResult | null {
+    const matches = this.collectJobMatches(job, normalizedQuery);
+    if (!matches.length) {
+      return null;
+    }
+    const normalizedName = (job.jobName || '').trim();
+    return {
+      job,
+      jobId: job.id,
+      jobName: normalizedName || `Job ${job.id}`,
+      matches
+    };
+  }
+
+  private collectJobMatches(job: JobExtended, normalizedQuery: string): JobSearchMatch[] {
+    const matches: JobSearchMatch[] = [];
+    const seen = new Set<string>();
+    const maxMatchesPerJob = 6;
+
+    const visit = (value: unknown, path: string) => {
+      if (matches.length >= maxMatchesPerJob || value === null || value === undefined) {
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          const nextPath = path ? `${path}[${index}]` : `[${index}]`;
+          visit(item, nextPath);
+        });
+        return;
+      }
+
+      if (typeof value === 'object') {
+        Object.entries(value as Record<string, unknown>).forEach(([key, nestedValue]) => {
+          const nextPath = path ? `${path}.${key}` : key;
+          visit(nestedValue, nextPath);
+        });
+        return;
+      }
+
+      const rawValue = String(value);
+      const normalizedValue = rawValue.toLocaleLowerCase();
+      const normalizedPath = path.toLocaleLowerCase();
+      if (!normalizedValue.includes(normalizedQuery) && !normalizedPath.includes(normalizedQuery)) {
+        return;
+      }
+
+      const field = this.getSearchFieldLabel(path);
+      const dedupeKey = `${field}:${rawValue}`;
+      if (seen.has(dedupeKey)) {
+        return;
+      }
+      seen.add(dedupeKey);
+      matches.push({
+        field,
+        preview: this.buildSearchPreview(rawValue, normalizedQuery)
+      });
+    };
+
+    visit(job, '');
+    return matches;
+  }
+
+  private getSearchFieldLabel(path: string): string {
+    const labels: Record<string, string> = {
+      id: 'ID',
+      jobName: 'Nome do Job',
+      selectSql: 'SELECT SQL',
+      insertSql: 'INSERT SQL',
+      posInsertSql: 'POS SQL',
+      columns: 'Colunas',
+      recordsPerPage: 'Registros por Pagina',
+      type: 'Tipo',
+      stopOnError: 'Parar em Erro',
+      left: 'Posicao X',
+      top: 'Posicao Y',
+      total: 'Total',
+      processed: 'Processados',
+      progress: 'Progresso',
+      status: 'Status',
+      startedAt: 'Inicio',
+      endedAt: 'Fim',
+      error: 'Erro'
+    };
+    if (!path) {
+      return 'Job';
+    }
+    const direct = labels[path];
+    if (direct) {
+      return direct;
+    }
+    return path;
+  }
+
+  private buildSearchPreview(value: string, normalizedQuery: string): string {
+    const normalizedValue = value.replace(/\s+/g, ' ').trim();
+    if (!normalizedValue) {
+      return '(vazio)';
+    }
+    const lower = normalizedValue.toLocaleLowerCase();
+    const index = lower.indexOf(normalizedQuery);
+    if (index < 0) {
+      return normalizedValue.length > 110 ? `${normalizedValue.slice(0, 110)}...` : normalizedValue;
+    }
+    const start = Math.max(0, index - 45);
+    const end = Math.min(normalizedValue.length, index + normalizedQuery.length + 70);
+    const prefix = start > 0 ? '...' : '';
+    const suffix = end < normalizedValue.length ? '...' : '';
+    return `${prefix}${normalizedValue.slice(start, end)}${suffix}`;
+  }
+
+  private centerViewOnJob(job: JobExtended) {
+    const container = this.scrollContainer?.nativeElement as HTMLElement | undefined;
+    if (!container) return;
+    const centerX = (job.left ?? 0) + this.jobBoxWidth / 2;
+    const centerY = (job.top ?? 0) + this.jobBoxHeight / 2;
+    this.viewOffsetX = container.clientWidth / 2 - this.zoom * centerX;
+    this.viewOffsetY = container.clientHeight / 2 - this.zoom * centerY;
+    if (this.isBrowser) {
+      localStorage.setItem('diagramOffset', JSON.stringify({ x: this.viewOffsetX, y: this.viewOffsetY }));
+    }
+    this.instance?.repaintEverything();
+    this.cdr.detectChanges();
+  }
+
+  private highlightSearchResult(jobId: string) {
+    this.highlightedSearchJobId = jobId;
+    this.clearSearchHighlightTimer();
+    this.searchHighlightTimer = setTimeout(() => {
+      this.highlightedSearchJobId = null;
+      this.searchHighlightTimer = null;
+    }, 2200);
+  }
+
+  private clearSearchHighlightTimer() {
+    if (this.searchHighlightTimer) {
+      clearTimeout(this.searchHighlightTimer);
+      this.searchHighlightTimer = null;
+    }
   }
 
   onMouseDown(e: MouseEvent): void {

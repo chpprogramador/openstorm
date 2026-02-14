@@ -5,7 +5,7 @@
 <mat-dialog-content class="dialog-content">
   <form [formGroup]="form">
     <div class="lineFull">
-      <div class="w50">
+      <div class="w40">
         <mat-form-field appearance="outline">
           <mat-label>Nome do Job</mat-label>
           <input matInput formControlName="jobName" required>
@@ -16,7 +16,7 @@
         </mat-form-field>
       </div>
 
-      <div class="w25">
+      <div class="w20">
         <mat-form-field appearance="outline" *ngIf="!isMemorySelectType(); else ignoredRecordsPerPageField">
           <mat-label>Registros por Pagina</mat-label>
           <input matInput type="number" formControlName="recordsPerPage" required>
@@ -31,6 +31,16 @@
             <mat-option value="execution">Execucao</mat-option>
             <mat-option value="condition">Condicao</mat-option>
             <mat-option value="memory-select">Memory Select</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="w15" *ngIf="isExecutionOrConditionType()">
+        <mat-form-field appearance="outline">
+          <mat-label>Executar em</mat-label>
+          <mat-select formControlName="connection">
+            <mat-option value="destination">Destino</mat-option>
+            <mat-option value="source">Origem</mat-option>
           </mat-select>
         </mat-form-field>
       </div>

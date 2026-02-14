@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 export interface Job {
   id: string;
   jobName: string;
+  connection?: 'destination' | 'source';
   selectSql: string;
   insertSql: string;
   posInsertSql?: string;
@@ -24,6 +25,11 @@ export interface ValidateJob {
   projectId: string;
   type?: string;
   validationMode?: string;
+}
+
+export interface ResumeJobResponse {
+  message?: string;
+  startJobs?: string[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -48,8 +54,8 @@ export class JobService {
     return this.http.delete(`${this.apiUrl}/projects/${projectId}/jobs/${jobId}`);
   }
 
-  resumeJob(projectId: string, jobId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/projects/${projectId}/jobs/${jobId}/resume`, {});
+  resumeJob(projectId: string, jobId: string): Observable<ResumeJobResponse> {
+    return this.http.post<ResumeJobResponse>(`${this.apiUrl}/projects/${projectId}/jobs/${jobId}/resume`, {});
   }
 
   validate(validateJob: ValidateJob): Observable<Job> {

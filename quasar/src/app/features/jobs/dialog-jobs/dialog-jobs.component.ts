@@ -67,6 +67,7 @@ export class DialogJobs {
     this.form = this.fb.group({
       id: [this.localJob?.id || ''],
       jobName: [this.localJob?.jobName || '', [Validators.required]],
+      connection: [this.normalizeConnection(this.localJob?.connection)],
       selectSql: [this.localJob?.selectSql || '', [Validators.required]],
       insertSql: [this.localJob?.insertSql || '', []],
       posInsertSql: [this.localJob?.posInsertSql || '', []],
@@ -80,6 +81,12 @@ export class DialogJobs {
     this.sqlSelect = this.localJob?.selectSql || '';
     this.sqlInsert = this.localJob?.insertSql || '';
     this.sqlPosInsert = this.localJob?.posInsertSql || '';
+
+    this.form.get('type')?.valueChanges.subscribe((typeValue) => {
+      if (this.requiresConnectionSelector(typeValue) && !this.form.get('connection')?.value) {
+        this.form.patchValue({ connection: 'destination' }, { emitEvent: false });
+      }
+    });
   }
 
   onCancel() {
@@ -94,15 +101,17 @@ export class DialogJobs {
     }
 
     const formValue = this.form.getRawValue();
+    const payloadType = String(formValue.type ?? 'insert');
     const payload: Job = {
       id: formValue.id,
       jobName: String(formValue.jobName ?? ''),
+      connection: this.normalizeConnection(formValue.connection),
       selectSql: String(formValue.selectSql ?? ''),
       insertSql: String(formValue.insertSql ?? ''),
       posInsertSql: String(formValue.posInsertSql ?? ''),
       columns: Array.isArray(formValue.columns) ? formValue.columns : [],
       recordsPerPage: this.isMemorySelectType() ? 1000 : Number(formValue.recordsPerPage ?? 1000),
-      type: String(formValue.type ?? 'insert'),
+      type: payloadType,
       stopOnError: !!formValue.stopOnError,
       top: Number(formValue.top ?? 0),
       left: Number(formValue.left ?? 0)
@@ -125,6 +134,20 @@ export class DialogJobs {
 
   isMemorySelectType(): boolean {
     return this.form.get('type')?.value === 'memory-select';
+  }
+
+  isExecutionOrConditionType(): boolean {
+    return this.requiresConnectionSelector(this.form.get('type')?.value);
+  }
+
+  private requiresConnectionSelector(typeValue: unknown): boolean {
+    const normalizedType = String(typeValue ?? '').toLowerCase();
+    return normalizedType === 'execution' || normalizedType === 'condition';
+  }
+
+  private normalizeConnection(value: unknown): 'destination' | 'source' {
+    const normalized = String(value ?? '').trim().toLowerCase();
+    return normalized === 'source' ? 'source' : 'destination';
   }
 
   private shouldValidateColumnsFromSelect(type: string): boolean {

@@ -47,6 +47,66 @@
   <div class="toolbar-separator" aria-hidden="true"></div>
 
   <div class="toolbar-group utility-section" aria-label="Utilitarios">
+    <div class="toolbar-search" [class.is-expanded]="isSearchExpanded" #toolbarSearchContainer>
+      <button
+        mat-stroked-button
+        type="button"
+        class="action-btn toggle-btn icon-only search-toggle"
+        [class.active]="isSearchExpanded"
+        (click)="toggleSearchExpanded()"
+        aria-label="Buscar jobs"
+        matTooltip="Buscar jobs"
+      >
+        <mat-icon>{{ isSearchExpanded ? 'close' : 'search' }}</mat-icon>
+      </button>
+
+      <div class="toolbar-search-panel">
+        <input
+          #toolbarSearchInput
+          type="text"
+          [ngModel]="searchQuery"
+          (ngModelChange)="onSearchQueryChange($event)"
+          (keydown.enter)="onSearchEnter()"
+          (focus)="onSearchInputFocus()"
+          placeholder="Buscar em todos os campos dos jobs (inclui SQL)"
+          aria-label="Buscar em todos os campos dos jobs"
+        />
+        @if (searchQuery.trim().length > 0) {
+          <button type="button" class="toolbar-search-clear" (click)="clearSearchQuery()" aria-label="Limpar busca">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+
+      @if (isSearchExpanded && isSearchDropdownOpen && searchQuery.trim().length > 0) {
+        <div class="toolbar-search-results">
+          @if (searchQuery.trim().length < minSearchChars) {
+            <div class="toolbar-search-empty">
+              Digite pelo menos {{ minSearchChars }} caracteres.
+            </div>
+          } @else if (searchResults.length === 0) {
+            <div class="toolbar-search-empty">
+              Nenhum job encontrado para "{{ searchQuery.trim() }}".
+            </div>
+          } @else {
+            @for (result of searchResults; track result.jobId) {
+              <button type="button" class="toolbar-search-result" (click)="focusSearchResult(result)">
+                <div class="toolbar-search-result-header">
+                  <span class="toolbar-search-result-title">{{ result.jobName }}</span>
+                  <span class="toolbar-search-result-status">{{ result.job.status || 'pending' }}</span>
+                </div>
+                <div class="toolbar-search-result-meta">{{ result.matches.length }} campo(s) encontrado(s)</div>
+                @if (result.matches[0]; as firstMatch) {
+                  <div class="toolbar-search-result-field">{{ firstMatch.field }}</div>
+                  <div class="toolbar-search-result-preview">{{ firstMatch.preview }}</div>
+                }
+              </button>
+            }
+          }
+        </div>
+      }
+    </div>
+
     <button mat-stroked-button class="action-btn logs-btn toggle-btn" [class.active]="showLogs" (click)="showHideLogs()">
       <mat-icon>terminal</mat-icon>
       <span>Logs</span>
@@ -326,6 +386,7 @@
           [id]="job.id"
           [class]="'box ' + job.status"
           [class.is-selected]="isJobSelected(job)"
+          [class.is-search-highlighted]="job.id === highlightedSearchJobId"
           [style.left.px]="job.left"
           [style.top.px]="job.top"
           #jobEl
