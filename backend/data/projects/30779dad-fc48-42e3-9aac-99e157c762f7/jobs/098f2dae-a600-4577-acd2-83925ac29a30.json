@@ -1,0 +1,13 @@
+{
+  "id": "098f2dae-a600-4577-acd2-83925ac29a30",
+  "jobName": "Tabelas Cobrança Régua",
+  "selectSql": "INSERT INTO ${SCHEMA}.cobranca_regua (id, ativo, nome) VALUES(1, true, 'glt');\n\nINSERT INTO ${SCHEMA}.cobranca_regua_acao (id, descricao, nome_acao) VALUES(1, NULL, 'Envio de SMS');\nINSERT INTO ${SCHEMA}.cobranca_regua_acao (id, descricao, nome_acao) VALUES(2, NULL, 'Envio de Email');\nINSERT INTO ${SCHEMA}.cobranca_regua_acao (id, descricao, nome_acao) VALUES(3, NULL, 'Corte Light');\nINSERT INTO ${SCHEMA}.cobranca_regua_acao (id, descricao, nome_acao) VALUES(4, NULL, 'Corte Efetivo');\n\nINSERT INTO ${SCHEMA}.cobranca_regua_etapa (id, ativa, dias_apos_evento_base, evento_base, nome_etapa, ordem, id_acao, id_cobranca_regua) VALUES(1, true, 0, 'PROCESSO_CRIADO', 'dw', 1, 1, 1);",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 6420
+}

@@ -20,6 +20,13 @@
         <span class="status-meta" *ngIf="formatSavedAt() as savedAt">· {{ savedAt }}</span>
       </div>
     }
+    @if(shouldShowPipelineElapsed()) {
+      <div class="status-indicator runtime" [class.running]="isPipelineExecutionActive()">
+        <mat-icon class="status-icon">{{ isPipelineExecutionActive() ? 'timer' : 'timer_off' }}</mat-icon>
+        <span class="status-text">Execução</span>
+        <span class="runtime-value">{{ pipelineElapsed }}</span>
+      </div>
+    }
   </div>
 
   <div class="toolbar-separator" aria-hidden="true"></div>

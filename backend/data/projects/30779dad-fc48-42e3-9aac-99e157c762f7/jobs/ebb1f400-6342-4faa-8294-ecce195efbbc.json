@@ -1,0 +1,16 @@
+{
+  "id": "ebb1f400-6342-4faa-8294-ecce195efbbc",
+  "jobName": "Serviço Motivo Corte",
+  "selectSql": "select\n\tm.id id,\n\tm.motivocorteos nome_servico_motivo_corte\nfrom motivocorteos m ",
+  "insertSql": "insert into ${SCHEMA}.servico_motivo_corte (\n\tid,\n\tnome_servico_motivo_corte)",
+  "columns": [
+    "id",
+    "nome_servico_motivo_corte"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 9660
+}

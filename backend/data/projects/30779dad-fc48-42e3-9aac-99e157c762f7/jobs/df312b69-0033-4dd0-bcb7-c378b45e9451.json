@@ -1,0 +1,16 @@
+{
+  "id": "df312b69-0033-4dd0-bcb7-c378b45e9451",
+  "jobName": "Serviço Área Classificação",
+  "selectSql": "select\n\ta.id id,\n\ta.area nome_servico_area_classificacao\nfrom areaclassificacao a",
+  "insertSql": "insert into ${SCHEMA}.servico_area_classificacao (\n\tid,\n\tnome_servico_area_classificacao)",
+  "columns": [
+    "id",
+    "nome_servico_area_classificacao"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 9480
+}

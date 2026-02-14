@@ -125,6 +125,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   showLogs = false;
   showAuxBars = true;
   elapsedByJobId: Record<string, string> = {};
+  pipelineElapsed = '00:00:00';
   visualElements: VisualElement[] = [];
   selectedVisualElement: VisualElement | null = null;
   snapEnabled = true;
@@ -167,6 +168,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   private blurHandler: (() => void) | null = null;
   private visibilityHandler: (() => void) | null = null;
   private elapsedTimer: number | null = null;
+  private pipelineTimer: number | null = null;
+  private pipelineStartedAtMs: number | null = null;
+  private pipelineEndedAtMs: number | null = null;
   private runningJobs = new Map<string, JobExtended>();
   private suppressConnectionEvents = false;
   private repaintTimer: ReturnType<typeof setTimeout> | null = null;
@@ -342,8 +346,13 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     const projectChanged = !!changes['project'] && this.project?.id !== this.lastProjectId;
     const jobsChange = changes['jobs'];
     const jobsChanged = !!jobsChange && !jobsChange.firstChange;
+    const isRunningChange = changes['isRunning'];
     if (jobsChange) {
       this.refreshElapsedTracking();
+      this.refreshPipelineTracking();
+    }
+    if (isRunningChange) {
+      this.refreshPipelineTracking();
     }
 
     if (!this.instance) return;
@@ -351,6 +360,10 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     if (projectChanged) {
       this.lastProjectId = this.project?.id ?? null;
       this.visualElements = [];
+      this.pipelineStartedAtMs = null;
+      this.pipelineEndedAtMs = null;
+      this.pipelineElapsed = '00:00:00';
+      this.stopPipelineTimer();
       const projectId = this.project?.id;
       if (projectId) {
         this.visualElementService.list(projectId).subscribe({
@@ -414,6 +427,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       document.removeEventListener('visibilitychange', this.visibilityHandler);
     }
     this.stopElapsedTimer();
+    this.stopPipelineTimer();
   }
 
   onWheel(event: WheelEvent) {
@@ -750,6 +764,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     };
 
     this.jobs.push(newJob);
+    if (!jobs_.some((job) => job.id === newJob.id)) {
+      jobs_.push(newJob as JobExtended);
+    }
     this.refreshElapsedTracking();
 
     if (this.project) {
@@ -1920,6 +1937,9 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
 
     this.isSaving = true;
     this.isRunning = true;
+    this.pipelineStartedAtMs = Date.now();
+    this.pipelineEndedAtMs = null;
+    this.pipelineElapsed = '00:00:00';
 
     this.jobs.forEach(job => {
       job.total = 0;
@@ -1931,6 +1951,7 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
       job.error = '';
     });
     this.refreshElapsedTracking();
+    this.refreshPipelineTracking();
 
     this.projectService.runProject(this.project.id).subscribe({
       next: () => {
@@ -1951,6 +1972,8 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     this.projectService.stopProject(this.project.id).subscribe({
       next: () => {
         this.isRunning = false;
+        this.pipelineEndedAtMs = Date.now();
+        this.refreshPipelineTracking();
         this.isSaved();
       },
       error: (error) => {
@@ -2054,6 +2077,14 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
   formatSavedAt(): string {
     if (!this.lastSavedAt) return '';
     return this.lastSavedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  shouldShowPipelineElapsed(): boolean {
+    return this.isRunning || this.pipelineStartedAtMs !== null || (this.jobs ?? []).some((job) => !!job.startedAt);
+  }
+
+  isPipelineExecutionActive(): boolean {
+    return this.isRunning && this.pipelineStartedAtMs !== null && this.pipelineEndedAtMs === null;
   }
 
   getStatusCounts() {
@@ -2324,11 +2355,69 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     return `translate(${this.viewOffsetX}px, ${this.viewOffsetY}px) scale(${this.zoom})`;
   }
 
+  private refreshPipelineTracking() {
+    const jobs = this.jobs ?? [];
+    const startCandidates = jobs
+      .map((job) => this.parseDateMs(job.startedAt))
+      .filter((ms): ms is number => ms !== null);
+    const endCandidates = jobs
+      .map((job) => this.parseDateMs(job.endedAt))
+      .filter((ms): ms is number => ms !== null);
+
+    if (!jobs.length && !this.isRunning) {
+      this.pipelineStartedAtMs = null;
+      this.pipelineEndedAtMs = null;
+      this.pipelineElapsed = '00:00:00';
+      this.stopPipelineTimer();
+      return;
+    }
+
+    if (startCandidates.length) {
+      const earliestStart = Math.min(...startCandidates);
+      if (this.pipelineStartedAtMs === null) {
+        this.pipelineStartedAtMs = earliestStart;
+      } else if (earliestStart >= this.pipelineStartedAtMs - 2000) {
+        this.pipelineStartedAtMs = Math.min(this.pipelineStartedAtMs, earliestStart);
+      }
+    }
+
+    if (this.isRunning && this.pipelineStartedAtMs === null) {
+      this.pipelineStartedAtMs = Date.now();
+    }
+
+    if (this.pipelineStartedAtMs === null) {
+      this.pipelineElapsed = '00:00:00';
+      this.pipelineEndedAtMs = null;
+      this.stopPipelineTimer();
+      return;
+    }
+
+    const hasRunningJob = jobs.some((job) => job.status === 'running');
+    const pipelineActive = this.isRunning || hasRunningJob;
+
+    if (pipelineActive) {
+      this.pipelineEndedAtMs = null;
+      this.updatePipelineElapsedNow();
+      this.startPipelineTimer();
+      return;
+    }
+
+    if (endCandidates.length) {
+      this.pipelineEndedAtMs = Math.max(...endCandidates);
+    } else if (this.pipelineEndedAtMs === null) {
+      this.pipelineEndedAtMs = Date.now();
+    }
+
+    this.updatePipelineElapsedNow();
+    this.stopPipelineTimer();
+  }
+
   private startElapsedTimer() {
     if (!this.isBrowser) return;
     this.stopElapsedTimer();
     this.elapsedTimer = window.setInterval(() => {
       this.updateElapsedTimes();
+      this.detectChangesSafely();
     }, 1000);
   }
 
@@ -2336,6 +2425,59 @@ export class Diagram implements AfterViewInit, OnChanges, OnDestroy {
     if (this.elapsedTimer !== null) {
       window.clearInterval(this.elapsedTimer);
       this.elapsedTimer = null;
+    }
+  }
+
+  private startPipelineTimer() {
+    if (!this.isBrowser || this.pipelineTimer !== null || this.pipelineStartedAtMs === null || this.pipelineEndedAtMs !== null) {
+      return;
+    }
+    this.pipelineTimer = window.setInterval(() => {
+      this.updatePipelineElapsedNow();
+      this.detectChangesSafely();
+    }, 1000);
+  }
+
+  private stopPipelineTimer() {
+    if (this.pipelineTimer !== null) {
+      window.clearInterval(this.pipelineTimer);
+      this.pipelineTimer = null;
+    }
+  }
+
+  private updatePipelineElapsedNow() {
+    if (this.pipelineStartedAtMs === null) {
+      this.pipelineElapsed = '00:00:00';
+      return;
+    }
+    const endMs = this.pipelineEndedAtMs ?? Date.now();
+    const safeEnd = Math.max(endMs, this.pipelineStartedAtMs);
+    this.pipelineElapsed = this.formatDurationMs(safeEnd - this.pipelineStartedAtMs);
+  }
+
+  private formatDurationMs(diffMs: number): string {
+    const totalSeconds = Math.floor(Math.max(0, diffMs) / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return [
+      hours.toString().padStart(2, '0'),
+      minutes.toString().padStart(2, '0'),
+      seconds.toString().padStart(2, '0')
+    ].join(':');
+  }
+
+  private parseDateMs(value?: string | null): number | null {
+    if (!value) return null;
+    const parsed = new Date(value).getTime();
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private detectChangesSafely() {
+    try {
+      this.cdr.detectChanges();
+    } catch {
+      // no-op: componente pode estar em teardown
     }
   }
 

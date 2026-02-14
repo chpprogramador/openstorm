@@ -1,0 +1,16 @@
+{
+  "id": "b188eb20-4323-496f-979a-1d13af47bda9",
+  "jobName": "Serviço Setor",
+  "selectSql": "select\n\ts.id id,\n\ts.descricao nome_servico_setor\nfrom setorservico s",
+  "insertSql": "insert into ${SCHEMA}.servico_setor (\n\tid,\n\tnome_servico_setor)",
+  "columns": [
+    "id",
+    "nome_servico_setor"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 9300
+}

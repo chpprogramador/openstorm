@@ -48,6 +48,7 @@ type JobRunner struct {
 	countInit      sync.Once
 	memoryStoreMu  sync.RWMutex
 	memoryStore    map[string]memoryDataset
+	mapCTECache    map[string]map[string]string
 	logFlushMu     sync.Mutex
 	lastLogFlush   time.Time
 	logDirty       bool
@@ -86,6 +87,7 @@ func NewJobRunner(sourceDB, destDB *sql.DB, sourceDSN, destDSN string, dialect d
 		PipelineLog:    pipelineLog,
 		ProjectID:      projectID,
 		memoryStore:    make(map[string]memoryDataset),
+		mapCTECache:    make(map[string]map[string]string),
 		preCount:       envBoolDefault("ETL_PRECOUNT_ENABLED", true),
 		mapParallel:    envBoolDefault("ETL_MAP_PARALLEL_ENABLED", false),
 		logFlushEvery:  envDurationMsDefault("ETL_LOG_FLUSH_MS", 500),
@@ -429,16 +431,9 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 			concurrency = 1
 			log.Printf("Total (%d) menor que batchSize (%d), usando apenas 1 worker", total, job.RecordsPerPage)
 		}
-		if len(mapDirectives) > 0 && !jr.mapParallel {
-			concurrency = 1
-			log.Printf("Map[%d] ativo: paralelismo de leitura desabilitado para evitar rematerializacao por worker", len(mapDirectives))
-		}
 
 		writerConcurrency := jr.Concurrency
 		if writerConcurrency < 1 {
-			writerConcurrency = 1
-		}
-		if len(mapDirectives) > 0 && !jr.mapParallel {
 			writerConcurrency = 1
 		}
 
@@ -611,50 +606,23 @@ func (jr *JobRunner) runInsertJob(jobID string, job models.Job) {
 				} else {
 					log.Printf("Job %s (%s): leitura sem hash (worker unico)", job.ID, job.JobName)
 				}
-				var rows *sql.Rows
 				if len(mapDirectives) > 0 {
-					mapStart := time.Now()
-					conn, err := jr.SourceDB.Conn(jobCtx)
-					if err != nil {
-						log.Printf("Erro ao obter conexao do bucket %d: %v", workerID, err)
-						setJobError(err)
+					compiledQuery, compileErr := jr.compileSQLWithMapDirectives(query, mapDirectives, normalizeDBTypeFromDSN(jr.SourceDSN))
+					if compileErr != nil {
+						log.Printf("Erro ao compilar Map via CTE no bucket %d: %v", workerID, compileErr)
+						setJobError(compileErr)
 						jobCancel()
 						return
 					}
-					defer conn.Close()
+					query = compiledQuery
+				}
 
-					tx, err := conn.BeginTx(jobCtx, nil)
-					if err != nil {
-						log.Printf("Erro ao iniciar transacao do bucket %d: %v", workerID, err)
-						setJobError(err)
-						jobCancel()
-						return
-					}
-					defer tx.Rollback()
-
-					if err := jr.materializeDirectiveMapsWithExecutor(jobCtx, tx, normalizeDBTypeFromDSN(jr.SourceDSN), mapDirectives); err != nil {
-						log.Printf("Erro ao materializar maps no bucket %d: %v", workerID, err)
-						setJobError(err)
-						jobCancel()
-						return
-					}
-					log.Printf("Job %s (%s): worker %d materializou maps em %s", job.ID, job.JobName, workerID, time.Since(mapStart))
-
-					rows, err = tx.QueryContext(jobCtx, query)
-					if err != nil {
-						log.Printf("Erro na query do bucket %d: %v", workerID, err)
-						setJobError(err)
-						jobCancel()
-						return
-					}
-				} else {
-					rows, err = jr.SourceDB.Query(query)
-					if err != nil {
-						log.Printf("Erro na query do bucket %d: %v", workerID, err)
-						setJobError(err)
-						jobCancel()
-						return
-					}
+				rows, err := jr.SourceDB.QueryContext(jobCtx, query)
+				if err != nil {
+					log.Printf("Erro na query do bucket %d: %v", workerID, err)
+					setJobError(err)
+					jobCancel()
+					return
 				}
 				defer rows.Close()
 
@@ -830,36 +798,14 @@ func (jr *JobRunner) runExecutionJob(jobID string, job models.Job) {
 	}
 
 	if len(directives) > 0 {
-		tx, txErr := conn.BeginTx(jr.ctx, nil)
-		if txErr != nil {
-			jr.handleExecutionJobError(jobID, job, txErr)
-			return
-		}
-		committed := false
-		defer func() {
-			if !committed {
-				_ = tx.Rollback()
-			}
-		}()
-
-		if err := jr.materializeDirectiveMapsWithExecutor(jr.ctx, tx, dbType, directives); err != nil {
+		resolvedSQL, err = jr.compileSQLWithMapDirectives(resolvedSQL, directives, dbType)
+		if err != nil {
 			jr.handleExecutionJobError(jobID, job, err)
 			return
 		}
-
-		if strings.TrimSpace(resolvedSQL) != "" {
-			_, err = tx.ExecContext(jr.ctx, resolvedSQL)
-		}
-		if err == nil {
-			err = tx.Commit()
-			if err == nil {
-				committed = true
-			}
-		}
-	} else {
-		if strings.TrimSpace(resolvedSQL) != "" {
-			_, err = conn.ExecContext(jr.ctx, resolvedSQL)
-		}
+	}
+	if strings.TrimSpace(resolvedSQL) != "" {
+		_, err = conn.ExecContext(jr.ctx, resolvedSQL)
 	}
 
 	end := time.Now()
@@ -955,27 +901,21 @@ func (jr *JobRunner) runConditionJob(jobID string, job models.Job) {
 	job.SelectSQL = resolvedSQL
 
 	var result bool
-	if len(directives) == 0 {
-		err = jr.SourceDB.QueryRow(job.SelectSQL).Scan(&result)
-	} else {
-		conn, connErr := jr.SourceDB.Conn(jr.ctx)
-		if connErr != nil {
-			err = connErr
-		} else {
-			defer conn.Close()
-			tx, txErr := conn.BeginTx(jr.ctx, nil)
-			if txErr != nil {
-				err = txErr
-			} else if materializeErr := jr.materializeDirectiveMapsWithExecutor(jr.ctx, tx, normalizeDBTypeFromDSN(jr.SourceDSN), directives); materializeErr != nil {
-				err = materializeErr
-			} else {
-				err = tx.QueryRowContext(jr.ctx, job.SelectSQL).Scan(&result)
+	if len(directives) > 0 {
+		job.SelectSQL, err = jr.compileSQLWithMapDirectives(job.SelectSQL, directives, normalizeDBTypeFromDSN(jr.SourceDSN))
+		if err != nil {
+			end := time.Now()
+			jr.markJobFinalStatus(jobID, job, "error", err.Error(), end)
+			if job.StopOnError {
+				jr.PipelineLog.Status = "error"
+				jr.PipelineLog.EndedAt = end
+				jr.savePipelineLog()
+				status.UpdateProjectStatus("error")
 			}
-			if tx != nil {
-				_ = tx.Rollback()
-			}
+			return
 		}
 	}
+	err = jr.SourceDB.QueryRow(job.SelectSQL).Scan(&result)
 	end := time.Now()
 
 	if jr.shouldStop() {
@@ -1223,11 +1163,6 @@ type mapDirective struct {
 	Key string
 }
 
-type directiveExecutor interface {
-	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
-	PrepareContext(context.Context, string) (*sql.Stmt, error)
-}
-
 var (
 	mapDirectiveRegex = regexp.MustCompile(`Map\[\s*'([^']+)'\s*\]\s*;?`)
 	mapKeyRegex       = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -1392,146 +1327,200 @@ func extractMapDirectives(sqlText string) (string, []mapDirective, error) {
 	return cleanSQL, directives, nil
 }
 
-func (jr *JobRunner) materializeDirectiveMaps(ctx context.Context, conn *sql.Conn, targetDBType string, directives []mapDirective) error {
-	return jr.materializeDirectiveMapsWithExecutor(ctx, conn, targetDBType, directives)
+func (jr *JobRunner) compileSQLWithMapDirectives(sqlText string, directives []mapDirective, targetDBType string) (string, error) {
+	baseSQL := strings.TrimSpace(sqlText)
+	baseSQL = strings.TrimSuffix(baseSQL, ";")
+	if len(directives) == 0 || baseSQL == "" {
+		return baseSQL, nil
+	}
+
+	cteDefs, err := jr.buildMapCTEDefinitions(targetDBType, directives)
+	if err != nil {
+		return "", err
+	}
+
+	lower := strings.ToLower(strings.TrimSpace(baseSQL))
+	if strings.HasPrefix(lower, "with recursive") {
+		body := strings.TrimSpace(baseSQL[len("with recursive"):])
+		return fmt.Sprintf("WITH RECURSIVE %s, %s", cteDefs, body), nil
+	}
+	if strings.HasPrefix(lower, "with") {
+		body := strings.TrimSpace(baseSQL[len("with"):])
+		return fmt.Sprintf("WITH %s, %s", cteDefs, body), nil
+	}
+	return fmt.Sprintf("WITH %s %s", cteDefs, baseSQL), nil
 }
 
-func (jr *JobRunner) materializeDirectiveMapsWithExecutor(ctx context.Context, executor directiveExecutor, targetDBType string, directives []mapDirective) error {
+func (jr *JobRunner) buildMapCTEDefinitions(targetDBType string, directives []mapDirective) (string, error) {
+	parts := make([]string, 0, len(directives))
 	for _, directive := range directives {
-		directiveStart := time.Now()
-		dataset, ok := jr.getMemoryMap(directive.Key)
-		if !ok {
-			return fmt.Errorf("map '%s' nao encontrado no contexto da pipeline", directive.Key)
-		}
-		log.Printf("Map materialization: key=%s rows=%d cols=%d target=%s", directive.Key, len(dataset.Rows), len(dataset.Columns), targetDBType)
-
-		createStart := time.Now()
-		createSQL, err := buildCreateTempTableSQL(targetDBType, directive.Key, dataset)
+		cte, err := jr.getOrBuildMapCTEDefinition(targetDBType, directive.Key)
 		if err != nil {
-			return err
+			return "", err
 		}
-		if _, err := executor.ExecContext(ctx, createSQL); err != nil {
-			return err
-		}
-		log.Printf("Map materialization: key=%s create temp table em %s", directive.Key, time.Since(createStart))
-
-		if len(dataset.Rows) == 0 {
-			log.Printf("Map materialization: key=%s sem linhas, apenas schema criado (%s)", directive.Key, time.Since(directiveStart))
-			continue
-		}
-
-		insertStart := time.Now()
-		batchSize := suggestMapInsertBatchSize(targetDBType, len(dataset.Columns))
-		for start := 0; start < len(dataset.Rows); start += batchSize {
-			end := start + batchSize
-			if end > len(dataset.Rows) {
-				end = len(dataset.Rows)
-			}
-
-			insertSQL, err := buildInsertTempTableSQL(targetDBType, directive.Key, dataset.Columns, end-start)
-			if err != nil {
-				return err
-			}
-
-			args := make([]interface{}, 0, (end-start)*len(dataset.Columns))
-			for _, row := range dataset.Rows[start:end] {
-				for _, col := range dataset.Columns {
-					args = append(args, row[col])
-				}
-			}
-
-			if _, err := executor.ExecContext(ctx, insertSQL, args...); err != nil {
-				return err
-			}
-		}
-		log.Printf("Map materialization: key=%s insert %d linha(s) em %s (total %s)", directive.Key, len(dataset.Rows), time.Since(insertStart), time.Since(directiveStart))
+		parts = append(parts, cte)
 	}
-	return nil
+	return strings.Join(parts, ", "), nil
 }
 
-func buildCreateTempTableSQL(targetDBType, tableName string, dataset memoryDataset) (string, error) {
-	if len(dataset.Columns) == 0 {
-		return "", fmt.Errorf("map '%s' sem colunas para materializacao", tableName)
+func (jr *JobRunner) getOrBuildMapCTEDefinition(targetDBType, mapKey string) (string, error) {
+	normalizedDBType := strings.ToLower(strings.TrimSpace(targetDBType))
+	if normalizedDBType == "" {
+		normalizedDBType = "postgres"
 	}
 
-	columnDefs := make([]string, 0, len(dataset.Columns))
+	jr.memoryStoreMu.RLock()
+	if byKey, ok := jr.mapCTECache[normalizedDBType]; ok {
+		if cte, exists := byKey[mapKey]; exists {
+			jr.memoryStoreMu.RUnlock()
+			return cte, nil
+		}
+	}
+	dataset, ok := jr.memoryStore[mapKey]
+	jr.memoryStoreMu.RUnlock()
+	if !ok {
+		return "", fmt.Errorf("map '%s' nao encontrado no contexto da pipeline", mapKey)
+	}
+
+	cte, err := buildMapCTEDefinition(normalizedDBType, mapKey, dataset)
+	if err != nil {
+		return "", err
+	}
+
+	jr.memoryStoreMu.Lock()
+	if jr.mapCTECache == nil {
+		jr.mapCTECache = make(map[string]map[string]string)
+	}
+	if jr.mapCTECache[normalizedDBType] == nil {
+		jr.mapCTECache[normalizedDBType] = make(map[string]string)
+	}
+	jr.mapCTECache[normalizedDBType][mapKey] = cte
+	jr.memoryStoreMu.Unlock()
+
+	return cte, nil
+}
+
+func buildMapCTEDefinition(targetDBType, cteName string, dataset memoryDataset) (string, error) {
+	if len(dataset.Columns) == 0 {
+		return "", fmt.Errorf("map '%s' sem colunas para materializacao", cteName)
+	}
+
+	quotedCols := make([]string, 0, len(dataset.Columns))
+	colTypes := make(map[string]string, len(dataset.Columns))
 	for _, col := range dataset.Columns {
+		quotedCols = append(quotedCols, quoteIdentifier(targetDBType, col))
 		sqlType, err := inferColumnSQLType(targetDBType, col, dataset)
 		if err != nil {
 			return "", err
 		}
-		columnDefs = append(columnDefs, fmt.Sprintf("%s %s", quoteIdentifier(targetDBType, col), sqlType))
+		colTypes[col] = mapSQLTypeForCast(targetDBType, sqlType)
 	}
 
-	createPrefix := "CREATE TEMP TABLE"
-	if targetDBType == "mysql" {
-		createPrefix = "CREATE TEMPORARY TABLE"
-	}
-	createSuffix := ""
-	if targetDBType == "postgres" {
-		createSuffix = " ON COMMIT DROP"
-	}
-
-	return fmt.Sprintf("%s %s (%s)%s", createPrefix, quoteIdentifier(targetDBType, tableName), strings.Join(columnDefs, ", "), createSuffix), nil
-}
-
-func buildInsertTempTableSQL(targetDBType, tableName string, columns []string, rowCount int) (string, error) {
-	if len(columns) == 0 {
-		return "", fmt.Errorf("nao e possivel gerar insert sem colunas")
-	}
-	if rowCount <= 0 {
-		return "", fmt.Errorf("nao e possivel gerar insert sem linhas")
-	}
-
-	quotedColumns := make([]string, 0, len(columns))
-	for _, col := range columns {
-		quotedColumns = append(quotedColumns, quoteIdentifier(targetDBType, col))
-	}
-
-	valueGroups := make([]string, 0, rowCount)
-	paramIndex := 1
-	for row := 0; row < rowCount; row++ {
-		placeholders := make([]string, 0, len(columns))
-		for range columns {
-			if targetDBType == "postgres" {
-				placeholders = append(placeholders, fmt.Sprintf("$%d", paramIndex))
-				paramIndex++
-				continue
-			}
-			placeholders = append(placeholders, "?")
+	if len(dataset.Rows) == 0 {
+		selectExprs := make([]string, 0, len(dataset.Columns))
+		for _, col := range dataset.Columns {
+			selectExprs = append(selectExprs, fmt.Sprintf("CAST(NULL AS %s) AS %s", colTypes[col], quoteIdentifier(targetDBType, col)))
 		}
-		valueGroups = append(valueGroups, fmt.Sprintf("(%s)", strings.Join(placeholders, ", ")))
+		return fmt.Sprintf(
+			"%s (%s) AS (SELECT %s WHERE 1=0)",
+			quoteIdentifier(targetDBType, cteName),
+			strings.Join(quotedCols, ", "),
+			strings.Join(selectExprs, ", "),
+		), nil
+	}
+
+	selectParts := make([]string, 0, len(dataset.Rows))
+	for rowIdx, row := range dataset.Rows {
+		exprs := make([]string, 0, len(dataset.Columns))
+		for _, col := range dataset.Columns {
+			lit, err := sqlLiteralForCTE(row[col])
+			if err != nil {
+				return "", fmt.Errorf("map '%s' coluna '%s': %w", cteName, col, err)
+			}
+			expr := fmt.Sprintf("CAST(%s AS %s)", lit, colTypes[col])
+			if rowIdx == 0 {
+				expr += " AS " + quoteIdentifier(targetDBType, col)
+			}
+			exprs = append(exprs, expr)
+		}
+		selectParts = append(selectParts, "SELECT "+strings.Join(exprs, ", "))
 	}
 
 	return fmt.Sprintf(
-		"INSERT INTO %s (%s) VALUES %s",
-		quoteIdentifier(targetDBType, tableName),
-		strings.Join(quotedColumns, ", "),
-		strings.Join(valueGroups, ", "),
+		"%s (%s) AS (%s)",
+		quoteIdentifier(targetDBType, cteName),
+		strings.Join(quotedCols, ", "),
+		strings.Join(selectParts, " UNION ALL "),
 	), nil
 }
 
-func suggestMapInsertBatchSize(targetDBType string, columnCount int) int {
-	if columnCount <= 0 {
-		return 1
+func mapSQLTypeForCast(targetDBType, sqlType string) string {
+	if targetDBType != "mysql" {
+		return sqlType
 	}
 
-	switch targetDBType {
-	case "postgres":
-		// Postgres limita o total de parametros por statement.
-		const maxParamsPerStmt = 65535
-		size := maxParamsPerStmt / columnCount
-		if size > 1000 {
-			return 1000
-		}
-		if size < 1 {
-			return 1
-		}
-		return size
-	case "mysql":
-		return 1000
+	upper := strings.ToUpper(strings.TrimSpace(sqlType))
+	switch {
+	case strings.Contains(upper, "BIGINT"):
+		return "SIGNED"
+	case strings.Contains(upper, "DOUBLE"), strings.Contains(upper, "FLOAT"), strings.Contains(upper, "NUMERIC"), strings.Contains(upper, "DECIMAL"):
+		return "DECIMAL(65,20)"
+	case strings.Contains(upper, "BOOL"), strings.Contains(upper, "BIT"):
+		return "UNSIGNED"
+	case strings.Contains(upper, "TIMESTAMP"), strings.Contains(upper, "DATETIME"):
+		return "DATETIME"
+	case strings.Contains(upper, "DATE"):
+		return "DATE"
+	case strings.Contains(upper, "TIME"):
+		return "TIME"
 	default:
-		return 500
+		return "CHAR"
+	}
+}
+
+func sqlLiteralForCTE(value interface{}) (string, error) {
+	if value == nil {
+		return "NULL", nil
+	}
+
+	switch v := value.(type) {
+	case bool:
+		if v {
+			return "TRUE", nil
+		}
+		return "FALSE", nil
+	case int:
+		return strconv.FormatInt(int64(v), 10), nil
+	case int8:
+		return strconv.FormatInt(int64(v), 10), nil
+	case int16:
+		return strconv.FormatInt(int64(v), 10), nil
+	case int32:
+		return strconv.FormatInt(int64(v), 10), nil
+	case int64:
+		return strconv.FormatInt(v, 10), nil
+	case uint:
+		return strconv.FormatUint(uint64(v), 10), nil
+	case uint8:
+		return strconv.FormatUint(uint64(v), 10), nil
+	case uint16:
+		return strconv.FormatUint(uint64(v), 10), nil
+	case uint32:
+		return strconv.FormatUint(uint64(v), 10), nil
+	case uint64:
+		return strconv.FormatUint(v, 10), nil
+	case float32:
+		return strconv.FormatFloat(float64(v), 'f', -1, 64), nil
+	case float64:
+		return strconv.FormatFloat(v, 'f', -1, 64), nil
+	case time.Time:
+		return "'" + v.Format("2006-01-02 15:04:05.999999") + "'", nil
+	case []byte:
+		return "'" + strings.ReplaceAll(string(v), "'", "''") + "'", nil
+	case string:
+		return "'" + strings.ReplaceAll(v, "'", "''") + "'", nil
+	default:
+		return "'" + strings.ReplaceAll(fmt.Sprintf("%v", v), "'", "''") + "'", nil
 	}
 }
 
@@ -1667,12 +1656,39 @@ func (jr *JobRunner) hasMemoryMap(key string) bool {
 }
 
 func (jr *JobRunner) storeMemoryMap(key string, dataset memoryDataset) error {
+	sourceDBType := normalizeDBTypeFromDSN(jr.SourceDSN)
+	destDBType := normalizeDBTypeFromDSN(jr.DestinationDSN)
+	prebuilt := make(map[string]string, 2)
+	for _, dbType := range []string{sourceDBType, destDBType} {
+		dbType = strings.ToLower(strings.TrimSpace(dbType))
+		if dbType == "" {
+			dbType = "postgres"
+		}
+		if _, exists := prebuilt[dbType]; exists {
+			continue
+		}
+		cte, err := buildMapCTEDefinition(dbType, key, dataset)
+		if err != nil {
+			return err
+		}
+		prebuilt[dbType] = cte
+	}
+
 	jr.memoryStoreMu.Lock()
 	defer jr.memoryStoreMu.Unlock()
 	if _, exists := jr.memoryStore[key]; exists {
 		return fmt.Errorf("map em memoria '%s' ja existe", key)
 	}
 	jr.memoryStore[key] = dataset
+	if jr.mapCTECache == nil {
+		jr.mapCTECache = make(map[string]map[string]string)
+	}
+	for dbType, cte := range prebuilt {
+		if jr.mapCTECache[dbType] == nil {
+			jr.mapCTECache[dbType] = make(map[string]string)
+		}
+		jr.mapCTECache[dbType][key] = cte
+	}
 	return nil
 }
 
@@ -1686,6 +1702,7 @@ func (jr *JobRunner) getMemoryMap(key string) (memoryDataset, bool) {
 func (jr *JobRunner) clearMemoryStore() {
 	jr.memoryStoreMu.Lock()
 	jr.memoryStore = make(map[string]memoryDataset)
+	jr.mapCTECache = make(map[string]map[string]string)
 	jr.memoryStoreMu.Unlock()
 }
 
@@ -2057,24 +2074,15 @@ func (jr *JobRunner) getHashKeyExprFromExplain(job models.Job) (string, error) {
 }
 
 func (jr *JobRunner) getHashKeyExprFromExplainWithMapDirectives(job models.Job, directives []mapDirective, ctx context.Context) (string, error) {
-	conn, err := jr.SourceDB.Conn(ctx)
+	compiledSQL, err := jr.compileSQLWithMapDirectives(job.SelectSQL, directives, normalizeDBTypeFromDSN(jr.SourceDSN))
 	if err != nil {
 		return "", err
 	}
-	defer conn.Close()
+	jobWithMap := job
+	jobWithMap.SelectSQL = compiledSQL
 
-	tx, err := conn.BeginTx(ctx, nil)
-	if err != nil {
-		return "", err
-	}
-	defer tx.Rollback()
-
-	if err := jr.materializeDirectiveMapsWithExecutor(ctx, tx, normalizeDBTypeFromDSN(jr.SourceDSN), directives); err != nil {
-		return "", err
-	}
-
-	queryExplain := jr.Dialect.BuildExplainSelectQueryByHash(job)
-	rowsExplain, err := tx.QueryContext(ctx, queryExplain)
+	queryExplain := jr.Dialect.BuildExplainSelectQueryByHash(jobWithMap)
+	rowsExplain, err := jr.SourceDB.QueryContext(ctx, queryExplain)
 	if err != nil {
 		return "", err
 	}
@@ -2093,15 +2101,7 @@ func (jr *JobRunner) getHashKeyExprFromExplainWithMapDirectives(job models.Job, 
 		return "", err
 	}
 
-	tempTables := make(map[string]struct{}, len(directives))
-	for _, d := range directives {
-		tempTables[strings.ToLower(strings.TrimSpace(d.Key))] = struct{}{}
-	}
-
-	options := MainTableResolveOptions{
-		TemporaryTables: tempTables,
-	}
-	return jr.resolveHashKeyExprFromExplainJSON(ctx, explainJSON, options, job.SelectSQL, tx)
+	return jr.resolveHashKeyExprFromExplainJSON(ctx, explainJSON, MainTableResolveOptions{}, compiledSQL, jr.SourceDB)
 }
 
 func (jr *JobRunner) resolveHashKeyExprFromExplainJSON(ctx context.Context, explainJSON []byte, options MainTableResolveOptions, selectSQL string, pkExecutor queryContextExecutor) (string, error) {
@@ -2335,28 +2335,14 @@ func stripSQLComments(sqlText string) string {
 
 func (jr *JobRunner) countSelectWithMapDirectives(job models.Job, directives []mapDirective) (int, error) {
 	ctx := jr.ctx
-	conn, err := jr.SourceDB.Conn(ctx)
+	selectSQL, err := jr.compileSQLWithMapDirectives(job.SelectSQL, directives, normalizeDBTypeFromDSN(jr.SourceDSN))
 	if err != nil {
 		return 0, err
 	}
-	defer conn.Close()
-
-	tx, err := conn.BeginTx(ctx, nil)
-	if err != nil {
-		return 0, err
-	}
-	defer tx.Rollback()
-
-	if err := jr.materializeDirectiveMapsWithExecutor(ctx, tx, normalizeDBTypeFromDSN(jr.SourceDSN), directives); err != nil {
-		return 0, err
-	}
-
-	selectSQL := strings.TrimSpace(job.SelectSQL)
-	selectSQL = strings.TrimSuffix(selectSQL, ";")
 	countSQL := fmt.Sprintf("SELECT COUNT(*) FROM (%s) AS t", selectSQL)
 
 	var total int
-	if err := tx.QueryRowContext(ctx, countSQL).Scan(&total); err != nil {
+	if err := jr.SourceDB.QueryRowContext(ctx, countSQL).Scan(&total); err != nil {
 		return 0, err
 	}
 	return total, nil

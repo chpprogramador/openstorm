@@ -1,0 +1,20 @@
+{
+  "id": "1899ad5c-769c-4387-9d68-5756fc7aba96",
+  "jobName": "Serviço Cobrança",
+  "selectSql": "select\n\ts.id id,\n\ts.nrparcelas numero_parcelas,\n\ts.valor valor_servico,\n\ts.idrubrica id_rubrica,\n\ts.idservico id_servico,\n\tcase when s.tipo = 'I' then 1 else 2 end as id_servico_cobranca_tipo\nfrom servicorubrica s ",
+  "insertSql": "insert into ${SCHEMA}.servico_cobranca (\n\tid,\n\tnumero_parcelas,\n\tvalor_servico,\n\tid_rubrica,\n\tid_servico,\n\tid_servico_cobranca_tipo)",
+  "columns": [
+    "id",
+    "numero_parcelas",
+    "valor_servico",
+    "id_rubrica",
+    "id_servico",
+    "id_servico_cobranca_tipo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 9660
+}

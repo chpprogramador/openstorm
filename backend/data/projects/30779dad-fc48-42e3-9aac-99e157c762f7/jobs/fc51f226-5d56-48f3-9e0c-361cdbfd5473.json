@@ -1,0 +1,18 @@
+{
+  "id": "fc51f226-5d56-48f3-9e0c-361cdbfd5473",
+  "jobName": "Equipe",
+  "selectSql": "select\n\te.id id,\n\tcase when e.ativo = 'S' then true else false end as ativo,\n\te.equipe nome_equipe,\n\te.iddepartamento id_departamento\nfrom equipe e",
+  "insertSql": "insert into ${SCHEMA}.equipe (\n\tid,\n\tativo,\n\tnome_equipe,\n\tid_departamento)",
+  "columns": [
+    "id",
+    "ativo",
+    "nome_equipe",
+    "id_departamento"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 9300
+}

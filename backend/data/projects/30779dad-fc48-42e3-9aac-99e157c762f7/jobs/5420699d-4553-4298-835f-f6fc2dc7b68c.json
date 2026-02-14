@@ -1,0 +1,16 @@
+{
+  "id": "5420699d-4553-4298-835f-f6fc2dc7b68c",
+  "jobName": "Serviço Grupo",
+  "selectSql": "select\n\tg.id id,\n\tg.gruposervico nome_servico_grupo\nfrom gruposervico g ",
+  "insertSql": "insert into ${SCHEMA}.servico_grupo (\n\tid,\n\tnome_servico_grupo)",
+  "columns": [
+    "id",
+    "nome_servico_grupo"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 900,
+  "top": 9480
+}

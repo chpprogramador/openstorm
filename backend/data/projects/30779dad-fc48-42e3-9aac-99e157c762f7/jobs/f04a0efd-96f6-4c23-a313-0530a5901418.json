@@ -1,0 +1,28 @@
+{
+  "id": "f04a0efd-96f6-4c23-a313-0530a5901418",
+  "jobName": "Serviço Corte Ligação",
+  "selectSql": "select\n\tl.id id,\n\tcase when l.datacorte is not null then true else false end as cortado,\n\tto_date(nullif(trim(l.datacorte),''),'YYYYMMDD') data_execucao,\n\tto_date(nullif(trim(l.datareligacao),''),'YYYYMMDD') data_religacao,\n\tl.leituracorte leitura_corte,\n\tl.leiturareligacao leitura_religacao,\n\tnullif(l.numerolacre,'')::int numero_lacre,\n\tl.residuocorte residuo_corte,\n\t(l.residuopendenteutilizado = l.residuopendente) as residuo_utilizado,\n\tl.idleituristacorte id_agente_comercial_corte,\n\tl.idleituristareligacao id_agente_comercial_religacao,\n\tl.idligacao id_ligacao_imovel,\n\tl.idmotivocorteos id_servico_motivo_corte,\n\tl.idtipocorte id_servico_tipo_corte\nfrom ligacaocorte l",
+  "insertSql": "insert into ${SCHEMA}.servico_corte_ligacao (\n\tid,\n\tcortado,\n\tdata_execucao,\n\tdata_religacao,\n\tleitura_corte,\n\tleitura_religacao,\n\tnumero_lacre,\n\tresiduo_corte,\n\tresiduo_utilizado,\n\tid_agente_comercial_corte,\n\tid_agente_comercial_religacao,\n\tid_ligacao_imovel,\n\tid_servico_motivo_corte,\n\tid_servico_tipo_corte)",
+  "columns": [
+    "id",
+    "cortado",
+    "data_execucao",
+    "data_religacao",
+    "leitura_corte",
+    "leitura_religacao",
+    "numero_lacre",
+    "residuo_corte",
+    "residuo_utilizado",
+    "id_agente_comercial_corte",
+    "id_agente_comercial_religacao",
+    "id_ligacao_imovel",
+    "id_servico_motivo_corte",
+    "id_servico_tipo_corte"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 100,
+  "top": 9840
+}

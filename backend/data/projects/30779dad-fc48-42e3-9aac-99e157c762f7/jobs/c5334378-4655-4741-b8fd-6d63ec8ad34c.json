@@ -1,0 +1,16 @@
+{
+  "id": "c5334378-4655-4741-b8fd-6d63ec8ad34c",
+  "jobName": "Usuário Equipe",
+  "selectSql": "Map['temp_usuario'];\n\nselect\n\te.id id_equipe,\n\tt.id id_usuario\nfrom usuario u \njoin equipe e on (e.id = u.idequipe)\nleft join temp_usuario t on (t.mig_id_usuario_original = u.id)",
+  "insertSql": "insert into ${SCHEMA}.usuario_equipe (\n\tid_equipe,\n\tid_usuario)",
+  "columns": [
+    "id_equipe",
+    "id_usuario"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 9300
+}

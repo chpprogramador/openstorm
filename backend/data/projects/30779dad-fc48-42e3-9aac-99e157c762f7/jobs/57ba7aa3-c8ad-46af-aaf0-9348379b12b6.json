@@ -1,0 +1,16 @@
+{
+  "id": "57ba7aa3-c8ad-46af-aaf0-9348379b12b6",
+  "jobName": "Serviço Dimensão",
+  "selectSql": "select\n\td.id id,\n\td.dimensao nome_dimensao\nfrom dimensao d ",
+  "insertSql": "insert into ${SCHEMA}.servico_dimensao (\n\tid,\n\tnome_dimensao)",
+  "columns": [
+    "id",
+    "nome_dimensao"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 9480
+}

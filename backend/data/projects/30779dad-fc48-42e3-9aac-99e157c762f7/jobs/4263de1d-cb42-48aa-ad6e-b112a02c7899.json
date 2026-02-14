@@ -1,0 +1,13 @@
+{
+  "id": "4263de1d-cb42-48aa-ad6e-b112a02c7899",
+  "jobName": "Serviço Prioridade",
+  "selectSql": "INSERT INTO ${SCHEMA}.servico_prioridade (id, nome_servico_prioridade) VALUES(1, 'Normal');\nINSERT INTO ${SCHEMA}.servico_prioridade (id, nome_servico_prioridade) VALUES(2, 'Média');\nINSERT INTO ${SCHEMA}.servico_prioridade (id, nome_servico_prioridade) VALUES(3, 'Urgente');",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 9480
+}

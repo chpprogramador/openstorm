@@ -1,0 +1,19 @@
+{
+  "id": "87e64cc5-a311-4a9a-8773-9e7428e30bff",
+  "jobName": "Departamento",
+  "selectSql": "select\n\td.id id,\n\tcase when d.ativo = 'S' then true else false end as ativo,\n\td.departamento nome_departamento,\n\td.iddistrito id_distrito,\n\td.idsetorservico id_servico_setor\nfrom departamento d",
+  "insertSql": "insert into ${SCHEMA}.departamento (\n\tid,\n\tativo,\n\tnome_departamento,\n\tid_distrito,\n\tid_servico_setor)",
+  "columns": [
+    "id",
+    "ativo",
+    "nome_departamento",
+    "id_distrito",
+    "id_servico_setor"
+  ],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "insert",
+  "stopOnError": true,
+  "left": 500,
+  "top": 9300
+}
