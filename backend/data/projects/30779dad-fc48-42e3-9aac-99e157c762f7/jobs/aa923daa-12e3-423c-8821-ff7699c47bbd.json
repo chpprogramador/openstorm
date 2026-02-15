@@ -1,7 +1,7 @@
 {
   "id": "aa923daa-12e3-423c-8821-ff7699c47bbd",
   "jobName": "Arrecadação Pagamento",
-  "selectSql": "select\n\tfp.id id,\n\ttext_to_date(fp.datacredito) AS data_credito,\n\ttext_to_date(fp.datapagamento) AS data_pagamento,\n\tcase \n\t\twhen fp.status = 'P' then 'PAGO'\n\t\twhen fp.status = 'D' then 'DUPLICADO'\n\t\telse 'PAGO'\n\tend as status_pagamento,\n\tfp.taxaarrecadacao taxa_arrecadacao,\n\tfp.valorfatura valor_fatura,\n\tfp.idarrecadacao id_arrecadacao,\n\tnull id_arrecadacao_baixa_manual,\n\tnull id_arrecadacao_deposito_bancario,\n\tnull id_arrecadacao_frente_caixa,\n\tfp.idfatura id_fatura,\n\tfp.idguia id_guia\nfrom faturapagamento fp",
+  "selectSql": "select\n\tfp.id id,\n\tpublic.text_to_date(fp.datacredito) AS data_credito,\n\tpublic.text_to_date(fp.datapagamento) AS data_pagamento,\n\tcase \n\t\twhen fp.status = 'P' then 'PAGO'\n\t\twhen fp.status = 'D' then 'DUPLICADO'\n\t\telse 'PAGO'\n\tend as status_pagamento,\n\tfp.taxaarrecadacao taxa_arrecadacao,\n\tfp.valorfatura valor_fatura,\n\tfp.idarrecadacao id_arrecadacao,\n\tnull id_arrecadacao_baixa_manual,\n\tnull id_arrecadacao_deposito_bancario,\n\tnull id_arrecadacao_frente_caixa,\n\tfp.idfatura id_fatura,\n\tfp.idguia id_guia\nfrom faturapagamento fp",
   "insertSql": "insert into ${SCHEMA}.arrecadacao_pagamento (\n\tid,\n\tdata_credito,\n\tdata_pagamento,\n\tstatus_pagamento,\n\ttaxa_arrecadacao,\n\tvalor_fatura,\n\tid_arrecadacao,\n\tid_arrecadacao_baixa_manual,\n\tid_arrecadacao_deposito_bancario,\n\tid_arrecadacao_frente_caixa,\n\tid_fatura,\n\tid_guia)",
   "columns": [
     "id",

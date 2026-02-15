@@ -1,7 +1,7 @@
 {
   "id": "221c5416-7725-4181-bc68-9861cbfd964e",
   "jobName": "Guia Fatura",
-  "selectSql": "select\n\tgf.id id,\n\ttext_to_date(gf.datapagto) data_pagamento,\n\tgf.valor valor_fatura,\n\tgf.idfatura id_fatura,\n\tgf.idfaturasituacao id_fatura_situacao,\n\tgf.idguia id_guia\nfrom guiafatura gf",
+  "selectSql": "select\n\tgf.id id,\n\tpublic.text_to_date(gf.datapagto) data_pagamento,\n\tgf.valor valor_fatura,\n\tgf.idfatura id_fatura,\n\tgf.idfaturasituacao id_fatura_situacao,\n\tgf.idguia id_guia\nfrom guiafatura gf",
   "insertSql": "\ninsert into ${SCHEMA}.guia_fatura (\n\tid,\n\tdata_pagamento,\n\tvalor_fatura,\n\tid_fatura,\n\tid_fatura_situacao,\n\tid_guia)",
   "columns": [
     "id",

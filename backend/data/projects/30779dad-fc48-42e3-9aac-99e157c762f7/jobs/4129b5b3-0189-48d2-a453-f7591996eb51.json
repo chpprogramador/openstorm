@@ -1,0 +1,14 @@
+{
+  "id": "4129b5b3-0189-48d2-a453-f7591996eb51",
+  "jobName": "Ajusta Sequences",
+  "connection": "destination",
+  "selectSql": "DO $$\nDECLARE\n  v_schema text := '${SCHEMA}';\n  r record;\n  v_max bigint;\n  v_sql text;\nBEGIN\n  FOR r IN\n    SELECT\n      ns.nspname  AS seq_schema,\n      seq.relname AS seq_name,\n      nt.nspname  AS tbl_schema,\n      tbl.relname AS tbl_name,\n      a.attname   AS col_name\n    FROM pg_class seq\n    JOIN pg_namespace ns ON ns.oid = seq.relnamespace\n    JOIN pg_depend d ON d.objid = seq.oid AND d.deptype = 'a'\n    JOIN pg_class tbl ON tbl.oid = d.refobjid\n    JOIN pg_namespace nt ON nt.oid = tbl.relnamespace\n    JOIN pg_attribute a ON a.attrelid = tbl.oid AND a.attnum = d.refobjsubid\n    WHERE seq.relkind = 'S'\n      AND nt.nspname = v_schema\n    ORDER BY nt.nspname, tbl.relname, a.attname\n  LOOP\n    -- Descobre o maior valor atual da coluna\n    v_sql := format('SELECT max(%I) FROM %I.%I', r.col_name, r.tbl_schema, r.tbl_name);\n    EXECUTE v_sql INTO v_max;\n\n    -- Ajusta a sequence para max(coluna) (ou 1 se a tabela estiver vazia)\n    v_sql := format(\n      'SELECT setval(%L, %s, true)',\n      format('%I.%I', r.seq_schema, r.seq_name),\n      COALESCE(v_max, 1)::text\n    );\n\n    RAISE NOTICE 'Ajustando %.% para %.%.% (max=%)',\n      r.seq_schema, r.seq_name, r.tbl_schema, r.tbl_name, r.col_name, COALESCE(v_max, 1);\n\n    EXECUTE v_sql;\n  END LOOP;\nEND $$;\n",
+  "insertSql": "",
+  "columns": [],
+  "primaryKeys": null,
+  "recordsPerPage": 1000,
+  "type": "execution",
+  "stopOnError": true,
+  "left": 1300,
+  "top": 10680
+}

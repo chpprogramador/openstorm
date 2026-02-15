@@ -1,7 +1,7 @@
 {
   "id": "2c25418c-46fc-4da5-8a4e-69386e233759",
   "jobName": "Consolidação Guia",
-  "selectSql": "Map['temp_usuario'];\n\nselect\n\tc.id id,\n\ttext_to_date(c.dataimpressao) data_impressao,\n\tcase when c.impressa = 'S' then true else false end as guia_impressa,\n\tc.idconsolidacaoarrecadacao id_consolidacao,\n\tc.idguia id_guia,\n\tc.idciclo id_periodo,\n\tt.id id_usuario_impressao\nfrom consolidacaoarrecadacaohist c \njoin temp_usuario t on (t.mig_id_usuario_original = c.idusuarioimpressao)",
+  "selectSql": "Map['temp_usuario'];\n\nselect\n\tc.id id,\n\tpublic.text_to_date(c.dataimpressao) data_impressao,\n\tcase when c.impressa = 'S' then true else false end as guia_impressa,\n\tc.idconsolidacaoarrecadacao id_consolidacao,\n\tc.idguia id_guia,\n\tc.idciclo id_periodo,\n\tt.id id_usuario_impressao\nfrom consolidacaoarrecadacaohist c \njoin temp_usuario t on (t.mig_id_usuario_original = c.idusuarioimpressao)",
   "insertSql": "insert into ${SCHEMA}.consolidacao_guia (\n\tid,\n\tdata_impressao,\n\tguia_impressa,\n\tid_consolidacao,\n\tid_guia,\n\tid_periodo,\n\tid_usuario_impressao)",
   "columns": [
     "id",

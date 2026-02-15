@@ -1,7 +1,7 @@
 {
   "id": "3b195a3c-da08-4e0a-95fe-3e625f0bf4f5",
   "jobName": "Decreto",
-  "selectSql": "select \r\n\td.id,\r\n\ttext_to_date(d.datavigenciadiariooficial) datavigenciadiariooficial,\r\n\td.decreto,\r\n\tcase when validado = 'S' then true else false end validado,\r\n\td.idperiodovigencia,\r\n\t(d.id = (select max(id) from decreto)) decreto_vigente\r\nfrom decreto d",
+  "selectSql": "select \r\n\td.id,\r\n\tpublic.text_to_date(d.datavigenciadiariooficial) datavigenciadiariooficial,\r\n\td.decreto,\r\n\tcase when validado = 'S' then true else false end validado,\r\n\td.idperiodovigencia,\r\n\t(d.id = (select max(id) from decreto)) decreto_vigente\r\nfrom decreto d",
   "insertSql": "INSERT INTO ${SCHEMA}.decreto (id, data_vigencia_oficial, descricao, validado, id_periodo, decreto_vigente) ",
   "columns": [
     "id",

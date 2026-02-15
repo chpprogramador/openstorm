@@ -1,7 +1,7 @@
 {
   "id": "c2b0a746-056c-41a7-b04c-835c345af882",
   "jobName": "Medição Cronograma",
-  "selectSql": "select\n\tpg.id id,\n\ttext_to_date(pg.dataentrega) data_entrega_fatura,\n\ttext_to_date(pg.datainiciovenda) data_inicio_venda,\n\ttext_to_date(pg.dataleitura) data_leitura,\n\ttext_to_date(pg.dataproxleitura) data_proxima_leitura,\n\ttext_to_date(pg.datatermvenda) data_termino_venda,\n\ttext_to_date(pg.datavencimento) data_vencimento,\n\tpg.idgrupo id_grupo_medicao,\n\tpg.idperiodo id_periodo\nfrom periodogrupo pg ",
+  "selectSql": "select\n\tpg.id id,\n\tpublic.text_to_date(pg.dataentrega) data_entrega_fatura,\n\tpublic.text_to_date(pg.datainiciovenda) data_inicio_venda,\n\tpublic.text_to_date(pg.dataleitura) data_leitura,\n\tpublic.text_to_date(pg.dataproxleitura) data_proxima_leitura,\n\tpublic.text_to_date(pg.datatermvenda) data_termino_venda,\n\tpublic.text_to_date(pg.datavencimento) data_vencimento,\n\tpg.idgrupo id_grupo_medicao,\n\tpg.idperiodo id_periodo\nfrom periodogrupo pg ",
   "insertSql": "insert into ${SCHEMA}.medicao_cronograma (\n\tid,\n\tdata_entrega_fatura,\n\tdata_inicio_venda,\n\tdata_leitura,\n\tdata_proxima_leitura,\n\tdata_termino_venda,\n\tdata_vencimento,\n\tid_grupo_medicao,\n\tid_periodo)",
   "columns": [
     "id",

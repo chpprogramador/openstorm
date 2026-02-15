@@ -1,7 +1,7 @@
 {
   "id": "48e76c62-d540-483b-b0b2-865f9ed88b11",
   "jobName": "Cobrança Processo Ligação",
-  "selectSql": "select\n\tl.id id,\n\ttext_to_date(l.databaixa) data_baixa_ligacao_processo,\n\tcase when l.statusprocesso = 'F' then true else false end as processo_finalizado,\n\tl.idprocessocorte id_cobranca_processo,\n\tl.idsituacaoligacaoprocesso id_cobranca_processo_ligacao_situacao,\n\tl.idligacao id_ligacao_imovel\t\nfrom ligacaoprocessocorte l ",
+  "selectSql": "select\n\tl.id id,\n\tpublic.text_to_date(l.databaixa) data_baixa_ligacao_processo,\n\tcase when l.statusprocesso = 'F' then true else false end as processo_finalizado,\n\tl.idprocessocorte id_cobranca_processo,\n\tl.idsituacaoligacaoprocesso id_cobranca_processo_ligacao_situacao,\n\tl.idligacao id_ligacao_imovel\t\nfrom ligacaoprocessocorte l ",
   "insertSql": "insert into ${SCHEMA}.cobranca_processo_ligacao (\n\tid,\n\tdata_baixa_ligacao_processo,\n\tprocesso_finalizado,\n\tid_cobranca_processo,\n\tid_cobranca_processo_ligacao_situacao,\n\tid_ligacao_imovel)",
   "columns": [
     "id",
