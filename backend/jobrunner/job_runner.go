@@ -134,7 +134,9 @@ func (jr *JobRunner) requestCount(jobID string, job models.Job) *countFuture {
 	}
 	future := &countFuture{done: make(chan struct{})}
 	jr.countMap[jobID] = future
+	total := len(jr.countMap)
 	jr.countMu.Unlock()
+	status.SetCountTotal(total)
 
 	jr.countQueue <- &countRequest{
 		jobID:  jobID,
@@ -1824,8 +1826,6 @@ func (jr *JobRunner) Run(startIDs []string) {
 	stopLogFlusher := jr.startLogFlusher()
 	defer stopLogFlusher()
 	defer jr.flushPipelineLogNow()
-
-	jr.preloadCounts(startIDs)
 
 	for _, id := range startIDs {
 		if jr.shouldStop() {
